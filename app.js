@@ -804,6 +804,7 @@ function setupInteractions() {
       workState = 'checked_in';
       localStorage.setItem('jeegong_work_state', 'checked_in');
       updateWorkButtonUI();
+      pushCloudState();
 
       const now = new Date();
       const timeStr = now.toTimeString().split(' ')[0];
@@ -829,6 +830,7 @@ function setupInteractions() {
       workState = 'finished';
       localStorage.setItem('jeegong_work_state', 'finished');
       updateWorkButtonUI();
+      pushCloudState();
 
       const now = new Date();
       const timeStr = now.toTimeString().split(' ')[0];
@@ -863,6 +865,7 @@ function setupInteractions() {
         workState = 'ready';
         localStorage.setItem('jeegong_work_state', 'ready');
         updateWorkButtonUI();
+        pushCloudState();
         renderTodayView();
         showToast('출근 준비 상태로 복원되었습니다.');
       }
@@ -912,67 +915,95 @@ function showToast(msg) {
 }
 
 // =========================================================
-// CHATBOT WIDGET LOGIC (구름이 웹 소통, 파일 첨부 & 멀티 세션)
+// CHATBOT WIDGET LOGIC (채널톡 스타일 대화 목록 & 개별 대화방)
 // =========================================================
 let chatMessages = [];
+let currentChatView = 'list'; // 'list' or 'room'
 
 function setupChatbot() {
   const toggleBtn = document.getElementById('btn-chatbot-toggle');
   const modal = document.getElementById('chatbot-modal');
-  const closeBtn = document.getElementById('btn-chatbot-close');
+  const listCloseBtn = document.getElementById('btn-chat-list-close');
+  const roomCloseBtn = document.getElementById('btn-chatbot-close');
+  const backBtn = document.getElementById('btn-chat-back');
+  const newInquiryBtn = document.getElementById('btn-chat-new-inquiry');
   const clearBtn = document.getElementById('btn-chatbot-clear');
   const sendBtn = document.getElementById('chatbot-send-btn');
   const inputEl = document.getElementById('chatbot-input');
   const badge = document.getElementById('trigger-unread-badge');
   const attachBtn = document.getElementById('btn-chatbot-attach');
   const fileInput = document.getElementById('chatbot-file-input');
-  const sessionSelect = document.getElementById('chatbot-session-select');
-  const newSessionBtn = document.getElementById('btn-chatbot-new-session');
 
   if (!toggleBtn || !modal) return;
 
-  // Initialize Session
-  if (!chatSessions[activeChatDate] || chatSessions[activeChatDate].length === 0) {
-    chatSessions[activeChatDate] = [
+  // Initialize Sessions
+  if (!chatSessions['2026-10-21'] || chatSessions['2026-10-21'].length === 0) {
+    chatSessions['2026-10-21'] = [
       {
         role: 'bot',
         text: '지원진 님 안녕하세요! 구름이예요 ㅎㅎ 웹에서도 편하게 말씀해 주세요. 오늘 일정이나 메일, 할 일 관련해서 궁금하신 점이나 처리할 일 있으시면 바로 해결해 드릴게요!',
         time: '08:30'
+      },
+      {
+        role: 'user',
+        text: '이미 끝난 작업들이야',
+        time: '17:44'
+      },
+      {
+        role: 'bot',
+        text: '이미 마무리하신 작업들이군요! 확인했습니다 ㅎㅎ 대시보드 목록에서도 깔끔하게 완료 상태로 정리해 둘게요.',
+        time: '17:44'
       }
     ];
   }
-  chatMessages = chatSessions[activeChatDate];
-  renderChatSessionSelect();
+  if (!chatSessions['session-sixshop']) {
+    chatSessions['session-sixshop'] = [
+      {
+        role: 'bot',
+        text: '온세스 사업용 메일로 식스샵 신규 의뢰(이준석 대표, 예산 100~200만 원)가 도착해 임시보관함에 답장 초안을 작성해 두었습니다!',
+        time: '17:50'
+      }
+    ];
+  }
+  if (!chatSessions['2026-10-20']) {
+    chatSessions['2026-10-20'] = [
+      {
+        role: 'bot',
+        text: '지원진 님, 10/20 크몽 전자책 승인 검토 카드와 마진계산기 피드백 확인했습니다.',
+        time: '1일 전'
+      }
+    ];
+  }
 
-  // Session Selector Change
-  if (sessionSelect) {
-    sessionSelect.addEventListener('change', () => {
-      activeChatDate = sessionSelect.value;
-      chatMessages = chatSessions[activeChatDate] || [];
-      renderChatMessages();
-      showToast(`📅 ${activeChatDate} 대화 기록을 불러왔습니다.`);
+  activeChatDate = '2026-10-21';
+  chatMessages = chatSessions[activeChatDate];
+  renderChatConversationList();
+
+  // Navigation: Back to List
+  if (backBtn) {
+    backBtn.addEventListener('click', () => {
+      showChatList();
     });
   }
 
-  // New Session Button
-  if (newSessionBtn) {
-    newSessionBtn.addEventListener('click', () => {
+  // New Inquiry Floating Button
+  if (newInquiryBtn) {
+    newInquiryBtn.addEventListener('click', () => {
       const now = new Date();
-      const timeTag = `${now.getHours()}시${now.getMinutes()}분`;
-      const newKey = `2026-10-21 (${timeTag})`;
+      const timeTag = `${now.getHours()}시${String(now.getMinutes()).padStart(2, '0')}분`;
+      const newKey = `새 대화 (${timeTag})`;
       chatSessions[newKey] = [
         {
           role: 'bot',
-          text: `새로운 대화 세션이 시작되었습니다! (${newKey})\n필요한 업무나 질문 편하게 남겨주세요 ㅎㅎ`,
+          text: `새로운 대화가 시작되었습니다! (${newKey})\n궁금하신 점이나 처리할 업무 편하게 남겨주세요 ㅎㅎ`,
           time: `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`
         }
       ];
       activeChatDate = newKey;
       chatMessages = chatSessions[newKey];
-      renderChatSessionSelect();
-      renderChatMessages();
       saveChatHistory();
-      showToast('✨ 새로운 대화 세션이 생성되었습니다.');
+      showChatRoom(newKey);
+      showToast('✨ 새로운 대화방이 열렸습니다.');
     });
   }
 
@@ -1043,7 +1074,6 @@ function setupChatbot() {
     inputEl.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         if (e.shiftKey) {
-          // Allow default newline
           setTimeout(() => {
             inputEl.style.height = 'auto';
             inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + 'px';
@@ -1082,31 +1112,131 @@ function setupChatbot() {
     modal.classList.toggle('open');
     if (modal.classList.contains('open')) {
       markAsRead();
-      renderChatMessages();
-      if (inputEl) inputEl.focus();
+      if (currentChatView === 'list') {
+        showChatList();
+      } else {
+        renderChatMessages();
+        if (inputEl) inputEl.focus();
+      }
     }
   });
 
-  closeBtn.addEventListener('click', () => {
-    modal.classList.remove('open');
-  });
+  if (listCloseBtn) {
+    listCloseBtn.addEventListener('click', () => {
+      modal.classList.remove('open');
+    });
+  }
 
-  clearBtn.addEventListener('click', () => {
-    chatMessages = [
+  if (roomCloseBtn) {
+    roomCloseBtn.addEventListener('click', () => {
+      modal.classList.remove('open');
+    });
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      chatMessages = [
+        {
+          role: 'bot',
+          text: '대화 기록이 정리되었어요! 새로운 용건이나 작업 말씀해 주시면 바로 챙길게요.',
+          time: '방금 전'
+        }
+      ];
+      saveChatHistory();
+      renderChatMessages();
+    });
+  }
+
+  if (sendBtn) {
+    sendBtn.addEventListener('click', () => {
+      markAsRead();
+      handleChatSend();
+    });
+  }
+
+  showChatList();
+}
+
+window.showChatList = function() {
+  currentChatView = 'list';
+  const listView = document.getElementById('chat-view-list');
+  const roomView = document.getElementById('chat-view-room');
+  if (listView) listView.style.display = 'flex';
+  if (roomView) roomView.style.display = 'none';
+  renderChatConversationList();
+};
+
+window.showChatRoom = function(sessionId) {
+  currentChatView = 'room';
+  if (sessionId) {
+    activeChatDate = sessionId;
+  }
+  if (!chatSessions[activeChatDate]) {
+    chatSessions[activeChatDate] = [
       {
         role: 'bot',
-        text: '대화 기록이 정리되었어요! 새로운 용건이나 작업 말씀해 주시면 바로 챙길게요.',
-        time: '방금 전'
+        text: '지원진 님 안녕하세요! 구름이예요 ㅎㅎ 웹에서도 편하게 말씀해 주세요.',
+        time: '08:30'
       }
     ];
-    saveChatHistory();
-    renderChatMessages();
-  });
+  }
+  chatMessages = chatSessions[activeChatDate];
+  
+  const listView = document.getElementById('chat-view-list');
+  const roomView = document.getElementById('chat-view-room');
+  if (listView) listView.style.display = 'none';
+  if (roomView) roomView.style.display = 'flex';
+  renderChatMessages();
+  const inputEl = document.getElementById('chatbot-input');
+  if (inputEl) inputEl.focus();
+};
 
-  sendBtn.addEventListener('click', () => {
-    markAsRead();
-    handleChatSend();
-  });
+function renderChatConversationList() {
+  const container = document.getElementById('chat-conv-list-container');
+  if (!container) return;
+
+  const sessionKeys = Object.keys(chatSessions);
+
+  container.innerHTML = sessionKeys.map(key => {
+    const msgs = chatSessions[key] || [];
+    const lastMsg = msgs.length > 0 ? msgs[msgs.length - 1] : { text: '대화 시작하기', time: '' };
+
+    let title = '구름이';
+    let timeTag = '오늘';
+
+    if (key === '2026-10-21') {
+      title = '구름이 (오늘 업무)';
+      timeTag = lastMsg.time || '오늘';
+    } else if (key === 'session-sixshop') {
+      title = '식스샵 신규 프로젝트 의뢰 (이준석 대표)';
+      timeTag = '17:50';
+    } else if (key === '2026-10-20') {
+      title = '구름이 (어제 업무)';
+      timeTag = '1일 전';
+    } else if (key === '2026-10-19') {
+      title = '구름이 (시스템 연동)';
+      timeTag = '2일 전';
+    } else {
+      title = `대화 (${key})`;
+      timeTag = lastMsg.time || '최근';
+    }
+
+    const previewText = (lastMsg.text || '대화가 없습니다.').replace(/\n/g, ' ');
+
+    return `
+      <div class="chat-conv-item" onclick="showChatRoom('${key}')">
+        <img src="gureumi_avatar.png" alt="구름이" class="chat-conv-avatar">
+        <div class="chat-conv-content">
+          <div class="chat-conv-meta">
+            <span class="chat-conv-name">${title}</span>
+            <span class="chat-conv-time">${timeTag}</span>
+          </div>
+          <div class="chat-conv-preview">${previewText}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
 
   renderChatMessages();
 }
@@ -1346,4 +1476,97 @@ async function generateAssistantResponse(prompt, attachments = []) {
   // Natural Concise Default response (NO repetitive schedule recitation)
   return `네 지원진 님, '${clean}' 내용 접수했습니다! 말씀해 주신 내용 바탕으로 바로 챙겨둘게요 ㅎㅎ`;
 }
+
+// =========================================================
+// REAL-TIME CLOUD SYNC (Mobile <-> PC Sync via Cloud DB)
+// =========================================================
+async function pushCloudState() {
+  if (isSyncing) return;
+  try {
+    const nowTs = Date.now();
+    lastLocalUpdateTimestamp = nowTs;
+    localStorage.setItem('jeegong_last_sync_ts', String(nowTs));
+
+    const payload = {
+      name: "jeegong_sync",
+      data: {
+        updatedAt: nowTs,
+        workState: localStorage.getItem('jeegong_work_state') || 'ready',
+        chatSessions: chatSessions,
+        activeChatDate: activeChatDate,
+        briefingState: appData && appData.briefings && appData.briefings[0] ? {
+          todomateTodos: appData.briefings[0].todomateTodos,
+          agentPriorities: appData.briefings[0].agentPriorities,
+          emails: appData.briefings[0].emails,
+          inquiries: appData.briefings[0].inquiries
+        } : null
+      }
+    };
+
+    await fetch(CLOUD_SYNC_ENDPOINT, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  } catch (err) {
+    console.warn('pushCloudState error:', err);
+  }
+}
+
+async function pullCloudState() {
+  if (isSyncing) return;
+  try {
+    const res = await fetch(CLOUD_SYNC_ENDPOINT);
+    if (!res.ok) return;
+    const json = await res.json();
+    if (!json || !json.data) return;
+
+    const remoteData = json.data;
+    const remoteTs = remoteData.updatedAt || 0;
+
+    if (remoteTs > lastLocalUpdateTimestamp) {
+      isSyncing = true;
+      lastLocalUpdateTimestamp = remoteTs;
+      localStorage.setItem('jeegong_last_sync_ts', String(remoteTs));
+
+      // 1. Sync work state (출근/퇴근)
+      if (remoteData.workState && remoteData.workState !== workState) {
+        workState = remoteData.workState;
+        localStorage.setItem('jeegong_work_state', workState);
+        updateWorkButtonUI();
+      }
+
+      // 2. Sync chat sessions
+      if (remoteData.chatSessions) {
+        chatSessions = remoteData.chatSessions;
+        localStorage.setItem('jeegong_chat_sessions', JSON.stringify(chatSessions));
+        if (remoteData.activeChatDate) {
+          activeChatDate = remoteData.activeChatDate;
+        }
+        renderChatConversationList();
+        if (currentChatView === 'room') {
+          chatMessages = chatSessions[activeChatDate] || [];
+          renderChatMessages();
+        }
+      }
+
+      // 3. Sync briefing items
+      if (remoteData.briefingState && appData && appData.briefings && appData.briefings[0]) {
+        const b = appData.briefings[0];
+        if (remoteData.briefingState.todomateTodos) b.todomateTodos = remoteData.briefingState.todomateTodos;
+        if (remoteData.briefingState.agentPriorities) b.agentPriorities = remoteData.briefingState.agentPriorities;
+        if (remoteData.briefingState.emails) b.emails = remoteData.briefingState.emails;
+        if (remoteData.briefingState.inquiries) b.inquiries = remoteData.briefingState.inquiries;
+        renderTodayView();
+        renderInquiriesExclusiveView();
+      }
+
+      isSyncing = false;
+    }
+  } catch (err) {
+    console.warn('pullCloudState error:', err);
+    isSyncing = false;
+  }
+}
+
 

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>지공 출근 에이전트 | 출근 준비 대시보드</title>
-  <link rel="stylesheet" href="styles.css?v=20261021_1745">
+  <link rel="stylesheet" href="styles.css?v=20261021_1800">
 </head>
 <body>
   <div class="app-container">
@@ -398,52 +398,74 @@
   <div class="chatbot-floating-wrapper" id="chatbot-wrapper">
     <!-- Chat Modal Window -->
     <div class="chatbot-modal" id="chatbot-modal">
-      <div class="chatbot-header">
-        <div class="chatbot-header-left">
-          <img src="gureumi_avatar.png" alt="구름이" class="chatbot-header-avatar-img">
-          <div>
-            <div class="chatbot-title">구름이 (업무 비서)</div>
-            <div class="chatbot-status">
-              <span class="status-dot"></span>
-              <span>온라인 · 실시간 소통 가능</span>
+      
+      <!-- VIEW A: CONVERSATION LIST (Channel.io Style 대화 목록 뷰) -->
+      <div class="chatbot-view" id="chat-view-list">
+        <div class="chat-list-header">
+          <h2 class="chat-list-title">대화</h2>
+          <button class="chat-circle-btn" id="btn-chat-list-close" title="닫기">✕</button>
+        </div>
+        <div class="chat-conv-scroll" id="chat-conv-list-container">
+          <!-- Injected via JS -->
+        </div>
+        <div class="chat-list-footer">
+          <button class="chat-new-inquiry-btn" id="btn-chat-new-inquiry">
+            <span>새 문의하기</span>
+            <span style="font-size: 13px;">✈</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- VIEW B: CHAT ROOM (개별 대화방 상세 뷰) -->
+      <div class="chatbot-view" id="chat-view-room" style="display: none;">
+        <div class="chatbot-header">
+          <div class="chatbot-header-left">
+            <button class="chat-back-btn" id="btn-chat-back" title="대화 목록으로 돌아가기">
+              <span>←</span>
+            </button>
+            <img src="gureumi_avatar.png" alt="구름이" class="chatbot-header-avatar-img">
+            <div>
+              <div class="chatbot-title">구름이 (업무 비서)</div>
+              <div class="chatbot-status">
+                <span class="status-dot"></span>
+                <span>온라인 · 실시간 소통 가능</span>
+              </div>
             </div>
           </div>
+          <div class="chatbot-header-right">
+            <button class="chatbot-btn-icon" id="btn-chatbot-clear" title="대화 지우기">🗑️</button>
+            <button class="chat-circle-btn" id="btn-chatbot-close" title="닫기">✕</button>
+          </div>
         </div>
-        <div class="chatbot-header-right">
-          <select id="chatbot-session-select" class="chatbot-session-select" title="날짜별 대화 기록"></select>
-          <button class="chatbot-btn-icon" id="btn-chatbot-new-session" title="새 대화 시작">➕</button>
-          <button class="chatbot-btn-icon" id="btn-chatbot-clear" title="대화 지우기">🗑️</button>
-          <button class="chatbot-btn-icon" id="btn-chatbot-close" title="닫기">✕</button>
+
+        <!-- Quick Suggestion Chips -->
+        <div class="chatbot-chips-bar" id="chatbot-chips-bar">
+          <button class="chat-chip" onclick="sendQuickMessage('오늘 우선순위 핵심만 다시 짚어줘')">오늘 우선순위 짚어줘</button>
+          <button class="chat-chip" onclick="sendQuickMessage('희수 님 답장 톤을 조금 더 친근하게 다듬어줘')">희수 님 답장 다듬기</button>
+          <button class="chat-chip" onclick="sendQuickMessage('오늘 할 일에 세무사 통화 추가해줘')">새 할 일 추가</button>
+          <button class="chat-chip" onclick="sendQuickMessage('내일 아넬라 공구 준비물 뭐 남았어?')">아넬라 준비물 점검</button>
         </div>
-      </div>
 
-      <!-- Quick Suggestion Chips -->
-      <div class="chatbot-chips-bar" id="chatbot-chips-bar">
-        <button class="chat-chip" onclick="sendQuickMessage('오늘 우선순위 핵심만 다시 짚어줘')">오늘 우선순위 짚어줘</button>
-        <button class="chat-chip" onclick="sendQuickMessage('희수 님 답장 톤을 조금 더 친근하게 다듬어줘')">희수 님 답장 다듬기</button>
-        <button class="chat-chip" onclick="sendQuickMessage('오늘 할 일에 세무사 통화 추가해줘')">새 할 일 추가</button>
-        <button class="chat-chip" onclick="sendQuickMessage('내일 아넬라 공구 준비물 뭐 남았어?')">아넬라 준비물 점검</button>
-      </div>
+        <!-- Messages Scroll Area -->
+        <div class="chatbot-messages" id="chatbot-messages">
+          <!-- Messages rendered by app.js -->
+        </div>
 
-      <!-- Messages Scroll Area -->
-      <div class="chatbot-messages" id="chatbot-messages">
-        <!-- Messages rendered by app.js -->
-      </div>
+        <!-- File Attachment Preview Bar -->
+        <div class="chatbot-file-preview-bar" id="chatbot-file-preview-bar" style="display: none;">
+          <!-- Preview chips rendered by app.js -->
+        </div>
 
-      <!-- File Attachment Preview Bar -->
-      <div class="chatbot-file-preview-bar" id="chatbot-file-preview-bar" style="display: none;">
-        <!-- Preview chips rendered by app.js -->
-      </div>
-
-      <!-- Chat Input Area (Supports Shift+Enter, Clipboard Paste) -->
-      <div class="chatbot-input-bar">
-        <input type="file" id="chatbot-file-input" style="display: none;" accept="image/*,video/*,.mp4,.mov,.avi,.webm,.pdf,.doc,.docx,.xlsx,.txt" multiple>
-        <button class="chatbot-attach-btn" id="btn-chatbot-attach" title="사진, 동영상 및 파일 첨부">📎</button>
-        <textarea id="chatbot-input" rows="1" placeholder="메시지를 입력하세요..." autocomplete="off"></textarea>
-        <button id="chatbot-send-btn" class="chatbot-send-btn">
-          <span>전송</span>
-          <span>↗</span>
-        </button>
+        <!-- Chat Input Area (Supports Shift+Enter, Clipboard Paste) -->
+        <div class="chatbot-input-bar">
+          <input type="file" id="chatbot-file-input" style="display: none;" accept="image/*,video/*,.mp4,.mov,.avi,.webm,.pdf,.doc,.docx,.xlsx,.txt" multiple>
+          <button class="chatbot-attach-btn" id="btn-chatbot-attach" title="사진, 동영상 및 파일 첨부">📎</button>
+          <textarea id="chatbot-input" rows="1" placeholder="메시지를 입력하세요..." autocomplete="off"></textarea>
+          <button id="chatbot-send-btn" class="chatbot-send-btn">
+            <span>전송</span>
+            <span>↗</span>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -456,6 +478,6 @@
 
   <div class="toast-notice" id="toast-notice">클립보드에 복사되었습니다.</div>
 
-  <script src="app.js?v=20261021_1745"></script>
+  <script src="app.js?v=20261021_1800"></script>
 </body>
 </html>
