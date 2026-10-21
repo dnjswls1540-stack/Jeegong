@@ -7,7 +7,7 @@ let isCheckedIn = false;
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    const res = await fetch('data.json');
+    const res = await fetch('data.json?v=' + Date.now());
     appData = await res.json();
   } catch (e) {
     console.error('Failed to load data.json', e);
