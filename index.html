@@ -26,6 +26,10 @@
           <span class="nav-icon">🌅</span>
           <span>오늘의 브리핑</span>
         </li>
+        <li class="nav-item" data-view="inquiry-view">
+          <span class="nav-icon">💬</span>
+          <span>실시간 문의</span>
+        </li>
         <li class="nav-item" data-view="archive-view">
           <span class="nav-icon">📅</span>
           <span>날짜별 아카이브</span>
@@ -72,6 +76,7 @@
       <!-- Mobile Nav Tabs (Horizontal Segmented Control) -->
       <nav class="mobile-nav-tabs">
         <button class="mobile-tab-btn active" data-view="today-view">🌅 오늘의 브리핑</button>
+        <button class="mobile-tab-btn" data-view="inquiry-view">💬 실시간 문의</button>
         <button class="mobile-tab-btn" data-view="archive-view">📅 날짜별 아카이브</button>
         <button class="mobile-tab-btn" data-view="history-view">⚡ 실행 이력</button>
         <button class="mobile-tab-btn" data-view="settings-view">⚙️ 에이전트 설정</button>
@@ -143,6 +148,13 @@
               </div>
               <div class="stat-icon">📁</div>
             </div>
+            <div class="stat-card">
+              <div class="stat-info">
+                <div class="stat-label">실시간 고객 문의</div>
+                <div class="stat-val" id="stat-inquiry-count">3건</div>
+              </div>
+              <div class="stat-icon">💬</div>
+            </div>
           </div>
 
           <!-- Guide Banner -->
@@ -183,6 +195,20 @@
                 <span class="section-badge" id="email-badge">3건 조치 필요</span>
               </div>
               <div class="email-list" id="email-list-container">
+                <!-- Injected via JS -->
+              </div>
+            </div>
+
+            <!-- 2-B. Inquiries: Kmong, Imweb, Mail Customer Inquiries -->
+            <div class="card-section">
+              <div class="section-header">
+                <div class="section-title">
+                  <span>💬</span>
+                  <span>실시간 고객 문의 (크몽 · 아임웹 · 메일)</span>
+                </div>
+                <span class="section-badge" id="inquiry-badge" style="background-color: #fff1f2; color: #e11d48;">3건 대기</span>
+              </div>
+              <div class="inquiry-list" id="inquiry-list-container">
                 <!-- Injected via JS -->
               </div>
             </div>
@@ -240,6 +266,25 @@
               <div class="drive-list" id="drive-list-container">
                 <!-- Injected via JS -->
               </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW 1-B: INQUIRIES EXCLUSIVE VIEW -->
+        <section class="view-section" id="inquiry-view">
+          <div class="card-section">
+            <div class="section-header">
+              <div class="section-title">
+                <span>💬</span>
+                <span>실시간 고객 문의 통합 관리</span>
+              </div>
+              <span class="section-badge" id="inquiry-exclusive-badge" style="background-color: #fff1f2; color: #e11d48;">3건 대기</span>
+            </div>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
+              크몽, 아임웹, 네이버/지메일에서 인입된 신규 제작 견적, 공구 협의, 코칭 문의를 실시간으로 확인하고 초안을 승인하여 회신합니다.
+            </p>
+            <div class="inquiry-list" id="inquiry-exclusive-list-container">
+              <!-- Injected via JS -->
             </div>
           </div>
         </section>

@@ -52,6 +52,7 @@ function setupNavigation() {
 
   const titles = {
     'today-view': '오늘의 브리핑',
+    'inquiry-view': '실시간 고객 문의',
     'archive-view': '날짜별 아카이브',
     'history-view': '실행 이력 & 로그',
     'settings-view': '에이전트 설정'
@@ -95,14 +96,25 @@ function renderTodayView() {
   if (!appData || !appData.briefings) return;
   const b = appData.briefings.find(item => item.id === 'b-20261021') || appData.briefings[0];
 
-  // Stats Counters
-  document.getElementById('stat-calendar-count').textContent = `${b.calendar.count}건`;
-  document.getElementById('stat-email-count').textContent = `${b.emails.filter(m => m.status !== 'excluded').length}건`;
-  document.getElementById('stat-todo-count').textContent = `${b.todomateTodos.filter(t => !t.done).length}건`;
-  document.getElementById('stat-drive-count').textContent = `${b.driveFiles.length}건`;
+  // Stats Counters with Defensive Checks
+  const calCountEl = document.getElementById('stat-calendar-count');
+  if (calCountEl && b.calendar) calCountEl.textContent = `${b.calendar.count}건`;
+
+  const emailCountEl = document.getElementById('stat-email-count');
+  if (emailCountEl && b.emails) emailCountEl.textContent = `${b.emails.filter(m => m.status !== 'excluded').length}건`;
+
+  const todoCountEl = document.getElementById('stat-todo-count');
+  if (todoCountEl && b.todomateTodos) todoCountEl.textContent = `${b.todomateTodos.filter(t => !t.done).length}건`;
+
+  const driveCountEl = document.getElementById('stat-drive-count');
+  if (driveCountEl && b.driveFiles) driveCountEl.textContent = `${b.driveFiles.length}건`;
+
+  const inqCountEl = document.getElementById('stat-inquiry-count');
+  if (inqCountEl && b.inquiries) inqCountEl.textContent = `${b.inquiries.filter(i => i.status !== 'excluded' && i.status !== 'done' && i.status !== 'sent').length}건`;
 
   // Guide
-  document.getElementById('guide-banner-text').textContent = b.guide;
+  const guideEl = document.getElementById('guide-banner-text');
+  if (guideEl) guideEl.textContent = b.guide;
 
   // 1. Calendar
   const calContainer = document.getElementById('calendar-list-container');
@@ -126,7 +138,10 @@ function renderTodayView() {
   // 2. Emails (with Exclude & Process System)
   const emailContainer = document.getElementById('email-list-container');
   emailContainer.innerHTML = '';
-  document.getElementById('email-count-badge').textContent = `${b.emails.filter(e => e.status !== 'excluded' && e.status !== 'done' && e.status !== 'sent').length}건 조치 필요`;
+  const emailBadge = document.getElementById('email-badge');
+  if (emailBadge) {
+    emailBadge.textContent = `${b.emails.filter(e => e.status !== 'excluded' && e.status !== 'done' && e.status !== 'sent').length}건 조치 필요`;
+  }
 
   // Sort emails: actionable first, (done, sent, excluded) at the bottom
   const sortedEmails = [...b.emails].sort((a, b) => {
@@ -203,10 +218,15 @@ function renderTodayView() {
     `;
   });
 
+  // 2-B. Customer Inquiries (Kmong, Imweb, Mail)
+  renderInquiries(b, 'inquiry-list-container', 'inquiry-badge');
+  renderInquiries(b, 'inquiry-exclusive-list-container', 'inquiry-exclusive-badge');
+
   // 3-A. Todomate Todos (Separated - Completed items sink to bottom)
   const todoContainer = document.getElementById('todomate-list-container');
-  todoContainer.innerHTML = '';
-  document.getElementById('todomate-count-badge').textContent = `${b.todomateTodos.filter(t => !t.done).length}건 대기`;
+  if (todoContainer) todoContainer.innerHTML = '';
+  const todoBadge = document.getElementById('todomate-count-badge');
+  if (todoBadge) todoBadge.textContent = `${b.todomateTodos.filter(t => !t.done).length}건 대기`;
 
   const sortedTodos = [...b.todomateTodos].sort((a, b) => {
     if (a.done === b.done) return 0;
@@ -333,6 +353,154 @@ window.toggleAgentPriorityExclude = function(id) {
 };
 
 // Email Exclude / Restore
+// Render Customer Inquiries (Kmong, Imweb, Mail)
+function renderInquiries(b, containerId, badgeId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  if (!b.inquiries) b.inquiries = [];
+
+  const badge = document.getElementById(badgeId);
+  const pendingCount = b.inquiries.filter(i => i.status !== 'excluded' && i.status !== 'done' && i.status !== 'sent').length;
+  if (badge) {
+    badge.textContent = `${pendingCount}건 대기`;
+  }
+
+  container.innerHTML = '';
+  if (b.inquiries.length === 0) {
+    container.innerHTML = '<div class="empty-state">현재 인입된 신규 고객 문의가 없습니다.</div>';
+    return;
+  }
+
+  // Sort: actionable first, (done, sent, excluded) at the bottom
+  const sortedInquiries = [...b.inquiries].sort((a, b) => {
+    const aHandled = a.status === 'done' || a.status === 'sent' || a.status === 'excluded';
+    const bHandled = b.status === 'done' || b.status === 'sent' || b.status === 'excluded';
+    if (aHandled === bHandled) return 0;
+    return aHandled ? 1 : -1;
+  });
+
+  sortedInquiries.forEach(inq => {
+    const isExcluded = inq.status === 'excluded';
+    const isDone = inq.status === 'done';
+    const isSent = inq.status === 'sent';
+    const chClass = inq.channel === '크몽' ? 'channel-kmong' : inq.channel === '아임웹' ? 'channel-imweb' : inq.channel === '네이버 메일' ? 'channel-naver' : 'channel-gmail';
+    const badgeChClass = inq.channel === '크몽' ? 'badge-channel-kmong' : inq.channel === '아임웹' ? 'badge-channel-imweb' : inq.channel === '네이버 메일' ? 'badge-channel-naver' : 'badge-channel-gmail';
+
+    container.innerHTML += `
+      <div class="inquiry-item ${chClass} ${isExcluded ? 'excluded' : ''} ${isDone || isSent ? 'done' : ''}" id="inquiry-item-${containerId}-${inq.id}">
+        <div class="email-top">
+          <div class="email-badges">
+            <span class="section-badge ${badgeChClass}">${inq.channel} 문의</span>
+            <span class="email-sender">${inq.from}</span>
+            <span class="email-time">${inq.time}</span>
+          </div>
+          <div class="email-item-actions">
+            ${isDone ? `
+              <span class="email-status-text" style="color: var(--accent-green);">직접 답변 완료 ✓</span>
+              <button class="btn-email-action" onclick="toggleInquiryDirectDone('${inq.id}')">복구</button>
+            ` : isSent ? `
+              <span class="email-status-text" style="color: var(--accent-blue);">답변 발송 완료 ✈️</span>
+            ` : isExcluded ? `
+              <span class="email-status-text">제외됨</span>
+              <button class="btn-email-action" onclick="toggleInquiryExclude('${inq.id}')">복구</button>
+            ` : `
+              <button class="btn-email-action btn-direct-done" onclick="toggleInquiryDirectDone('${inq.id}')" title="이미 직접 답변한 문의">
+                직접 완료
+              </button>
+              <button class="btn-email-action" onclick="toggleInquiryExclude('${inq.id}')" title="답변 불필요">
+                제외
+              </button>
+              <button class="btn-process" onclick="openInquiryProcessDraft('${containerId}-${inq.id}')">
+                답장 처리
+              </button>
+            `}
+          </div>
+        </div>
+
+        <div class="email-subject" style="font-weight: 600; font-size: 13.5px;">${inq.subject}</div>
+        <div class="email-summary" style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.45;">${inq.content}</div>
+
+        <!-- Inline Draft Box -->
+        <div class="inline-draft-box" id="inquiry-draft-box-${containerId}-${inq.id}">
+          <div class="draft-header">
+            <span>✍️ 구름이 고객 응대 초안 (수정 후 승인 시 답변 발송)</span>
+            <span style="font-size: 11.5px; color: var(--text-tertiary);">수신: ${inq.from}</span>
+          </div>
+          <textarea class="draft-textarea" id="inquiry-draft-text-${containerId}-${inq.id}">${inq.draft}</textarea>
+          <div class="draft-actions">
+            <button class="btn-secondary" onclick="closeInquiryProcessDraft('${containerId}-${inq.id}')" style="padding: 5px 12px; font-size: 12px;">닫기</button>
+            <button class="btn-primary" onclick="approveAndSendInquiry('${inq.id}', '${containerId}-${inq.id}')" style="padding: 6px 14px; font-size: 12px;">
+              <span>승인 및 답변 발송</span>
+              <span>✈️</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+// Inquiry Action Handlers
+window.toggleInquiryDirectDone = function(id) {
+  if (!appData) return;
+  const b = appData.briefings.find(item => item.id === currentBriefingId);
+  if (!b || !b.inquiries) return;
+  const inq = b.inquiries.find(i => i.id === id);
+  if (!inq) return;
+
+  if (inq.status === 'done') {
+    inq.status = 'pending';
+    showToast('문의 항목이 조치 대기 상태로 복구되었습니다.');
+  } else {
+    inq.status = 'done';
+    showToast('문의 항목이 직접 완료 처리되었습니다.');
+  }
+  renderTodayView();
+};
+
+window.toggleInquiryExclude = function(id) {
+  if (!appData) return;
+  const b = appData.briefings.find(item => item.id === currentBriefingId);
+  if (!b || !b.inquiries) return;
+  const inq = b.inquiries.find(i => i.id === id);
+  if (!inq) return;
+
+  if (inq.status === 'excluded') {
+    inq.status = 'pending';
+    showToast('문의 항목이 복구되었습니다.');
+  } else {
+    inq.status = 'excluded';
+    showToast('문의 항목이 제외 처리되었습니다.');
+  }
+  renderTodayView();
+};
+
+window.openInquiryProcessDraft = function(domId) {
+  const box = document.getElementById(`inquiry-draft-box-${domId}`);
+  if (box) box.classList.toggle('active');
+};
+
+window.closeInquiryProcessDraft = function(domId) {
+  const box = document.getElementById(`inquiry-draft-box-${domId}`);
+  if (box) box.classList.remove('active');
+};
+
+window.approveAndSendInquiry = function(id, domId) {
+  if (!appData) return;
+  const b = appData.briefings.find(item => item.id === currentBriefingId);
+  if (!b || !b.inquiries) return;
+  const inq = b.inquiries.find(i => i.id === id);
+  if (!inq) return;
+
+  const textEl = document.getElementById(`inquiry-draft-text-${domId}`);
+  if (textEl) inq.draft = textEl.value;
+
+  inq.status = 'sent';
+  closeInquiryProcessDraft(domId);
+  renderTodayView();
+  showToast(`[답변 발송 완료] ${inq.from} 님께 맞춤 답변이 전송되었습니다!`);
+};
+
 window.toggleExcludeEmail = function(id) {
   if (!appData) return;
   const b = appData.briefings.find(item => item.id === currentBriefingId);
