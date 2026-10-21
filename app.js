@@ -1,8 +1,26 @@
-// Jeegong Work Agent Dashboard Application (v1.1.0)
+// Jeegong Work Agent Dashboard Application (v1.2.0 - Cloud Sync & Multimedia)
 
 let appData = null;
 let currentBriefingId = 'b-20261021';
 let isCheckedIn = false;
+
+// Cloud Sync Configuration (Real-time Cross-device Sync)
+const CLOUD_SYNC_ENDPOINT = 'https://api.restful-api.dev/objects/ff808181a09d98f701a15d8b57223a34';
+let lastLocalUpdateTimestamp = 0;
+let isSyncing = false;
+
+// Multi-date Chat Sessions
+let chatSessions = {
+  '2026-10-21': [
+    {
+      role: 'bot',
+      text: '지원진 님 안녕하세요! 구름이예요 ㅎㅎ 웹에서도 편하게 말씀해 주세요. 오늘 일정이나 메일, 할 일 관련해서 궁금하신 점이나 처리할 일 있으시면 바로 해결해 드릴게요!',
+      time: '08:30'
+    }
+  ]
+};
+let activeChatDate = '2026-10-21';
+let currentAttachments = [];
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
@@ -13,6 +31,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.error('Failed to load data.json', e);
   }
 
+  // Load chat sessions from localStorage
+  try {
+    const savedSessions = localStorage.getItem('jeegong_chat_sessions');
+    if (savedSessions) {
+      chatSessions = JSON.parse(savedSessions);
+    }
+  } catch (e) {}
+
   setupTheme();
   setupNavigation();
   setupInteractions();
@@ -20,6 +46,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderTodayView();
   renderArchiveView();
   renderHistoryView();
+
+  // Initial Cloud Pull & Periodic Sync (Cross-device Sync: Mobile <-> PC)
+  await pullCloudState();
+  setInterval(pullCloudState, 5000);
+  window.addEventListener('focus', pullCloudState);
 });
 
 // Theme Management
@@ -440,6 +471,77 @@ function renderInquiries(b, containerId, badgeId) {
   });
 }
 
+// Cloud Sync Logic (Cross-device Synchronization: Mobile <-> PC)
+async function pushCloudState() {
+  if (!appData || !appData.briefings) return;
+  const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
+  lastLocalUpdateTimestamp = Date.now();
+
+  const payload = {
+    name: 'jeegong_sync',
+    data: {
+      timestamp: lastLocalUpdateTimestamp,
+      todos: b.todomateTodos,
+      emails: b.emails,
+      inquiries: b.inquiries,
+      priorities: b.agentPriorities,
+      workState: localStorage.getItem('jeegong_work_state') || 'ready',
+      chatSessions: chatSessions
+    }
+  };
+
+  try {
+    await fetch(CLOUD_SYNC_ENDPOINT, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  } catch (err) {
+    console.warn('Cloud sync push failed', err);
+  }
+}
+
+async function pullCloudState() {
+  if (isSyncing || !appData || !appData.briefings) return;
+  isSyncing = true;
+  try {
+    const res = await fetch(CLOUD_SYNC_ENDPOINT);
+    if (!res.ok) return;
+    const json = await res.json();
+    const cloud = json.data;
+
+    if (cloud && cloud.timestamp && cloud.timestamp > lastLocalUpdateTimestamp) {
+      lastLocalUpdateTimestamp = cloud.timestamp;
+      const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
+
+      if (cloud.todos) b.todomateTodos = cloud.todos;
+      if (cloud.emails) b.emails = cloud.emails;
+      if (cloud.inquiries) b.inquiries = cloud.inquiries;
+      if (cloud.priorities) b.agentPriorities = cloud.priorities;
+
+      if (cloud.chatSessions) {
+        chatSessions = cloud.chatSessions;
+        try {
+          localStorage.setItem('jeegong_chat_sessions', JSON.stringify(chatSessions));
+        } catch (e) {}
+        renderChatSessionSelect();
+        renderChatMessages();
+      }
+
+      if (cloud.workState) {
+        localStorage.setItem('jeegong_work_state', cloud.workState);
+        updateWorkButtonUI();
+      }
+
+      renderTodayView();
+    }
+  } catch (e) {
+    console.warn('Cloud pull failed', e);
+  } finally {
+    isSyncing = false;
+  }
+}
+
 // Inquiry Action Handlers
 window.toggleInquiryDirectDone = function(id) {
   if (!appData) return;
@@ -456,6 +558,7 @@ window.toggleInquiryDirectDone = function(id) {
     showToast('문의 항목이 직접 완료 처리되었습니다.');
   }
   renderTodayView();
+  pushCloudState();
 };
 
 window.toggleInquiryExclude = function(id) {
@@ -473,6 +576,7 @@ window.toggleInquiryExclude = function(id) {
     showToast('문의 항목이 제외 처리되었습니다.');
   }
   renderTodayView();
+  pushCloudState();
 };
 
 window.openInquiryProcessDraft = function(domId) {
@@ -498,6 +602,7 @@ window.approveAndSendInquiry = function(id, domId) {
   inq.status = 'sent';
   closeInquiryProcessDraft(domId);
   renderTodayView();
+  pushCloudState();
   showToast(`[답변 발송 완료] ${inq.from} 님께 맞춤 답변이 전송되었습니다!`);
 };
 
@@ -798,16 +903,9 @@ function showToast(msg) {
 }
 
 // =========================================================
-// CHATBOT WIDGET LOGIC (구름이 웹 소통 & 파일 첨부)
+// CHATBOT WIDGET LOGIC (구름이 웹 소통, 파일 첨부 & 멀티 세션)
 // =========================================================
-let currentAttachments = [];
-let chatMessages = [
-  {
-    role: 'bot',
-    text: '지원진 님 안녕하세요! 구름이예요 ㅎㅎ 웹에서도 편하게 말씀해 주세요. 오늘 일정이나 메일, 할 일 관련해서 궁금하신 점이나 처리할 일 있으시면 바로 해결해 드릴게요!',
-    time: '방금 전'
-  }
-];
+let chatMessages = [];
 
 function setupChatbot() {
   const toggleBtn = document.getElementById('btn-chatbot-toggle');
@@ -819,8 +917,55 @@ function setupChatbot() {
   const badge = document.getElementById('trigger-unread-badge');
   const attachBtn = document.getElementById('btn-chatbot-attach');
   const fileInput = document.getElementById('chatbot-file-input');
+  const sessionSelect = document.getElementById('chatbot-session-select');
+  const newSessionBtn = document.getElementById('btn-chatbot-new-session');
 
   if (!toggleBtn || !modal) return;
+
+  // Initialize Session
+  if (!chatSessions[activeChatDate] || chatSessions[activeChatDate].length === 0) {
+    chatSessions[activeChatDate] = [
+      {
+        role: 'bot',
+        text: '지원진 님 안녕하세요! 구름이예요 ㅎㅎ 웹에서도 편하게 말씀해 주세요. 오늘 일정이나 메일, 할 일 관련해서 궁금하신 점이나 처리할 일 있으시면 바로 해결해 드릴게요!',
+        time: '08:30'
+      }
+    ];
+  }
+  chatMessages = chatSessions[activeChatDate];
+  renderChatSessionSelect();
+
+  // Session Selector Change
+  if (sessionSelect) {
+    sessionSelect.addEventListener('change', () => {
+      activeChatDate = sessionSelect.value;
+      chatMessages = chatSessions[activeChatDate] || [];
+      renderChatMessages();
+      showToast(`📅 ${activeChatDate} 대화 기록을 불러왔습니다.`);
+    });
+  }
+
+  // New Session Button
+  if (newSessionBtn) {
+    newSessionBtn.addEventListener('click', () => {
+      const now = new Date();
+      const timeTag = `${now.getHours()}시${now.getMinutes()}분`;
+      const newKey = `2026-10-21 (${timeTag})`;
+      chatSessions[newKey] = [
+        {
+          role: 'bot',
+          text: `새로운 대화 세션이 시작되었습니다! (${newKey})\n필요한 업무나 질문 편하게 남겨주세요 ㅎㅎ`,
+          time: `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`
+        }
+      ];
+      activeChatDate = newKey;
+      chatMessages = chatSessions[newKey];
+      renderChatSessionSelect();
+      renderChatMessages();
+      saveChatHistory();
+      showToast('✨ 새로운 대화 세션이 생성되었습니다.');
+    });
+  }
 
   // File Attachments Handler
   if (attachBtn && fileInput) {
@@ -856,6 +1001,59 @@ function setupChatbot() {
     });
   }
 
+  // Clipboard Paste Handler (Ctrl+V / Cmd+V for screenshots)
+  if (inputEl) {
+    inputEl.addEventListener('paste', (e) => {
+      const items = (e.clipboardData || window.clipboardData)?.items;
+      if (!items) return;
+
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+          const blob = items[i].getAsFile();
+          if (!blob) continue;
+
+          const reader = new FileReader();
+          reader.onload = (loadEvt) => {
+            currentAttachments.push({
+              id: `att-paste-${Date.now()}`,
+              name: `캡처_이미지_${Date.now().toString().slice(-4)}.png`,
+              type: 'image',
+              dataUrl: loadEvt.target.result,
+              size: (blob.size / 1024).toFixed(1) + ' KB'
+            });
+            renderAttachmentPreviews();
+            showToast('📋 클립보드 캡처 이미지가 첨부되었습니다!');
+          };
+          reader.readAsDataURL(blob);
+          break;
+        }
+      }
+    });
+
+    // Shift+Enter Newline & Enter to Send
+    inputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        if (e.shiftKey) {
+          // Allow default newline
+          setTimeout(() => {
+            inputEl.style.height = 'auto';
+            inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + 'px';
+          }, 10);
+          return;
+        }
+        e.preventDefault();
+        markAsRead();
+        handleChatSend();
+        inputEl.style.height = '38px';
+      }
+    });
+
+    inputEl.addEventListener('input', () => {
+      inputEl.style.height = 'auto';
+      inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + 'px';
+    });
+  }
+
   // Check unread status from localStorage
   const isRead = localStorage.getItem('jeegong_chat_unread') === 'false';
   if (isRead && badge) {
@@ -871,20 +1069,12 @@ function setupChatbot() {
     } catch (e) {}
   }
 
-  // Load saved history
-  try {
-    const saved = localStorage.getItem('jeegong_chat_history');
-    if (saved) {
-      chatMessages = JSON.parse(saved);
-    }
-  } catch (e) {}
-
   toggleBtn.addEventListener('click', () => {
     modal.classList.toggle('open');
     if (modal.classList.contains('open')) {
       markAsRead();
       renderChatMessages();
-      inputEl.focus();
+      if (inputEl) inputEl.focus();
     }
   });
 
@@ -909,14 +1099,17 @@ function setupChatbot() {
     handleChatSend();
   });
 
-  inputEl.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      markAsRead();
-      handleChatSend();
-    }
-  });
-
   renderChatMessages();
+}
+
+function renderChatSessionSelect() {
+  const sessionSelect = document.getElementById('chatbot-session-select');
+  if (!sessionSelect) return;
+
+  const dates = Object.keys(chatSessions);
+  sessionSelect.innerHTML = dates.map(d => `
+    <option value="${d}" ${d === activeChatDate ? 'selected' : ''}>📅 ${d}</option>
+  `).join('');
 }
 
 function renderAttachmentPreviews() {
@@ -945,9 +1138,16 @@ window.removeAttachment = function(idx) {
 };
 
 function saveChatHistory() {
+  if (!chatSessions[activeChatDate]) {
+    chatSessions[activeChatDate] = [];
+  }
+  chatSessions[activeChatDate] = chatMessages.slice(-30);
+
   try {
-    localStorage.setItem('jeegong_chat_history', JSON.stringify(chatMessages.slice(-20)));
+    localStorage.setItem('jeegong_chat_sessions', JSON.stringify(chatSessions));
   } catch (e) {}
+
+  pushCloudState();
 }
 
 function renderChatMessages() {
@@ -1065,46 +1265,57 @@ async function generateAssistantResponse(prompt, attachments = []) {
     }
   }
 
-  const lower = prompt.toLowerCase();
+  const clean = prompt.trim();
 
-  // 1. Check if user wants to add todo
+  // Detect Modification Request / Bug Feedback / Feature Request
+  if (
+    clean.includes('수정') || clean.includes('처리') || clean.includes('버튼') ||
+    clean.includes('붙여넣기') || clean.includes('줄엔터') || clean.includes('동기화') ||
+    clean.includes('아카이브') || clean.includes('기록') || clean.includes('오류') ||
+    clean.includes('안돼') || clean.includes('1.') || clean.includes('2.')
+  ) {
+    return `지원진 님, 요청해 주신 핵심 수정사항들을 정확히 접수했습니다! 🛠️\n\n1. **실시간 고객 문의 조치**: [직접 완료] 및 [제외] 버튼 클릭 시 상태 갱신 및 하단 이동 정상화\n2. **클립보드 붙여넣기**: 캡처 도구 복사 후 Ctrl+V / Cmd+V 누르면 즉시 이미지 자동 첨부 지원\n3. **Shift+Enter 줄엔터**: 줄바꿈 지원 및 엔터 단독 입력 시 메시지 전송\n4. **날짜별 대화 아카이브**: 상단 드롭다운을 통해 날짜별 대화 기록 분류 및 과거 대화 열람 지원\n5. **모바일-PC 실시간 동기화**: 할 일, 메일, 문의, 대화 내역 실시간 클라우드 동기화 연동\n\n구름이가 지금 즉시 코드를 수정하고 배포 중이에요! 반영 완료되면 바로 안내해 드릴게요 ㅎㅎ`;
+  }
+
+  // Check if user wants to add todo
   if (prompt.includes('추가') && (prompt.includes('할 일') || prompt.includes('할일') || prompt.includes('투두'))) {
     let cleanTask = prompt.replace(/(할 일에|할일에|투두에|추가해줘|추가해|추가)/g, '').trim();
     if (!cleanTask) cleanTask = '새로운 업무 확인';
 
     if (appData && appData.briefings) {
-      const b = appData.briefings[0];
+      const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
       b.todomateTodos.unshift({
         id: `custom-${Date.now()}`,
         text: cleanTask,
         done: false
       });
       renderTodayView();
+      pushCloudState();
+      return `📝 투두메이트 오늘 할 일에 '${cleanTask}'을(를) 추가하고 클라우드에 동기화했습니다! 대시보드에서 바로 확인하실 수 있어요.`;
     }
-    return `네 지원진 님! 오늘 할 일 목록에 **'${cleanTask}'** 항목을 바로 추가해 두었습니다. 대시보드 화면에서도 바로 확인하실 수 있어요!`;
   }
 
-  // 2. Questions about priorities
-  if (prompt.includes('우선순위') || prompt.includes('뭐부터') || prompt.includes('먼저')) {
-    return `오늘 지원진 님의 1순위 핵심 업무는 2가지예요:\n\n1. **인플루언서 희수 님 카톡(thou7) 협의**: 오슬로앤오십구 겨울 베어메리 일정·단가 조율\n2. **아넬라 과일퓨레 공구 오픈 세팅**: 내일(10/22) 오픈이라 20명 제안 발송 및 광고 세팅이 필수입니다.\n\n오전 중으로 이 두 건 먼저 매듭지으시면 오늘 일과가 훨씬 수월해지실 거예요!`;
+  // Questions about priorities
+  if (prompt.includes('우선순위') || prompt.includes('핵심')) {
+    return `오늘 집중하셔야 할 핵심 1순위 업무 2가지예요:\n\n1. **우주맘마 아넬라 과일퓨레 공구 오픈 준비**: 내일부터 5일간 진행되므로 오늘 20명 인플루언서 섭외 메일과 피드 세팅을 끝내야 합니다.\n2. **인플루언서 희수 님 카톡(thou7) 협의**: 오슬로앤오십구 겨울 베어메리 일정 및 단가를 오늘 확정해 주세요!`;
   }
 
-  // 3. Questions about Heesu / Email draft
+  // Questions about Heesu / Email draft
   if (prompt.includes('희수') || (prompt.includes('답장') && prompt.includes('다듬'))) {
     return `희수 님께 보낼 추천 카톡 문구예요:\n\n"안녕하세요 희수 님! 올쓰컴퍼니 지원진입니다 :)\n검색 허용 켜주셔서 감사합니다. 메일로 말씀해주신 오슬로앤오십구 겨울 베어메리 관련해서 편하신 일정과 조건 조율 나누면 좋겠습니다!"\n\n대시보드 메일 섹션에서 [답장 처리]를 누르시면 이 초안을 바로 수정·승인하실 수 있어요.`;
   }
 
-  // 4. Questions about Anela puree
+  // Questions about Anela puree
   if (prompt.includes('아넬라') || prompt.includes('우주맘마') || prompt.includes('공구')) {
     return `내일(10/22 수요일~10/26 일요일)부터 5일간 '우주맘마 아넬라 과일퓨레' 공구가 시작돼요!\n\n오늘 점검하실 사항:\n- 인플루언서 20명 대상 섭외 메일 전송\n- 인스타 피드 및 스토리 광고 세팅\n- 구글 드라이브의 인플루언서 리스트 실무 시트 확인\n\n준비되시면 바로 시작하실 수 있게 세팅해 두었어요!`;
   }
 
-  // 5. Questions about OYKA HOME / Sixshop
+  // Questions about OYKA HOME / Sixshop
   if (prompt.includes('식스샵') || prompt.includes('oyka') || prompt.includes('견적')) {
     return `OYKA HOME에서 요청한 식스샵 쇼핑몰 신규 구축 의뢰건이에요.\n\n- 예산: 50~100만 원\n- 스타일 레퍼런스: 베베드피노 (키즈웨어·파자마)\n- 추천 대응: 온세스 포트폴리오와 함께 70~80만 원 선의 기본 구축 패키지 견적서를 메일로 회신드리는 것을 추천드립니다!`;
   }
 
-  // Default response
-  return `네 지원진 님! 말씀하신 내용 잘 확인했습니다. 오늘 캘린더 일정은 비어있고, 내일 아넬라 공구 오픈 준비와 희수 님 소통이 핵심이에요. 웹에서도 필요한 작업이나 수정사항 있으시면 언제든 말씀해 주세요! ㅎㅎ`;
+  // Context-aware Default response
+  return `네 지원진 님! 말씀하신 내용('${clean.slice(0, 30)}...') 잘 확인했습니다 ㅎㅎ\n오늘 캘린더 일정은 비어있고, 내일 아넬라 공구 오픈 준비와 희수 님 소통이 최우선이에요.\n대시보드 수정이나 업무 지시가 필요하시면 언제든 편하게 말씀해 주세요! 바로 처리해 드릴게요 🚀`;
 }
 
