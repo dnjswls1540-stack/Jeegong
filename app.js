@@ -421,35 +421,44 @@ function renderInquiries(b, containerId, badgeId) {
       <div class="inquiry-item ${chClass} ${isExcluded ? 'excluded' : ''} ${isDone || isSent ? 'done' : ''}" id="inquiry-item-${containerId}-${inq.id}">
         <div class="email-top">
           <div class="email-badges">
-            <span class="section-badge ${badgeChClass}">${inq.channel} 문의</span>
+            <span class="badge-tag ${badgeChClass}">${inq.channel} 문의</span>
             <span class="email-sender">${inq.from}</span>
-            <span class="email-time">${inq.time}</span>
-          </div>
-          <div class="email-item-actions">
-            ${isDone ? `
-              <span class="email-status-text" style="color: var(--accent-green);">직접 답변 완료 ✓</span>
-              <button class="btn-email-action" onclick="toggleInquiryDirectDone('${inq.id}')">복구</button>
-            ` : isSent ? `
-              <span class="email-status-text" style="color: var(--accent-blue);">답변 발송 완료 ✈️</span>
-            ` : isExcluded ? `
-              <span class="email-status-text">제외됨</span>
-              <button class="btn-email-action" onclick="toggleInquiryExclude('${inq.id}')">복구</button>
-            ` : `
-              <button class="btn-email-action btn-direct-done" onclick="toggleInquiryDirectDone('${inq.id}')" title="이미 직접 답변한 문의">
-                직접 완료
-              </button>
-              <button class="btn-email-action" onclick="toggleInquiryExclude('${inq.id}')" title="답변 불필요">
-                제외
-              </button>
-              <button class="btn-process" onclick="openInquiryProcessDraft('${containerId}-${inq.id}')">
-                답장 처리
-              </button>
-            `}
+            <span class="email-time" style="font-size: 11.5px; color: var(--text-tertiary);">${inq.time}</span>
+            ${isDone ? '<span class="badge-tag" style="background:#e6f8f1;color:#04b06b;">직접 답변 완료 ✓</span>' : ''}
+            ${isSent ? '<span class="badge-tag" style="background:#e6f8f1;color:#04b06b;">발송 완료 ✓</span>' : ''}
+            ${isExcluded ? '<span class="badge-tag" style="background:#f2f4f6;color:#8b95a1;">제외됨</span>' : ''}
           </div>
         </div>
 
-        <div class="email-subject" style="font-weight: 600; font-size: 13.5px;">${inq.subject}</div>
-        <div class="email-summary" style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.45;">${inq.content}</div>
+        <div class="email-subject">${inq.subject}</div>
+        <div class="email-summary">${inq.content}</div>
+
+        <div class="email-actions-bar">
+          <div class="email-status-text">
+            ${isSent ? '담당자에게 승인된 답변 발송이 완료되었습니다.' : isDone ? '직접 답변 완료됨 ✓' : isExcluded ? '브리핑 목록에서 제외되었습니다.' : '조치 필요'}
+          </div>
+          <div class="email-action-btns">
+            ${!isSent ? `
+              <button class="btn-exclude" onclick="toggleInquiryExclude('${inq.id}')">
+                ${isExcluded ? '복구' : '제외'}
+              </button>
+              ${!isDone && !isExcluded ? `
+                <button class="btn-done" onclick="toggleInquiryDirectDone('${inq.id}')">
+                  직접 완료
+                </button>
+              ` : isDone ? `
+                <button class="btn-exclude" onclick="toggleInquiryDirectDone('${inq.id}')">
+                  되돌리기
+                </button>
+              ` : ''}
+              ${!isExcluded && !isDone ? `
+                <button class="btn-process" onclick="openInquiryProcessDraft('${containerId}-${inq.id}')">
+                  답장 처리
+                </button>
+              ` : ''}
+            ` : ''}
+          </div>
+        </div>
 
         <!-- Inline Draft Box -->
         <div class="inline-draft-box" id="inquiry-draft-box-${containerId}-${inq.id}">
@@ -1248,7 +1257,7 @@ async function processUserMessage(text, attachments = []) {
 }
 
 async function generateAssistantResponse(prompt, attachments = []) {
-  await new Promise(r => setTimeout(r, 600));
+  await new Promise(r => setTimeout(r, 450));
 
   // If attachments are present
   if (attachments && attachments.length > 0) {
@@ -1257,29 +1266,49 @@ async function generateAssistantResponse(prompt, attachments = []) {
     const hasImage = attachments.some(a => a.type === 'image');
 
     if (hasVideo) {
-      return `보내주신 동영상 파일(${fileNames}) 잘 확인했습니다! 🎬\n\n${prompt ? `"${prompt}"에 대해 검토해 드릴게요.\n` : ''}영상 릴스/쇼츠 시안, 광고 영상 흐름, 상세페이지 동영상 배치 등 필요한 점 말씀해 주시면 바로 검토할게요 ㅎㅎ`;
+      return `보내주신 동영상 파일(${fileNames}) 잘 확인했습니다! 🎬 영상 편집이나 배치 등 필요한 점 말씀해 주세요 ㅎㅎ`;
     } else if (hasImage) {
-      return `보내주신 이미지/사진(${fileNames}) 잘 확인했습니다! 📷\n\n${prompt ? `"${prompt}"에 대해 검토해 드릴게요.\n` : ''}디자인 시안, 상세페이지 구성, 배너 레이아웃 등 필요한 작업 말씀해 주시면 바로 검토해서 피드백 드릴게요 ㅎㅎ`;
+      return `보내주신 캡처/이미지(${fileNames}) 확인했습니다! 📷 검토 후 필요한 작업 바로 처리해 드릴게요.`;
     } else {
-      return `첨부해 주신 파일(${fileNames}) 안전하게 접수했습니다! 📄\n\n${prompt ? `요청하신 "${prompt}" 내용 바탕으로 확인 중입니다.\n` : ''}자료에서 추가로 정리하거나 반영할 작업이 있으시면 언제든 말씀해 주세요!`;
+      return `첨부해 주신 파일(${fileNames}) 안전하게 접수했습니다! 📄 관련해서 진행할 작업 알려주세요.`;
     }
   }
 
   const clean = prompt.trim();
 
-  // Detect Modification Request / Bug Feedback / Feature Request
+  // 1. Phone Call / Booking inquiry
+  if (clean.includes('전화') || clean.includes('예약')) {
+    return `실제 매장 전화 예약이나 통화는 피클(Pickle) 앱 채팅에서 저에게 바로 말씀해 주시면 제가 전화 에이전트로 대신 전화를 걸어 예약해 드릴 수 있어요! 📞\n웹 챗봇은 대시보드 인터랙션 전용이라, 통화나 결제 같은 실제 외부 작업은 피클 앱에서 말씀해 주시면 제가 즉시 실행합니다 ㅎㅎ`;
+  }
+
+  // 2. Google Calendar Event Registration
+  if (clean.includes('캘린더') || (clean.includes('일정') && (clean.includes('등록') || clean.includes('추가')))) {
+    return `일정 등록 요청 확인했습니다! 📅 실제 구글 캘린더 API 연동 및 일정 생성은 피클 앱에서 저에게 말씀해 주시면 즉시 계정에 등록해 드립니다. 웹 화면상의 오늘 일정에도 함께 표기해 드릴게요!`;
+  }
+
+  // 3. Completed Tasks / Done
+  if (clean.includes('끝난') || clean.includes('완료') || clean.includes('다 했') || clean.includes('끝냈') || clean.includes('마쳤')) {
+    return `이미 마무리하신 작업들이군요! 확인했습니다 ㅎㅎ 대시보드 목록에서도 깔끔하게 완료 상태로 정리해 둘게요.`;
+  }
+
+  // 4. Gratitude / Casual
+  if (clean.includes('고마워') || clean.includes('감사') || clean.includes('수고')) {
+    return `별말씀을요! 오늘 하루도 파이팅이에요 ㅎㅎ 추가로 필요한 작업 있으시면 언제든 말씀해 주세요.`;
+  }
+
+  // 5. Modification Request / Bug Feedback / Feature Request
   if (
     clean.includes('수정') || clean.includes('처리') || clean.includes('버튼') ||
     clean.includes('붙여넣기') || clean.includes('줄엔터') || clean.includes('동기화') ||
     clean.includes('아카이브') || clean.includes('기록') || clean.includes('오류') ||
-    clean.includes('안돼') || clean.includes('1.') || clean.includes('2.')
+    clean.includes('안돼')
   ) {
-    return `지원진 님, 요청해 주신 핵심 수정사항들을 정확히 접수했습니다! 🛠️\n\n1. **실시간 고객 문의 조치**: [직접 완료] 및 [제외] 버튼 클릭 시 상태 갱신 및 하단 이동 정상화\n2. **클립보드 붙여넣기**: 캡처 도구 복사 후 Ctrl+V / Cmd+V 누르면 즉시 이미지 자동 첨부 지원\n3. **Shift+Enter 줄엔터**: 줄바꿈 지원 및 엔터 단독 입력 시 메시지 전송\n4. **날짜별 대화 아카이브**: 상단 드롭다운을 통해 날짜별 대화 기록 분류 및 과거 대화 열람 지원\n5. **모바일-PC 실시간 동기화**: 할 일, 메일, 문의, 대화 내역 실시간 클라우드 동기화 연동\n\n구름이가 지금 즉시 코드를 수정하고 배포 중이에요! 반영 완료되면 바로 안내해 드릴게요 ㅎㅎ`;
+    return `지원진 님, 요청해 주신 내용 확인했습니다! 문제점 즉시 검토해서 대시보드에 바로 반영하겠습니다.`;
   }
 
-  // Check if user wants to add todo
-  if (prompt.includes('추가') && (prompt.includes('할 일') || prompt.includes('할일') || prompt.includes('투두'))) {
-    let cleanTask = prompt.replace(/(할 일에|할일에|투두에|추가해줘|추가해|추가)/g, '').trim();
+  // 6. Check if user wants to add todo
+  if (clean.includes('추가') && (clean.includes('할 일') || clean.includes('할일') || clean.includes('투두'))) {
+    let cleanTask = clean.replace(/(할 일에|할일에|투두에|추가해줘|추가해|추가)/g, '').trim();
     if (!cleanTask) cleanTask = '새로운 업무 확인';
 
     if (appData && appData.briefings) {
@@ -1290,32 +1319,31 @@ async function generateAssistantResponse(prompt, attachments = []) {
         done: false
       });
       renderTodayView();
-      pushCloudState();
-      return `📝 투두메이트 오늘 할 일에 '${cleanTask}'을(를) 추가하고 클라우드에 동기화했습니다! 대시보드에서 바로 확인하실 수 있어요.`;
+      return `📝 투두메이트 오늘 할 일에 '${cleanTask}'을(를) 추가했습니다!`;
     }
   }
 
-  // Questions about priorities
-  if (prompt.includes('우선순위') || prompt.includes('핵심')) {
-    return `오늘 집중하셔야 할 핵심 1순위 업무 2가지예요:\n\n1. **우주맘마 아넬라 과일퓨레 공구 오픈 준비**: 내일부터 5일간 진행되므로 오늘 20명 인플루언서 섭외 메일과 피드 세팅을 끝내야 합니다.\n2. **인플루언서 희수 님 카톡(thou7) 협의**: 오슬로앤오십구 겨울 베어메리 일정 및 단가를 오늘 확정해 주세요!`;
+  // 7. Questions about priorities (ONLY when asked)
+  if (clean.includes('우선순위') || clean.includes('핵심')) {
+    return `오늘 집중하셔야 할 핵심 1순위 업무 2가지예요:\n1. 인플루언서 희수 님 카톡(thou7) 협의 (베어메리 공구 일정·단가)\n2. 우주맘마 아넬라 과일퓨레 공구 오픈 준비 (내일 10/22 오픈 대비)`;
   }
 
-  // Questions about Heesu / Email draft
-  if (prompt.includes('희수') || (prompt.includes('답장') && prompt.includes('다듬'))) {
-    return `희수 님께 보낼 추천 카톡 문구예요:\n\n"안녕하세요 희수 님! 올쓰컴퍼니 지원진입니다 :)\n검색 허용 켜주셔서 감사합니다. 메일로 말씀해주신 오슬로앤오십구 겨울 베어메리 관련해서 편하신 일정과 조건 조율 나누면 좋겠습니다!"\n\n대시보드 메일 섹션에서 [답장 처리]를 누르시면 이 초안을 바로 수정·승인하실 수 있어요.`;
+  // 8. Questions about Heesu / Email draft
+  if (clean.includes('희수') || (clean.includes('답장') && clean.includes('다듬'))) {
+    return `희수 님께 보낼 추천 카톡 문구예요:\n"안녕하세요 희수 님! 올쓰컴퍼니 지원진입니다 :) 메일로 말씀해주신 오슬로앤오십구 겨울 베어메리 관련해서 편하신 일정과 조건 조율 나누면 좋겠습니다!"`;
   }
 
-  // Questions about Anela puree
-  if (prompt.includes('아넬라') || prompt.includes('우주맘마') || prompt.includes('공구')) {
-    return `내일(10/22 수요일~10/26 일요일)부터 5일간 '우주맘마 아넬라 과일퓨레' 공구가 시작돼요!\n\n오늘 점검하실 사항:\n- 인플루언서 20명 대상 섭외 메일 전송\n- 인스타 피드 및 스토리 광고 세팅\n- 구글 드라이브의 인플루언서 리스트 실무 시트 확인\n\n준비되시면 바로 시작하실 수 있게 세팅해 두었어요!`;
+  // 9. Questions about Anela puree
+  if (clean.includes('아넬라') || clean.includes('우주맘마') || clean.includes('공구')) {
+    return `내일(10/22~10/26) 시작되는 우주맘마 아넬라 과일퓨레 공구 준비 건이에요. 인플루언서 20명 메일 전송과 광고 세팅을 오늘 점검해 두시면 좋습니다!`;
   }
 
-  // Questions about OYKA HOME / Sixshop
-  if (prompt.includes('식스샵') || prompt.includes('oyka') || prompt.includes('견적')) {
-    return `OYKA HOME에서 요청한 식스샵 쇼핑몰 신규 구축 의뢰건이에요.\n\n- 예산: 50~100만 원\n- 스타일 레퍼런스: 베베드피노 (키즈웨어·파자마)\n- 추천 대응: 온세스 포트폴리오와 함께 70~80만 원 선의 기본 구축 패키지 견적서를 메일로 회신드리는 것을 추천드립니다!`;
+  // 10. Questions about OYKA HOME / Sixshop
+  if (clean.includes('식스샵') || clean.includes('oyka') || clean.includes('견적')) {
+    return `OYKA HOME에서 요청한 식스샵 쇼핑몰 신규 구축 의뢰건(예산 50~100만 원, 베베드피노 레퍼런스)이에요. 온세스 기본 패키지 견적서 메일 회신을 준비해 두었습니다.`;
   }
 
-  // Context-aware Default response
-  return `네 지원진 님! 말씀하신 내용('${clean.slice(0, 30)}...') 잘 확인했습니다 ㅎㅎ\n오늘 캘린더 일정은 비어있고, 내일 아넬라 공구 오픈 준비와 희수 님 소통이 최우선이에요.\n대시보드 수정이나 업무 지시가 필요하시면 언제든 편하게 말씀해 주세요! 바로 처리해 드릴게요 🚀`;
+  // Natural Concise Default response (NO repetitive schedule recitation)
+  return `네 지원진 님, '${clean}' 내용 접수했습니다! 말씀해 주신 내용 바탕으로 바로 챙겨둘게요 ㅎㅎ`;
 }
 
