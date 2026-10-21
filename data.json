@@ -1,0 +1,129 @@
+{
+  "agent": {
+    "name": "지공 출근 에이전트",
+    "version": "1.2.0",
+    "status": "ready",
+    "lastRun": "2026-10-21 08:30:15",
+    "tools": [
+      {"id": "calendar", "name": "구글 캘린더", "account": "dnjswls1540@gmail.com", "status": "connected"},
+      {"id": "gmail_personal", "name": "지메일 (개인)", "account": "dnjswls1540@gmail.com", "status": "connected"},
+      {"id": "gmail_business", "name": "지메일 (온세스 사업용)", "account": "onsessdesign@gmail.com", "status": "connected"},
+      {"id": "naver_mail", "name": "네이버 메일", "account": "dnjsrns123@naver.com", "status": "connected"},
+      {"id": "todomate", "name": "투두메이트", "account": "jeeallth", "status": "connected"},
+      {"id": "drive", "name": "구글 드라이브", "account": "dnjswls1540@gmail.com", "status": "connected"}
+    ]
+  },
+  "briefings": [
+    {
+      "id": "b-20261021",
+      "date": "2026-10-21",
+      "dayOfWeek": "수요일",
+      "createdAt": "2026-10-21 08:30:15",
+      "headline": "내일 아넬라 공구 오픈 준비 및 인플루언서 섭외 집중의 날",
+      "summary": "오늘 예정된 미팅은 없으나 내일(10/22)부터 5일간 진행되는 '우주맘마 아넬라 과일퓨레' 공구 오픈 사전 점검과 희수 님 오슬로앤오십구 카톡 소통이 최우선입니다.",
+      "calendar": {
+        "count": 0,
+        "items": [],
+        "note": "오늘 등록된 캘린더 일정 없음 (내일 10/22~10/26 [공구] 우주맘마 아넬라 과일퓨레 진행 예정)"
+      },
+      "emails": [
+        {
+          "id": "m1",
+          "service": "네이버 메일",
+          "from": "인플루언서 희수 님 (sumong204@naver.com)",
+          "subject": "카카오톡 아이디에요! 검색 허용 켜두었습니다",
+          "priority": "1순위 긴급",
+          "summary": "오슬로앤오십구 겨울 베어메리 공구 일정 소통 희망. 카톡 ID 'thou7' 검색 허용 켜둠.",
+          "draft": "안녕하세요 희수 님! 올쓰컴퍼니 지원진입니다 :)\n검색 허용 켜주셔서 감사합니다. 카카오톡(thou7)으로 바로 연락드리겠습니다!\n오슬로앤오십구 겨울 베어메리 일정 및 단가 관련해서 편하게 조율 나누면 좋겠습니다.",
+          "status": "pending"
+        },
+        {
+          "id": "m2",
+          "service": "지메일 (온세스)",
+          "from": "OYKA HOME (oykahome.office@gmail.com)",
+          "subject": "식스샵 쇼핑몰 신규 제작 견적 의뢰",
+          "priority": "2순위 진행",
+          "summary": "파자마·키즈웨어·리빙 쇼핑몰 신규 구축 의뢰 (예산 50~100만 원, 베베드피노 레퍼런스).",
+          "draft": "안녕하세요 OYKA HOME 담당자님, 온세스 스튜디오 대표 지원진입니다.\n보내주신 파자마·키즈웨어 쇼핑몰 신규 구축 의뢰 내용 잘 확인했습니다.\n희망하시는 예산(50~100만 원) 및 베베드피노 스타일 레퍼런스 반영하여 식스샵 기반 맞춤형 견적서와 작업 일정을 정리해 드리고자 합니다.\n편하신 시간대에 유선 또는 대면 미팅 가능 여부 말씀해 주시면 감사하겠습니다.",
+          "status": "pending"
+        },
+        {
+          "id": "m3",
+          "service": "네이버 메일",
+          "from": "라운드커머스 마케팅팀 (roundcommerce@gmail.com)",
+          "subject": "타이거모닝 진저샷 공동구매 운영 파트너십 제안",
+          "priority": "2순위 진행",
+          "summary": "국내 1위 진저샷 브랜드 공구 기획·섭외·운영 풀케어 파트너십 협업 요청.",
+          "draft": "안녕하세요 라운드커머스 마케팅팀 담당자님, 올쓰컴퍼니 대표 지원진입니다.\n국내 1위 진저샷 '타이거모닝' 공동구매 운영 파트너십 제안 감사드립니다.\n올쓰컴퍼니의 공구 실적 레퍼런스와 타겟 인플루언서 풀 자료를 함께 첨부하여 회신드립니다.\n제안 주신 기획·섭외·운영 풀케어 파트너십 세부 조건 조율을 위한 일정 편하게 남겨주시면 감사하겠습니다.",
+          "status": "pending"
+        }
+      ],
+      "todomateTodos": [
+        {"id": "tm1", "text": "지공 상세페이지 재구성", "done": false},
+        {"id": "tm2", "text": "이벤트 페이지 광고세팅", "done": false},
+        {"id": "tm3", "text": "아넬라 제안 20명", "done": false},
+        {"id": "tm4", "text": "디어커스 제안 15명", "done": false},
+        {"id": "tm5", "text": "듀오링고 일본어 2개", "done": false}
+      ],
+      "agentPriorities": [
+        {
+          "id": "ap1",
+          "priority": "1순위 긴급",
+          "title": "아넬라 과일퓨레 공구 오픈 최종 세팅",
+          "detail": "내일(10/22~10/26) 우주맘마 퓨레 공구가 오픈됩니다. 오늘 중으로 인플루언서 20명 제안 발송 및 피드 광고 세팅을 마무리해야 안정적인 오픈이 가능합니다.",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap2",
+          "priority": "1순위 긴급",
+          "title": "인플루언서 희수 님 카톡(thou7) 협의",
+          "detail": "희수 님이 카카오톡 검색 허용을 켜두셨습니다. 오슬로앤오십구 겨울 베어메리 단가 및 오픈 희망 일정을 오늘 중 확정해야 샘플 발송이 가능합니다.",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap3",
+          "priority": "2순위 진행",
+          "title": "디어커스 단톡방 개설 및 협업 일정 회신",
+          "detail": "디어커스에서 뱀부500·누볼라 욕실화 묶음 제안을 수락했습니다. 단톡방 개설 후 상세 일정과 공급 수수료율을 조율하세요.",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap4",
+          "priority": "2순위 진행",
+          "title": "식스샵 신규 리드 OYKA HOME 첫 상담 회신",
+          "detail": "예산 50~100만 원 규모 쇼핑몰 제작 의뢰입니다. 온세스 스튜디오 포트폴리오와 맞춤 견적서를 선제적으로 회신하면 수주율이 크게 올라갑니다.",
+          "done": false,
+          "excluded": false
+        }
+      ],
+      "driveFiles": [
+        {
+          "name": "공동구매 인플루언서 List. 2127명(실무).xlsx",
+          "type": "sheet",
+          "modified": "2026-10-21 12:24",
+          "url": "https://docs.google.com/spreadsheets/d/14m88HAa0UiXZHC6TG0uBqmvbCzPno6yh/edit"
+        },
+        {
+          "name": "[필독!] 1대1 코칭권 안내.txt",
+          "type": "doc",
+          "modified": "2026-10-20 21:00",
+          "url": "https://drive.google.com/file/d/1y6r2Q2q-v3z/view"
+        }
+      ],
+      "guide": "내일 시작되는 우주맘마 아넬라 공구 피드 세팅과 희수 님 카톡 협의를 오전 중 완료하세요."
+    }
+  ],
+  "history": [
+    {
+      "id": "run-1021-0830",
+      "timestamp": "2026-10-21 08:30:15",
+      "trigger": "출근 완료 (정기 동기화)",
+      "duration": "2.8s",
+      "status": "success",
+      "itemsFound": {"calendar": 0, "emails": 3, "todos": 5, "driveFiles": 2}
+    }
+  ]
+}
