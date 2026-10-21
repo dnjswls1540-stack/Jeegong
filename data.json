@@ -3,17 +3,260 @@
     "name": "지공 출근 에이전트",
     "version": "1.2.0",
     "status": "ready",
-    "lastRun": "2026-10-21 08:30:15",
+    "lastRun": "2026-10-22 08:30:00",
     "tools": [
-      {"id": "calendar", "name": "구글 캘린더", "account": "dnjswls1540@gmail.com", "status": "connected"},
-      {"id": "gmail_personal", "name": "지메일 (개인)", "account": "dnjswls1540@gmail.com", "status": "connected"},
-      {"id": "gmail_business", "name": "지메일 (온세스 사업용)", "account": "onsessdesign@gmail.com", "status": "connected"},
-      {"id": "naver_mail", "name": "네이버 메일", "account": "dnjsrns123@naver.com", "status": "connected"},
-      {"id": "todomate", "name": "투두메이트", "account": "jeeallth", "status": "connected"},
-      {"id": "drive", "name": "구글 드라이브", "account": "dnjswls1540@gmail.com", "status": "connected"}
+      {
+        "id": "calendar",
+        "name": "구글 캘린더",
+        "account": "dnjswls1540@gmail.com",
+        "status": "connected"
+      },
+      {
+        "id": "gmail_personal",
+        "name": "지메일 (개인)",
+        "account": "dnjswls1540@gmail.com",
+        "status": "connected"
+      },
+      {
+        "id": "gmail_business",
+        "name": "지메일 (온세스 사업용)",
+        "account": "onsessdesign@gmail.com",
+        "status": "connected"
+      },
+      {
+        "id": "naver_mail",
+        "name": "네이버 메일",
+        "account": "dnjsrns123@naver.com",
+        "status": "connected"
+      },
+      {
+        "id": "todomate",
+        "name": "투두메이트",
+        "account": "jeeallth",
+        "status": "connected"
+      },
+      {
+        "id": "drive",
+        "name": "구글 드라이브",
+        "account": "dnjswls1540@gmail.com",
+        "status": "connected"
+      }
     ]
   },
   "briefings": [
+    {
+      "id": "b-20261022",
+      "date": "2026-10-22",
+      "dayOfWeek": "목요일",
+      "createdAt": "2026-10-22 08:30:00",
+      "headline": "우주맘마 아넬라 과일퓨레 공구 오픈 및 페이노트 결제 관리의 날",
+      "summary": "오늘(10/22~10/26) 우주맘마 아넬라 과일퓨레 공구가 시작됩니다. 식스샵 이준석 대표님 외주 답장 초안(임시보관함) 발송과 파니맘 님 아넬라 일정 조율, 페이노트 이은희 님 전자책 결제(12.9만 원) 안내가 핵심입니다.",
+      "calendar": {
+        "count": 1,
+        "items": [
+          {
+            "time": "종일",
+            "title": "[공구] 우주맘마 아넬라 과일퓨레 진행 (~10/26)"
+          }
+        ],
+        "note": "오늘(10/22)부터 10/26까지 [공구] 우주맘마 아넬라 과일퓨레 진행"
+      },
+      "emails": [
+        {
+          "id": "m1",
+          "service": "지메일 (온세스)",
+          "from": "식스샵 프로 고객지원 (help-pro@sixshop.com)",
+          "subject": "[식스샵 파트너] 바로 상담할 수 있는 웹사이트 제작 신규 프로젝트 (이준석 대표)",
+          "priority": "1순위 긴급",
+          "summary": "이준석 대표 (010-5754-6610, sktboypros@naver.com) - 예산 100~200만 원 홈페이지 리모델링 및 AI 견적 연동 의뢰.",
+          "draft": "안녕하세요 이준석 대표님! 식스샵 파트너사 온세스 스튜디오 지원진 대표입니다. 문의주신 AI 자동 견적 및 영상 배너 홈페이지 구축 관련하여 메일로 상세 답변 초안을 전달드렸습니다. 편하신 시간에 유선(010-7527-6684) 주시면 빠르게 상담 도와드리겠습니다!",
+          "status": "pending"
+        },
+        {
+          "id": "m2",
+          "service": "네이버 메일",
+          "from": "인플루언서 파니맘 (synbe.park@gmail.com)",
+          "subject": "Re: [공구 제안] 100% 생과일 아넬라 퓨레, 공구 협업 제안드립니다.│올쓰컴퍼니",
+          "priority": "1순위 긴급",
+          "summary": "아넬라 과일퓨레 공구 스케줄 검토 후 회신 의사 전달.",
+          "draft": "안녕하세요 파니맘 님! 올쓰컴퍼니 지원진입니다 :)\n제안서 긍정적으로 검토해 주셔서 감사드립니다. 파니맘 님의 공구 희망 스케줄 편하게 말씀해 주시면 일정과 수량 최대한 맞춰 조율해 드리겠습니다!",
+          "status": "pending"
+        },
+        {
+          "id": "m3",
+          "service": "네이버 메일",
+          "from": "지공의 페이노트 (no-reply@paynote.co.kr)",
+          "subject": "[결제완료] 전자책 결제 완료 안내 (이은희 님, 129,000원)",
+          "priority": "2순위 진행",
+          "summary": "10/22 01:20 신규 회원 이은희 님 전자책 신용카드 결제 완료.",
+          "draft": "안녕하세요 이은희 님, 지공 지원진입니다! 전자책 구매 감사드립니다. 구매하신 전자책 다운로드 링크와 노하우 적용 관련 안내드립니다.",
+          "status": "pending"
+        },
+        {
+          "id": "m4",
+          "service": "네이버 메일",
+          "from": "라운드커머스 마케팅팀 (roundcommerce@gmail.com)",
+          "subject": "타이거모닝 진저샷 공동구매 운영 파트너십 제안",
+          "priority": "2순위 진행",
+          "summary": "국내 1위 진저샷 브랜드 공구 기획·섭외·운영 풀케어 파트너십 협업 요청.",
+          "draft": "안녕하세요 라운드커머스 마케팅팀 담당자님, 올쓰컴퍼니 대표 지원진입니다.\n국내 1위 진저샷 타이거모닝 공동구매 운영 파트너십 제안 감사드립니다.\n올쓰컴퍼니의 공구 실적 레퍼런스와 타겟 인플루언서 풀 자료를 함께 첨부하여 회신드립니다.",
+          "status": "pending"
+        }
+      ],
+      "todomateTodos": [
+        {
+          "id": "tm1",
+          "text": "아넬라 제안 20명",
+          "done": false
+        },
+        {
+          "id": "tm2",
+          "text": "디어커스 제안 15명",
+          "done": false
+        },
+        {
+          "id": "tm3",
+          "text": "아임웹 의뢰하기",
+          "done": false
+        },
+        {
+          "id": "tm4",
+          "text": "챔맘 아넬라 샘플 체크",
+          "done": false
+        },
+        {
+          "id": "tm5",
+          "text": "우주맘마 주문건 오후 체크",
+          "done": false
+        },
+        {
+          "id": "tm6",
+          "text": "지공 상세페이지 재구성 기획",
+          "done": false
+        },
+        {
+          "id": "tm7",
+          "text": "듀오링고 일본어 2개",
+          "done": false
+        },
+        {
+          "id": "tm8",
+          "text": "운동",
+          "done": false
+        }
+      ],
+      "agentPriorities": [
+        {
+          "id": "ap1",
+          "priority": "1순위 긴급",
+          "title": "우주맘마 아넬라 공구 오픈 및 주문 모니터링",
+          "detail": "오늘(10/22~10/26) 오픈되는 우주맘마 아넬라 퓨레 공구 링크와 주문 상태를 오후 중 점검하세요.",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap2",
+          "priority": "1순위 긴급",
+          "title": "식스샵 이준석 대표님 외주 상담 메일 발송",
+          "detail": "예산 100~200만 원 규모 홈페이지 제작 의뢰 답장 초안(임시보관함)을 검토 후 발송하세요.",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap3",
+          "priority": "2순위 진행",
+          "title": "인플루언서 파니맘 님 아넬라 일정 조율",
+          "detail": "스케줄 검토 후 회신 예정인 파니맘 님과 아넬라 퓨레 일정 조율 가이드를 준비하세요.",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap4",
+          "priority": "2순위 진행",
+          "title": "페이노트 이은희 님 전자책 구매 안내",
+          "detail": "새벽 01:20 결제된 이은희 님(12.9만 원) 전자책 자료 전달 및 안내를 확인하세요.",
+          "done": false,
+          "excluded": false
+        }
+      ],
+      "driveFiles": [
+        {
+          "name": "공동구매 인플루언서 List. 2127명(실무).xlsx",
+          "type": "sheet",
+          "modified": "2026-10-21 19:38",
+          "url": "https://docs.google.com/spreadsheets/d/14m88HAa0UiXZHC6TG0uBqmvbCzPno6yh/edit"
+        },
+        {
+          "name": "상품 소싱 리스트",
+          "type": "sheet",
+          "modified": "2026-10-21 14:38",
+          "url": "https://drive.google.com/file/d/1y6r2Q2q-v3z/view"
+        }
+      ],
+      "inquiries": [
+        {
+          "id": "inq-1",
+          "channel": "식스샵",
+          "serviceClass": "channel-imweb",
+          "from": "이준석 대표 (010-5754-6610)",
+          "email": "sktboypros@naver.com",
+          "time": "10/21 17:48",
+          "subject": "홈페이지 리모델링 및 AI 견적 연동 신규 의뢰 (예산 100~200만 원)",
+          "content": "마스터서버코리아·월드메모리 레퍼런스. 사진 업로드 시 자동 AI 견적 산출 연동 희망, 메인 영상 배너 및 키워드/페이지 무제한 SEO 구축 문의.",
+          "draft": "안녕하세요 이준석 대표님! 식스샵 파트너사 온세스 스튜디오 지원진 대표입니다. 식스샵을 통해 남겨주신 의뢰 내용 잘 확인했습니다. 문의주신 AI 자동 견적 및 영상 배너 홈페이지 구축 관련하여 메일로 상세 답변 초안을 전달드렸습니다. 편하신 시간에 유선(010-7527-6684) 주시면 빠르게 상담 도와드리겠습니다!",
+          "status": "pending"
+        },
+        {
+          "id": "inq-2",
+          "channel": "네이버 메일",
+          "serviceClass": "channel-naver",
+          "from": "인플루언서 파니맘",
+          "email": "synbe.park@gmail.com",
+          "time": "10/21 18:42",
+          "subject": "아넬라 과일퓨레 공구 일정 검토 회신",
+          "content": "안녕하세요, 파니맘입니다. 제안서 잘 읽어 보았습니다. 공구 스케줄 검토 후 답변드리겠습니다. 감사합니다. 파니맘드림",
+          "draft": "안녕하세요 파니맘 님! 올쓰컴퍼니 지원진입니다 :)\n제안서 긍정적으로 검토해 주셔서 감사드립니다. 파니맘 님의 공구 희망 스케줄 편하게 말씀해 주시면 일정과 수량 최대한 맞춰 조율해 드리겠습니다!",
+          "status": "pending"
+        },
+        {
+          "id": "inq-3",
+          "channel": "네이버 메일",
+          "serviceClass": "channel-naver",
+          "from": "인플루언서 희수 님",
+          "email": "sumong204@naver.com",
+          "time": "10/21 10:53",
+          "subject": "오슬로앤오십구 겨울 베어메리 공구 일정 소통",
+          "content": "카카오톡 검색 허용 켜두었습니다! 카톡 아이디 thou7로 일정 및 제품 수수료율 관련 편하게 톡 주세요 🙂",
+          "draft": "안녕하세요 희수 님! 올쓰컴퍼니 지원진입니다 :)\n검색 허용 켜주셔서 감사합니다. 메일로 말씀해주신 오슬로앤오십구 겨울 베어메리 관련해서 편하신 일정과 조건 조율 나누면 좋겠습니다!",
+          "status": "pending"
+        },
+        {
+          "id": "inq-4",
+          "channel": "아임웹",
+          "serviceClass": "channel-imweb",
+          "from": "OYKA HOME 담당자",
+          "email": "oykahome.office@gmail.com",
+          "time": "10/21 15:34",
+          "subject": "쇼핑몰 신규 구축 견적 및 제작 기간 문의",
+          "content": "베베드피노 스타일의 키즈웨어/리빙 쇼핑몰 구축 희망. 예산 50~100만 원 선에서 결제 연동 및 반응형 모바일 페이지 제작 가능한지 문의드립니다.",
+          "draft": "안녕하세요 OYKA HOME 담당자님, 온세스 스튜디오 지원진입니다.\n문의주신 베베드피노 레퍼런스 스타일의 키즈/리빙 쇼핑몰은 예산 70~80만 원 선에서 반응형 디자인 및 PG 결제 연동까지 패키지로 구축 가능합니다.\n기획서와 제작 포트폴리오를 메일로 보내드렸으니 검토 후 편하게 말씀해 주세요!",
+          "status": "pending"
+        },
+        {
+          "id": "inq-5",
+          "channel": "크몽",
+          "serviceClass": "channel-kmong",
+          "from": "크몽 의뢰인 (김** 님)",
+          "email": "kmong_user_821@kmong.com",
+          "time": "10/21 14:20",
+          "subject": "공동구매 중개 노하우 1:1 코칭권 일정 문의",
+          "content": "전자책 결제 완료했습니다! 1:1 맞춤 코칭 진행 방식과 이번 주말 온라인(구글 밋) 상담 가능한 시간대가 궁금합니다.",
+          "draft": "안녕하세요 대표님, 지공 지원진입니다! 코칭권 결제 감사드립니다.\n코칭은 구글 밋을 통해 화면 공유로 인플루언서 섭외 및 마진 계산 실무를 1:1로 짚어드립니다.\n이번 주 토요일 오후 2시 또는 일요일 저녁 8시 중 편하신 시간 말씀해 주시면 일정 확정해 드리겠습니다!",
+          "status": "pending"
+        }
+      ],
+      "guide": "오늘 오픈되는 우주맘마 아넬라 공구 모니터링과 식스샵 이준석 대표님 견적 회신을 오전 중 챙기세요."
+    },
     {
       "id": "b-20261021",
       "date": "2026-10-21",
@@ -69,11 +312,31 @@
         }
       ],
       "todomateTodos": [
-        {"id": "tm1", "text": "지공 상세페이지 재구성", "done": false},
-        {"id": "tm2", "text": "이벤트 페이지 광고세팅", "done": false},
-        {"id": "tm3", "text": "아넬라 제안 20명", "done": false},
-        {"id": "tm4", "text": "디어커스 제안 15명", "done": false},
-        {"id": "tm5", "text": "듀오링고 일본어 2개", "done": false}
+        {
+          "id": "tm1",
+          "text": "지공 상세페이지 재구성",
+          "done": false
+        },
+        {
+          "id": "tm2",
+          "text": "이벤트 페이지 광고세팅",
+          "done": false
+        },
+        {
+          "id": "tm3",
+          "text": "아넬라 제안 20명",
+          "done": false
+        },
+        {
+          "id": "tm4",
+          "text": "디어커스 제안 15명",
+          "done": false
+        },
+        {
+          "id": "tm5",
+          "text": "듀오링고 일본어 2개",
+          "done": false
+        }
       ],
       "agentPriorities": [
         {
@@ -178,12 +441,30 @@
   ],
   "history": [
     {
+      "id": "run-1022-0830",
+      "timestamp": "2026-10-22 08:30:00",
+      "trigger": "출근 알람 (08:30 정기 브리핑)",
+      "duration": "1.8s",
+      "status": "success",
+      "itemsFound": {
+        "calendar": 1,
+        "emails": 4,
+        "todos": 8,
+        "driveFiles": 2
+      }
+    },
+    {
       "id": "run-1021-0830",
       "timestamp": "2026-10-21 08:30:15",
       "trigger": "출근 완료 (정기 동기화)",
       "duration": "2.8s",
       "status": "success",
-      "itemsFound": {"calendar": 0, "emails": 3, "todos": 5, "driveFiles": 2}
+      "itemsFound": {
+        "calendar": 0,
+        "emails": 3,
+        "todos": 5,
+        "driveFiles": 2
+      }
     }
   ]
 }
