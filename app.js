@@ -1238,19 +1238,6 @@ function renderChatConversationList() {
   }).join('');
 }
 
-  renderChatMessages();
-}
-
-function renderChatSessionSelect() {
-  const sessionSelect = document.getElementById('chatbot-session-select');
-  if (!sessionSelect) return;
-
-  const dates = Object.keys(chatSessions);
-  sessionSelect.innerHTML = dates.map(d => `
-    <option value="${d}" ${d === activeChatDate ? 'selected' : ''}>📅 ${d}</option>
-  `).join('');
-}
-
 function renderAttachmentPreviews() {
   const previewBar = document.getElementById('chatbot-file-preview-bar');
   if (!previewBar) return;
