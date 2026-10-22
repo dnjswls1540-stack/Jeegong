@@ -7,7 +7,10 @@ let lastLocalUpdateTimestamp = 0;
 let isSyncing = false;
 
 // Cloud Sync Configuration (Real-time Cross-device Sync)
-const CLOUD_SYNC_ENDPOINT = 'https://api.restful-api.dev/objects/ff808181a09d98f701a15d8b57223a34';
+// Cloud Sync Configuration (ntfy.sh Real-time SSE & Instant Sync - Zero Limit)
+const SYNC_TOPIC = 'jeegong_sync_dnjswls1540_2026';
+const SYNC_ENDPOINT = 'https://ntfy.sh/' + SYNC_TOPIC;
+let syncEventSource = null;
 
 // Multi-date Chat Sessions
 let chatSessions = {};
@@ -146,14 +149,9 @@ async function initApp() {
   renderArchiveView();
   renderHistoryView();
 
-  // Initial Cloud Pull & Periodic Sync (Cross-device Sync: Mobile <-> PC)
-  await pullCloudState();
-  setInterval(pullCloudState, 4000);
+  // Setup Real-time SSE Sync & Midnight Auto Reset
+  setupRealtimeSync();
   setInterval(checkMidnightReset, 5000);
-  window.addEventListener('focus', () => {
-    checkMidnightReset();
-    pullCloudState();
-  });
 }
 
 if (document.readyState === 'loading') {
@@ -1499,8 +1497,161 @@ async function generateAssistantResponse(prompt, attachments = []) {
 }
 
 // =========================================================
-// REAL-TIME CLOUD SYNC (Mobile <-> PC Sync via Cloud DB)
+// REAL-TIME CLOUD SYNC (Mobile <-> PC Real-time Sync via ntfy SSE)
 // =========================================================
+function setupRealtimeSync() {
+  if (syncEventSource) {
+    try { syncEventSource.close(); } catch (e) {}
+  }
+
+  // 1. Initial snapshot pull
+  pullCloudState();
+
+  // 2. Real-time instant SSE stream (Mobile <-> PC 0.1s instant sync)
+  try {
+    syncEventSource = new EventSource(`${SYNC_ENDPOINT}/sse`);
+    syncEventSource.onmessage = (event) => {
+      try {
+        const payload = JSON.parse(event.data);
+        if (payload.event === 'message' && payload.message) {
+          const remoteData = JSON.parse(payload.message);
+          applyRemoteSync(remoteData);
+        }
+      } catch (err) {
+        console.warn('Realtime parse error:', err);
+      }
+    };
+    syncEventSource.onerror = () => {
+      // EventSource auto-reconnects natively
+    };
+  } catch (err) {
+    console.warn('EventSource setup error:', err);
+  }
+
+  // 3. Robust snapshot pull on focus & visibilitychange
+  window.addEventListener('focus', () => {
+    checkMidnightReset();
+    pullCloudState();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      checkMidnightReset();
+      pullCloudState();
+    }
+  });
+  setInterval(pullCloudState, 8000);
+}
+
+async function pullCloudState() {
+  if (!appData || !appData.briefings) return;
+  try {
+    const res = await fetch(`${SYNC_ENDPOINT}/json?poll=1`);
+    if (!res.ok) return;
+    const text = await res.text();
+    const lines = text.trim().split('\n').filter(Boolean);
+    if (lines.length === 0) return;
+    const lastLine = lines[lines.length - 1];
+    const payload = JSON.parse(lastLine);
+    if (payload.message) {
+      const remoteData = JSON.parse(payload.message);
+      applyRemoteSync(remoteData);
+    }
+  } catch (err) {
+    console.warn('pullCloudState error:', err);
+  }
+}
+
+function applyRemoteSync(remoteData) {
+  if (!remoteData || !appData || !appData.briefings) return;
+  const remoteTs = remoteData.updatedAt || 0;
+  if (remoteTs <= lastLocalUpdateTimestamp) return;
+
+  isSyncing = true;
+  lastLocalUpdateTimestamp = remoteTs;
+  try { localStorage.setItem('jeegong_last_sync_ts', String(remoteTs)); } catch (e) {}
+
+  const kst = getKSTNow();
+
+  // 1. Work state sync with daily midnight reset
+  if (remoteData.workDate && remoteData.workDate !== kst.dateStr) {
+    workState = 'ready';
+    try {
+      localStorage.setItem('jeegong_work_date', kst.dateStr);
+      localStorage.setItem('jeegong_work_state', 'ready');
+    } catch (e) {}
+  } else if (remoteData.workState) {
+    workState = remoteData.workState;
+    try {
+      localStorage.setItem('jeegong_work_date', kst.dateStr);
+      localStorage.setItem('jeegong_work_state', workState);
+    } catch (e) {}
+  }
+  updateWorkButtonUI();
+
+  // 2. Sync briefing statuses (todos, priorities, emails, inquiries)
+  const b = (remoteData.briefingId ? appData.briefings.find(item => item.id === remoteData.briefingId) : null)
+    || (remoteData.briefingDate ? appData.briefings.find(item => item.date === remoteData.briefingDate) : null)
+    || appData.briefings.find(item => item.id === currentBriefingId)
+    || appData.briefings[0];
+
+  if (b) {
+    if (Array.isArray(remoteData.doneTodos)) {
+      (b.todomateTodos || []).forEach(t => {
+        t.done = remoteData.doneTodos.includes(t.id);
+      });
+    }
+    if (Array.isArray(remoteData.donePriorities)) {
+      (b.agentPriorities || []).forEach(ap => {
+        ap.done = remoteData.donePriorities.includes(ap.id);
+      });
+    }
+    if (Array.isArray(remoteData.excludedPriorities)) {
+      (b.agentPriorities || []).forEach(ap => {
+        ap.excluded = remoteData.excludedPriorities.includes(ap.id);
+      });
+    }
+    if (remoteData.emailStatuses) {
+      (b.emails || []).forEach(e => {
+        if (remoteData.emailStatuses[e.id]) {
+          e.status = remoteData.emailStatuses[e.id];
+        } else {
+          e.status = 'pending';
+        }
+      });
+    }
+    if (remoteData.inquiryStatuses) {
+      (b.inquiries || []).forEach(i => {
+        if (remoteData.inquiryStatuses[i.id]) {
+          i.status = remoteData.inquiryStatuses[i.id];
+        } else {
+          i.status = 'pending';
+        }
+      });
+    }
+    renderTodayView();
+  }
+
+  // 3. Sync recent chats
+  if (Array.isArray(remoteData.recentChats) && remoteData.recentChats.length > 0) {
+    if (!chatSessions[kst.dateStr]) chatSessions[kst.dateStr] = [];
+    const existingTexts = new Set(chatSessions[kst.dateStr].map(m => m.text));
+    remoteData.recentChats.forEach(m => {
+      if (!existingTexts.has(m.text)) {
+        chatSessions[kst.dateStr].push(m);
+        existingTexts.add(m.text);
+      }
+    });
+    try { localStorage.setItem('jeegong_chat_sessions', JSON.stringify(chatSessions)); } catch (e) {}
+    renderChatConversationList();
+    if (typeof currentChatView !== 'undefined' && currentChatView === 'room' && activeChatDate === kst.dateStr) {
+      chatMessages = chatSessions[kst.dateStr];
+      renderChatMessages();
+    }
+  }
+
+  isSyncing = false;
+}
+
 async function pushCloudState() {
   if (isSyncing || !appData || !appData.briefings) return;
   try {
@@ -1525,132 +1676,28 @@ async function pushCloudState() {
       if (i.status && i.status !== 'pending') inquiryStatuses[i.id] = i.status;
     });
 
-    // Extract recent chats from today's session
     const todayChats = (chatSessions[kst.dateStr] || []).slice(-10);
 
     const payload = {
-      name: "jeegong_sync",
-      data: {
-        updatedAt: nowTs,
-        workDate: kst.dateStr,
-        workState: workState,
-        briefingId: b.id,
-        briefingDate: b.date,
-        doneTodos: doneTodos,
-        donePriorities: donePriorities,
-        excludedPriorities: excludedPriorities,
-        emailStatuses: emailStatuses,
-        inquiryStatuses: inquiryStatuses,
-        recentChats: todayChats
-      }
+      updatedAt: nowTs,
+      workDate: kst.dateStr,
+      workState: workState,
+      briefingId: b.id,
+      briefingDate: b.date,
+      doneTodos: doneTodos,
+      donePriorities: donePriorities,
+      excludedPriorities: excludedPriorities,
+      emailStatuses: emailStatuses,
+      inquiryStatuses: inquiryStatuses,
+      recentChats: todayChats
     };
 
-    await fetch(CLOUD_SYNC_ENDPOINT, {
-      method: 'PUT',
+    await fetch(`${SYNC_ENDPOINT}`, {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     });
   } catch (err) {
     console.warn('pushCloudState error:', err);
-  }
-}
-
-async function pullCloudState() {
-  if (isSyncing || !appData || !appData.briefings) return;
-  try {
-    const res = await fetch(CLOUD_SYNC_ENDPOINT);
-    if (!res.ok) return;
-    const json = await res.json();
-    if (!json || !json.data) return;
-
-    const remoteData = json.data;
-    const remoteTs = remoteData.updatedAt || 0;
-
-    if (remoteTs > lastLocalUpdateTimestamp) {
-      isSyncing = true;
-      lastLocalUpdateTimestamp = remoteTs;
-      try { localStorage.setItem('jeegong_last_sync_ts', String(remoteTs)); } catch (e) {}
-
-      const kst = getKSTNow();
-
-      // 1. Work state sync with daily midnight reset
-      if (remoteData.workDate && remoteData.workDate !== kst.dateStr) {
-        // Stored state is from previous date: reset to ready for today!
-        workState = 'ready';
-        try {
-          localStorage.setItem('jeegong_work_date', kst.dateStr);
-          localStorage.setItem('jeegong_work_state', 'ready');
-        } catch (e) {}
-      } else if (remoteData.workState && remoteData.workState !== workState) {
-        workState = remoteData.workState;
-        try {
-          localStorage.setItem('jeegong_work_date', kst.dateStr);
-          localStorage.setItem('jeegong_work_state', workState);
-        } catch (e) {}
-      }
-      updateWorkButtonUI();
-
-      // 2. Sync briefing statuses (todos, priorities, emails, inquiries)
-      const b = (remoteData.briefingId ? appData.briefings.find(item => item.id === remoteData.briefingId) : null)
-        || (remoteData.briefingDate ? appData.briefings.find(item => item.date === remoteData.briefingDate) : null)
-        || appData.briefings.find(item => item.id === currentBriefingId)
-        || appData.briefings[0];
-
-      if (b) {
-        if (Array.isArray(remoteData.doneTodos)) {
-          (b.todomateTodos || []).forEach(t => {
-            t.done = remoteData.doneTodos.includes(t.id);
-          });
-        }
-        if (Array.isArray(remoteData.donePriorities)) {
-          (b.agentPriorities || []).forEach(ap => {
-            ap.done = remoteData.donePriorities.includes(ap.id);
-          });
-        }
-        if (Array.isArray(remoteData.excludedPriorities)) {
-          (b.agentPriorities || []).forEach(ap => {
-            ap.excluded = remoteData.excludedPriorities.includes(ap.id);
-          });
-        }
-        if (remoteData.emailStatuses) {
-          (b.emails || []).forEach(e => {
-            if (remoteData.emailStatuses[e.id]) {
-              e.status = remoteData.emailStatuses[e.id];
-            }
-          });
-        }
-        if (remoteData.inquiryStatuses) {
-          (b.inquiries || []).forEach(i => {
-            if (remoteData.inquiryStatuses[i.id]) {
-              i.status = remoteData.inquiryStatuses[i.id];
-            }
-          });
-        }
-        renderTodayView();
-      }
-
-      // 3. Sync recent chats
-      if (Array.isArray(remoteData.recentChats) && remoteData.recentChats.length > 0) {
-        if (!chatSessions[kst.dateStr]) chatSessions[kst.dateStr] = [];
-        const existingTexts = new Set(chatSessions[kst.dateStr].map(m => m.text));
-        remoteData.recentChats.forEach(m => {
-          if (!existingTexts.has(m.text)) {
-            chatSessions[kst.dateStr].push(m);
-            existingTexts.add(m.text);
-          }
-        });
-        try { localStorage.setItem('jeegong_chat_sessions', JSON.stringify(chatSessions)); } catch (e) {}
-        renderChatConversationList();
-        if (typeof currentChatView !== 'undefined' && currentChatView === 'room' && activeChatDate === kst.dateStr) {
-          chatMessages = chatSessions[kst.dateStr];
-          renderChatMessages();
-        }
-      }
-
-      isSyncing = false;
-    }
-  } catch (err) {
-    console.warn('pullCloudState error:', err);
-    isSyncing = false;
   }
 }
