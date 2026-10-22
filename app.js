@@ -19,6 +19,122 @@ let currentAttachments = [];
 let currentChatView = 'list'; // 'list' or 'room'
 let chatMessages = [];
 
+// =========================================================
+// HANDLED ITEMS REGISTRY (Cross-day Deduplication Engine)
+// Handled items (done, sent, excluded) will NEVER appear on subsequent days
+// =========================================================
+let handledRegistry = {};
+
+function getItemFingerprint(item, type = 'inquiry') {
+  if (!item) return '';
+  if (type === 'inquiry') {
+    const ch = (item.channel || '').trim();
+    const sender = (item.from || '').trim();
+    const subj = (item.subject || '').trim();
+    return `inq::${ch}::${sender}::${subj}`;
+  } else if (type === 'email') {
+    const srv = (item.service || '').trim();
+    const sender = (item.from || '').trim();
+    const subj = (item.subject || '').trim();
+    return `email::${srv}::${sender}::${subj}`;
+  }
+  return item.id || '';
+}
+
+function loadHandledRegistry() {
+  try {
+    const saved = localStorage.getItem('jeegong_handled_registry');
+    if (saved) {
+      handledRegistry = JSON.parse(saved);
+    }
+  } catch (e) {
+    handledRegistry = {};
+  }
+
+  // Pre-seed known handled items from 10/21 so they never show as duplicates on 10/22+
+  const seedItems = [
+    { type: 'inquiry', channel: '네이버 메일', from: '인플루언서 파니맘', subject: '아넬라 과일퓨레 공구 일정 검토 회신', status: 'done', date: '2026-10-21' },
+    { type: 'inquiry', channel: '네이버 메일', from: '인플루언서 희수 님', subject: '오슬로앤오십구 겨울 베어메리 공구 일정 소통', status: 'done', date: '2026-10-21' },
+    { type: 'inquiry', channel: '아임웹', from: 'OYKA HOME 담당자', subject: '쇼핑몰 신규 구축 견적 및 제작 기간 문의', status: 'done', date: '2026-10-21' },
+    { type: 'inquiry', channel: '크몽', from: '크몽 의뢰인 (김** 님)', subject: '공동구매 중개 노하우 1:1 코칭권 일정 문의', status: 'done', date: '2026-10-21' }
+  ];
+
+  seedItems.forEach(seed => {
+    const fp = getItemFingerprint(seed, seed.type);
+    if (!handledRegistry[fp]) {
+      handledRegistry[fp] = {
+        status: seed.status,
+        handledDate: seed.date,
+        handledTimestamp: 1729500000000
+      };
+    }
+  });
+
+  saveHandledRegistry();
+}
+
+function saveHandledRegistry() {
+  try {
+    localStorage.setItem('jeegong_handled_registry', JSON.stringify(handledRegistry));
+  } catch (e) {}
+}
+
+function recordHandledItem(item, type, status) {
+  const fp = getItemFingerprint(item, type);
+  const kst = getKSTNow();
+  const b = (appData && appData.briefings) ? (appData.briefings.find(x => x.id === currentBriefingId) || appData.briefings[0]) : null;
+  const itemDate = (b && b.date) ? b.date : kst.dateStr;
+
+  if (status === 'pending') {
+    delete handledRegistry[fp];
+  } else {
+    handledRegistry[fp] = {
+      status: status,
+      handledDate: itemDate,
+      handledTimestamp: Date.now()
+    };
+  }
+  saveHandledRegistry();
+  pushCloudState();
+}
+
+function getFilteredInquiries(b) {
+  if (!b || !b.inquiries) return [];
+  const kst = getKSTNow();
+  const viewingDate = b.date || kst.dateStr;
+
+  return b.inquiries.filter(inq => {
+    const fp = getItemFingerprint(inq, 'inquiry');
+    const rec = handledRegistry[fp];
+    if (rec) {
+      if (rec.handledDate && rec.handledDate < viewingDate) {
+        return false;
+      }
+      inq.status = rec.status;
+    }
+    return true;
+  });
+}
+
+function getFilteredEmails(b) {
+  if (!b || !b.emails) return [];
+  const kst = getKSTNow();
+  const viewingDate = b.date || kst.dateStr;
+
+  return b.emails.filter(mail => {
+    const fp = getItemFingerprint(mail, 'email');
+    const rec = handledRegistry[fp];
+    if (rec) {
+      if (rec.handledDate && rec.handledDate < viewingDate) {
+        return false;
+      }
+      mail.status = rec.status;
+    }
+    return true;
+  });
+}
+
+
 // KST Date Helper
 function getKSTNow() {
   const now = new Date();
@@ -140,6 +256,7 @@ async function initApp() {
     dateBadge.textContent = kst.displayStr;
   }
 
+  loadHandledRegistry();
   setupTheme();
   setupNavigation();
   updateWorkButtonUI();
@@ -152,6 +269,21 @@ async function initApp() {
   // Setup Real-time SSE Sync & Midnight Auto Reset
   setupRealtimeSync();
   setInterval(checkMidnightReset, 5000);
+
+  // Background Auto-Refresh (Every 30s + on focus/visibility)
+  setInterval(() => {
+    window.refreshDashboardData(false);
+  }, 30000);
+
+  window.addEventListener('focus', () => {
+    window.refreshDashboardData(false);
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      window.refreshDashboardData(false);
+    }
+  });
 }
 
 if (document.readyState === 'loading') {
@@ -275,16 +407,23 @@ function renderTodayView() {
     });
   }
 
-  // 2. Emails (with Exclude & Process System)
+  // 2. Emails (with Exclude & Process System + Cross-day Deduplication)
   const emailContainer = document.getElementById('email-list-container');
   emailContainer.innerHTML = '';
+  
+  const filteredEmails = getFilteredEmails(b);
   const emailBadge = document.getElementById('email-badge');
   if (emailBadge) {
-    emailBadge.textContent = `${b.emails.filter(e => e.status !== 'excluded' && e.status !== 'done' && e.status !== 'sent').length}건 조치 필요`;
+    emailBadge.textContent = `${filteredEmails.filter(e => e.status !== 'excluded' && e.status !== 'done' && e.status !== 'sent').length}건 조치 필요`;
   }
 
+  // Update stat counters with deduplicated counts
+  if (emailCountEl) emailCountEl.textContent = `${filteredEmails.filter(m => m.status !== 'excluded').length}건`;
+  const filteredInqsForStat = getFilteredInquiries(b);
+  if (inqCountEl) inqCountEl.textContent = `${filteredInqsForStat.filter(i => i.status !== 'excluded' && i.status !== 'done' && i.status !== 'sent').length}건`;
+
   // Sort emails: actionable first, (done, sent, excluded) at the bottom
-  const sortedEmails = [...b.emails].sort((a, b) => {
+  const sortedEmails = [...filteredEmails].sort((a, b) => {
     const aHandled = a.status === 'done' || a.status === 'sent' || a.status === 'excluded';
     const bHandled = b.status === 'done' || b.status === 'sent' || b.status === 'excluded';
     if (aHandled === bHandled) return 0;
@@ -296,21 +435,27 @@ function renderTodayView() {
     const pClass = isP1 ? 'p1' : 'p2';
     const badgeClass = isP1 ? 'badge-p1' : 'badge-p2';
     const isExcluded = mail.status === 'excluded';
+    const isDone = mail.status === 'done';
     const isSent = mail.status === 'sent';
 
     emailContainer.innerHTML += `
-      <div class="email-item ${pClass} ${isExcluded ? 'excluded' : ''}" id="email-item-${mail.id}">
+      <div class="email-item ${pClass} ${isExcluded ? 'excluded' : ''} ${isDone || isSent ? 'done' : ''}" id="email-item-${mail.id}">
         <div class="email-top">
-          <div class="email-badges">
-            <span class="badge-tag ${badgeClass}">${mail.priority}</span>
-            <span class="badge-tag badge-service">${mail.service}</span>
-            ${isSent ? '<span class="badge-tag" style="background:#e6f8f1;color:#04b06b;">발송 완료 ✓</span>' : ''}
-            ${isExcluded ? '<span class="badge-tag" style="background:#f2f4f6;color:#8b95a1;">제외됨</span>' : ''}
+          <div class="email-badges-row">
+            <div class="email-badges-left">
+              <span class="badge-tag ${badgeClass}">${mail.priority}</span>
+              <span class="badge-tag badge-service">${mail.service}</span>
+              <span class="email-from" title="${mail.from}">${mail.from}</span>
+            </div>
+            <div class="email-badges-right">
+              ${isDone ? '<span class="badge-tag badge-status-done">직접 완료 ✓</span>' : ''}
+              ${isSent ? '<span class="badge-tag badge-status-sent">발송 완료 ✓</span>' : ''}
+              ${isExcluded ? '<span class="badge-tag badge-status-excluded">제외됨</span>' : ''}
+            </div>
           </div>
-          <div class="email-from">${mail.from}</div>
         </div>
         <div class="email-subject">${mail.subject}</div>
-        <div class="email-summary">${mail.summary}</div>
+        <div class="email-summary">${mail.summary || mail.preview || ''}</div>
 
         <div class="email-actions-bar">
           <div class="email-status-text">
@@ -457,8 +602,9 @@ window.markDoneEmail = function(id) {
   const mail = b.emails.find(m => m.id === id);
   if (!mail) return;
   mail.status = 'done';
+  recordHandledItem(mail, 'email', 'done');
   renderTodayView();
-  showToast('메일이 직접 처리 완료 상태로 변경되었습니다.');
+  showToast('메일이 직접 처리 완료 상태로 변경되었습니다. (다음 날 목록에서 자동 제외)');
   pushCloudState();
 };
 
@@ -468,6 +614,7 @@ window.unmarkDoneEmail = function(id) {
   const mail = b.emails.find(m => m.id === id);
   if (!mail) return;
   mail.status = 'pending';
+  recordHandledItem(mail, 'email', 'pending');
   renderTodayView();
   showToast('메일 완료 상태가 취소되었습니다.');
   pushCloudState();
@@ -497,26 +644,28 @@ window.toggleAgentPriorityExclude = function(id) {
 };
 
 // Email Exclude / Restore
-// Render Customer Inquiries (Kmong, Imweb, Mail)
+// Render Customer Inquiries (Kmong, Imweb, Mail) with Cross-day Deduplication & Responsive Badges
 function renderInquiries(b, containerId, badgeId) {
   const container = document.getElementById(containerId);
   if (!container) return;
   if (!b.inquiries) b.inquiries = [];
 
+  const filteredInquiries = getFilteredInquiries(b);
+
   const badge = document.getElementById(badgeId);
-  const pendingCount = b.inquiries.filter(i => i.status !== 'excluded' && i.status !== 'done' && i.status !== 'sent').length;
+  const pendingCount = filteredInquiries.filter(i => i.status !== 'excluded' && i.status !== 'done' && i.status !== 'sent').length;
   if (badge) {
     badge.textContent = `${pendingCount}건 대기`;
   }
 
   container.innerHTML = '';
-  if (b.inquiries.length === 0) {
+  if (filteredInquiries.length === 0) {
     container.innerHTML = '<div class="empty-state">현재 인입된 신규 고객 문의가 없습니다.</div>';
     return;
   }
 
   // Sort: actionable first, (done, sent, excluded) at the bottom
-  const sortedInquiries = [...b.inquiries].sort((a, b) => {
+  const sortedInquiries = [...filteredInquiries].sort((a, b) => {
     const aHandled = a.status === 'done' || a.status === 'sent' || a.status === 'excluded';
     const bHandled = b.status === 'done' || b.status === 'sent' || b.status === 'excluded';
     if (aHandled === bHandled) return 0;
@@ -533,13 +682,17 @@ function renderInquiries(b, containerId, badgeId) {
     container.innerHTML += `
       <div class="inquiry-item ${chClass} ${isExcluded ? 'excluded' : ''} ${isDone || isSent ? 'done' : ''}" id="inquiry-item-${containerId}-${inq.id}">
         <div class="email-top">
-          <div class="email-badges">
-            <span class="badge-tag ${badgeChClass}">${inq.channel} 문의</span>
-            <span class="email-sender">${inq.from}</span>
-            <span class="email-time" style="font-size: 11.5px; color: var(--text-tertiary);">${inq.time}</span>
-            ${isDone ? '<span class="badge-tag" style="background:#e6f8f1;color:#04b06b;">직접 답변 완료 ✓</span>' : ''}
-            ${isSent ? '<span class="badge-tag" style="background:#e6f8f1;color:#04b06b;">발송 완료 ✓</span>' : ''}
-            ${isExcluded ? '<span class="badge-tag" style="background:#f2f4f6;color:#8b95a1;">제외됨</span>' : ''}
+          <div class="email-badges-row">
+            <div class="email-badges-left">
+              <span class="badge-tag ${badgeChClass}">${inq.channel} 문의</span>
+              <span class="email-sender" title="${inq.from}">${inq.from}</span>
+              <span class="email-time" style="font-size: 11.5px; color: var(--text-tertiary);">${inq.time}</span>
+            </div>
+            <div class="email-badges-right">
+              ${isDone ? '<span class="badge-tag badge-status-done">직접 답변 완료 ✓</span>' : ''}
+              ${isSent ? '<span class="badge-tag badge-status-sent">발송 완료 ✓</span>' : ''}
+              ${isExcluded ? '<span class="badge-tag badge-status-excluded">제외됨</span>' : ''}
+            </div>
           </div>
         </div>
 
@@ -595,7 +748,7 @@ function renderInquiries(b, containerId, badgeId) {
 
 // [Duplicate sync removed - unified implementation at bottom]
 
-// Inquiry Action Handlers
+// Inquiry Action Handlers (with Handled Registry Tracking)
 window.toggleInquiryDirectDone = function(id) {
   if (!appData) return;
   const b = appData.briefings.find(item => item.id === currentBriefingId);
@@ -605,10 +758,12 @@ window.toggleInquiryDirectDone = function(id) {
 
   if (inq.status === 'done') {
     inq.status = 'pending';
+    recordHandledItem(inq, 'inquiry', 'pending');
     showToast('문의 항목이 조치 대기 상태로 복구되었습니다.');
   } else {
     inq.status = 'done';
-    showToast('문의 항목이 직접 완료 처리되었습니다.');
+    recordHandledItem(inq, 'inquiry', 'done');
+    showToast('문의 항목이 직접 완료 처리되었습니다. (다음 날 목록에서 자동 제외)');
   }
   renderTodayView();
   pushCloudState();
@@ -623,10 +778,12 @@ window.toggleInquiryExclude = function(id) {
 
   if (inq.status === 'excluded') {
     inq.status = 'pending';
+    recordHandledItem(inq, 'inquiry', 'pending');
     showToast('문의 항목이 복구되었습니다.');
   } else {
     inq.status = 'excluded';
-    showToast('문의 항목이 제외 처리되었습니다.');
+    recordHandledItem(inq, 'inquiry', 'excluded');
+    showToast('문의 항목이 제외 처리되었습니다. (다음 날 목록에서 자동 제외)');
   }
   renderTodayView();
   pushCloudState();
@@ -653,10 +810,11 @@ window.approveAndSendInquiry = function(id, domId) {
   if (textEl) inq.draft = textEl.value;
 
   inq.status = 'sent';
+  recordHandledItem(inq, 'inquiry', 'sent');
   closeInquiryProcessDraft(domId);
   renderTodayView();
   pushCloudState();
-  showToast(`[답변 발송 완료] ${inq.from} 님께 맞춤 답변이 전송되었습니다!`);
+  showToast(`[답변 발송 완료] ${inq.from} 님께 맞춤 답변이 전송되었습니다! (다음 날 목록에서 자동 제외)`);
 };
 
 window.toggleExcludeEmail = function(id) {
@@ -667,15 +825,17 @@ window.toggleExcludeEmail = function(id) {
 
   if (mail.status === 'excluded') {
     mail.status = 'pending';
+    recordHandledItem(mail, 'email', 'pending');
     showToast('메일 항목이 브리핑에 복구되었습니다.');
-  pushCloudState();
+    pushCloudState();
   } else {
     mail.status = 'excluded';
+    recordHandledItem(mail, 'email', 'excluded');
     // close draft if open
     const draftBox = document.getElementById(`draft-box-${id}`);
     if (draftBox) draftBox.classList.remove('active');
-    showToast('메일 항목이 제외 처리되었습니다.');
-  pushCloudState();
+    showToast('메일 항목이 제외 처리되었습니다. (다음 날 목록에서 자동 제외)');
+    pushCloudState();
   }
   renderTodayView();
 };
@@ -706,9 +866,10 @@ window.approveAndSendEmail = function(id) {
   }
 
   mail.status = 'sent';
+  recordHandledItem(mail, 'email', 'sent');
   closeProcessDraft(id);
   renderTodayView();
-  showToast(`[승인 완료] ${mail.from.split('(')[0].trim()} 님께 답장 메일 발송이 접수되었습니다!`);
+  showToast(`[승인 완료] ${mail.from.split('(')[0].trim()} 님께 답장 메일 발송이 접수되었습니다! (다음 날 목록에서 자동 제외)`);
   pushCloudState();
 };
 
@@ -939,7 +1100,63 @@ ${priorityText}
       showToast('브리핑이 복사되었습니다.');
     }
   });
+
+  // Refresh Button Click Listener
+  const refreshBtn = document.getElementById('btn-refresh-data');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', () => {
+      window.refreshDashboardData(true);
+    });
+  }
 }
+
+// Refresh Dashboard Data (Manual & Background Auto-sync)
+window.refreshDashboardData = async function(showNotice = true) {
+  const refreshBtn = document.getElementById('btn-refresh-data');
+  if (refreshBtn) refreshBtn.classList.add('spinning');
+
+  try {
+    const kst = getKSTNow();
+
+    // 1. Fetch fresh data.json bypassing browser cache
+    const res = await fetch('data.json?v=' + Date.now(), { cache: 'no-store' });
+    if (res.ok) {
+      appData = await res.json();
+    }
+
+    // 2. Pull cloud state from ntfy
+    await pullCloudState();
+
+    // 3. Ensure today's briefing is selected
+    if (appData && appData.briefings && appData.briefings.length > 0) {
+      const todayB = appData.briefings.find(b => b.date === kst.dateStr);
+      if (todayB) {
+        currentBriefingId = todayB.id;
+      }
+    }
+
+    // 4. Check midnight daily reset
+    checkMidnightReset();
+
+    // 5. Re-render all views
+    renderTodayView();
+    if (typeof renderChatConversationList === 'function') renderChatConversationList();
+    if (typeof renderChatMessages === 'function') renderChatMessages();
+
+    if (showNotice) {
+      showToast('🔄 최신 메일, 문의, 할 일을 모두 새로고침했습니다.');
+    }
+  } catch (err) {
+    console.error('Refresh dashboard error:', err);
+    if (showNotice) showToast('새로고침 중 오류가 발생했습니다.');
+  } finally {
+    if (refreshBtn) {
+      setTimeout(() => {
+        refreshBtn.classList.remove('spinning');
+      }, 500);
+    }
+  }
+};
 
 function showToast(msg) {
   const t = document.getElementById('toast-notice');
@@ -1628,6 +1845,10 @@ function applyRemoteSync(remoteData) {
         }
       });
     }
+    if (remoteData.handledRegistry && typeof remoteData.handledRegistry === 'object') {
+      Object.assign(handledRegistry, remoteData.handledRegistry);
+      saveHandledRegistry();
+    }
     renderTodayView();
   }
 
@@ -1689,6 +1910,7 @@ async function pushCloudState() {
       excludedPriorities: excludedPriorities,
       emailStatuses: emailStatuses,
       inquiryStatuses: inquiryStatuses,
+      handledRegistry: handledRegistry,
       recentChats: todayChats
     };
 
