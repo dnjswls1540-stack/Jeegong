@@ -3,7 +3,7 @@
     "name": "지공 출근 에이전트",
     "version": "1.2.0",
     "status": "ready",
-    "lastRun": "2026-10-22 08:30:00",
+    "lastRun": "2026-10-23 08:30:00",
     "tools": [
       {
         "id": "calendar",
@@ -139,43 +139,33 @@
       "todomateTodos": [
         {
           "id": "tm1",
-          "text": "아넬라 제안 20명",
+          "text": "챔맘 로지오가닉 샘플 발송",
           "done": false
         },
         {
           "id": "tm2",
-          "text": "디어커스 제안 15명",
-          "done": false
-        },
-        {
-          "id": "tm3",
-          "text": "아임웹 의뢰하기",
-          "done": false
-        },
-        {
-          "id": "tm4",
-          "text": "챔맘 아넬라 샘플 체크",
-          "done": false
-        },
-        {
-          "id": "tm5",
           "text": "우주맘마 주문건 오후 체크",
           "done": false
         },
         {
-          "id": "tm6",
+          "id": "tm3",
+          "text": "아넬라 제안 20명",
+          "done": false
+        },
+        {
+          "id": "tm4",
           "text": "지공 상세페이지 재구성 기획",
           "done": false
         },
         {
-          "id": "tm7",
-          "text": "듀오링고 일본어 2개",
-          "done": false
+          "id": "tm5",
+          "text": "지공의 페이노트 카카오톡 발송",
+          "done": true
         },
         {
-          "id": "tm8",
-          "text": "운동",
-          "done": false
+          "id": "tm6",
+          "text": "듀오링고 일본어 2개",
+          "done": true
         }
       ],
       "agentPriorities": [
