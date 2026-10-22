@@ -918,6 +918,10 @@ body {
   border-left-color: #eab308;
 }
 
+.inquiry-item.channel-sixshop {
+  border-left-color: #6366f1;
+}
+
 .inquiry-item.channel-imweb {
   border-left-color: #3b82f6;
 }
@@ -939,6 +943,12 @@ body {
   opacity: 0.45;
   background-color: var(--bg-card-subtle);
   filter: grayscale(0.5);
+}
+
+.badge-channel-sixshop {
+  background-color: #e0e7ff;
+  color: #4338ca;
+  font-weight: 700;
 }
 
 .badge-channel-kmong {

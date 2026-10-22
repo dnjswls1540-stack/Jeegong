@@ -234,7 +234,7 @@
         },
         {
           "id": "inq-6",
-          "channel": "식스샵 문의",
+          "channel": "식스샵",
           "serviceClass": "channel-imweb",
           "from": "수학논술학원 (010-8008-0115)",
           "email": "kkim0826@naver.com",
@@ -246,7 +246,7 @@
         },
         {
           "id": "inq-7",
-          "channel": "식스샵 문의",
+          "channel": "식스샵",
           "serviceClass": "channel-imweb",
           "from": "여행생활 (010-2088-7584)",
           "email": "jwnswo1@gmail.com",
