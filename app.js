@@ -1,29 +1,92 @@
-// Jeegong Work Agent Dashboard Application (v1.2.0 - Cloud Sync & Multimedia)
+// Jeegong Work Agent Dashboard Application (v1.3.0 - Midnight Auto Reset & Real-time Cloud Sync)
 
 let appData = null;
-let currentBriefingId = 'b-20261021';
-let isCheckedIn = false;
-
-// Cloud Sync Configuration (Real-time Cross-device Sync)
-const CLOUD_SYNC_ENDPOINT = 'https://api.restful-api.dev/objects/ff808181a09d98f701a15d8b57223a34';
+let currentBriefingId = 'b-20261022';
+let workState = 'ready'; // 'ready' (출근 완료) -> 'checked_in' (업무 종료) -> 'finished' (퇴근 완료)
 let lastLocalUpdateTimestamp = 0;
 let isSyncing = false;
 
+// Cloud Sync Configuration (Real-time Cross-device Sync)
+const CLOUD_SYNC_ENDPOINT = 'https://api.restful-api.dev/objects/ff808181a09d98f701a15d8b57223a34';
+
 // Multi-date Chat Sessions
-let chatSessions = {
-  '2026-10-21': [
-    {
-      role: 'bot',
-      text: '지원진 님 안녕하세요! 구름이예요 ㅎㅎ 웹에서도 편하게 말씀해 주세요. 오늘 일정이나 메일, 할 일 관련해서 궁금하신 점이나 처리할 일 있으시면 바로 해결해 드릴게요!',
-      time: '08:30'
-    }
-  ]
-};
-let activeChatDate = '2026-10-21';
+let chatSessions = {};
+let activeChatDate = '2026-10-22';
 let currentAttachments = [];
+let currentChatView = 'list'; // 'list' or 'room'
+let chatMessages = [];
+
+// KST Date Helper
+function getKSTNow() {
+  const now = new Date();
+  const d = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const days = ['일', '월', '화', '수', '목', '금', '토'];
+  const dayOfWeek = days[d.getDay()];
+  const dateStr = `${year}-${month}-${day}`;
+  const displayStr = `${year}-${month}-${day} (${dayOfWeek})`;
+  return { year, month, day, dayOfWeek, dateStr, displayStr, d };
+}
+
+// Work Button UI Updater (Global Scope)
+function updateWorkButtonUI() {
+  const btnRun = document.getElementById('btn-run-agent');
+  if (!btnRun) return;
+  if (workState === 'checked_in') {
+    btnRun.className = 'btn-primary work-active';
+    btnRun.innerHTML = '<span>🌙</span><span id="btn-run-agent-text">업무 종료</span>';
+    btnRun.disabled = false;
+  } else if (workState === 'finished') {
+    btnRun.className = 'btn-primary work-finished';
+    btnRun.innerHTML = '<span>🎉</span><span id="btn-run-agent-text">퇴근 완료 ✓</span>';
+    btnRun.disabled = false;
+  } else {
+    btnRun.className = 'btn-primary';
+    btnRun.innerHTML = '<span>✨</span><span id="btn-run-agent-text">출근 완료</span>';
+    btnRun.disabled = false;
+  }
+}
+
+// Midnight Daily Reset (자정 지나면 퇴근 안 눌러도 출근 버튼 자동 초기화 & 날짜 매일 업데이트)
+function checkMidnightReset() {
+  const kst = getKSTNow();
+
+  // 1. Always keep current date badge updated
+  const dateBadge = document.getElementById('current-date-text');
+  if (dateBadge && dateBadge.textContent !== kst.displayStr) {
+    dateBadge.textContent = kst.displayStr;
+  }
+
+  // 2. Check if day has changed (Midnight passed)
+  const savedWorkDate = localStorage.getItem('jeegong_work_date');
+  if (savedWorkDate !== kst.dateStr) {
+    // New day has arrived! Reset work state to ready (출근 완료)
+    workState = 'ready';
+    try {
+      localStorage.setItem('jeegong_work_date', kst.dateStr);
+      localStorage.setItem('jeegong_work_state', 'ready');
+    } catch (e) {}
+    updateWorkButtonUI();
+
+    // Automatically select today's briefing if available
+    if (appData && appData.briefings) {
+      const todayB = appData.briefings.find(b => b.date === kst.dateStr);
+      if (todayB && currentBriefingId !== todayB.id) {
+        currentBriefingId = todayB.id;
+        renderTodayView();
+      }
+    }
+
+    pushCloudState();
+  }
+}
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
+  const kst = getKSTNow();
+
   try {
     const res = await fetch('data.json?v=' + Date.now());
     appData = await res.json();
@@ -31,7 +94,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.error('Failed to load data.json', e);
   }
 
-  // Load chat sessions from localStorage
+  // 1. Dynamically select today's briefing if available
+  if (appData && appData.briefings && appData.briefings.length > 0) {
+    const todayB = appData.briefings.find(b => b.date === kst.dateStr);
+    currentBriefingId = todayB ? todayB.id : appData.briefings[0].id;
+  }
+
+  // 2. Daily reset check on startup
+  const savedWorkDate = localStorage.getItem('jeegong_work_date');
+  if (savedWorkDate !== kst.dateStr) {
+    // Midnight passed or new day: reset to ready
+    workState = 'ready';
+    try {
+      localStorage.setItem('jeegong_work_date', kst.dateStr);
+      localStorage.setItem('jeegong_work_state', 'ready');
+    } catch (e) {}
+  } else {
+    workState = localStorage.getItem('jeegong_work_state') || 'ready';
+  }
+
+  // 3. Load chat sessions from localStorage
   try {
     const savedSessions = localStorage.getItem('jeegong_chat_sessions');
     if (savedSessions) {
@@ -39,8 +121,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   } catch (e) {}
 
+  if (!chatSessions[kst.dateStr]) {
+    chatSessions[kst.dateStr] = [
+      {
+        role: 'bot',
+        text: '지원진 님 안녕하세요! 구름이예요 ㅎㅎ 오늘 우주맘마 아넬라 공구 오픈과 식스샵 외주 회신 등 업무들 차근차근 챙겨드릴게요. 궁금하신 점이나 처리할 일 있으시면 말씀해 주세요!',
+        time: '08:30'
+      }
+    ];
+  }
+  activeChatDate = kst.dateStr;
+
+  // 4. Update top navbar date badge
+  const dateBadge = document.getElementById('current-date-text');
+  if (dateBadge) {
+    dateBadge.textContent = kst.displayStr;
+  }
+
   setupTheme();
   setupNavigation();
+  updateWorkButtonUI();
   setupInteractions();
   setupChatbot();
   renderTodayView();
@@ -49,8 +149,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Initial Cloud Pull & Periodic Sync (Cross-device Sync: Mobile <-> PC)
   await pullCloudState();
-  setInterval(pullCloudState, 5000);
-  window.addEventListener('focus', pullCloudState);
+  setInterval(pullCloudState, 4000);
+  setInterval(checkMidnightReset, 5000); // Check midnight rollover every 5s
+  window.addEventListener('focus', () => {
+    checkMidnightReset();
+    pullCloudState();
+  });
 });
 
 // Theme Management
@@ -125,7 +229,7 @@ function setupNavigation() {
 // Render Today's Briefing
 function renderTodayView() {
   if (!appData || !appData.briefings) return;
-  const b = appData.briefings.find(item => item.id === 'b-20261021') || appData.briefings[0];
+  const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
 
   // Stats Counters with Defensive Checks
   const calCountEl = document.getElementById('stat-calendar-count');
@@ -350,6 +454,7 @@ window.markDoneEmail = function(id) {
   mail.status = 'done';
   renderTodayView();
   showToast('메일이 직접 처리 완료 상태로 변경되었습니다.');
+  pushCloudState();
 };
 
 window.unmarkDoneEmail = function(id) {
@@ -360,6 +465,7 @@ window.unmarkDoneEmail = function(id) {
   mail.status = 'pending';
   renderTodayView();
   showToast('메일 완료 상태가 취소되었습니다.');
+  pushCloudState();
 };
 
 // Agent Priority Done / Exclude Handlers
@@ -371,6 +477,7 @@ window.toggleAgentPriorityDone = function(id) {
   ap.done = !ap.done;
   renderTodayView();
   showToast(ap.done ? '해당 우선순위 업무를 완료 처리했습니다!' : '완료 처리를 취소했습니다.');
+  pushCloudState();
 };
 
 window.toggleAgentPriorityExclude = function(id) {
@@ -381,6 +488,7 @@ window.toggleAgentPriorityExclude = function(id) {
   ap.excluded = !ap.excluded;
   renderTodayView();
   showToast(ap.excluded ? '해당 우선순위 업무를 제외 처리했습니다.' : '제외 처리를 복구했습니다.');
+  pushCloudState();
 };
 
 // Email Exclude / Restore
@@ -480,76 +588,7 @@ function renderInquiries(b, containerId, badgeId) {
   });
 }
 
-// Cloud Sync Logic (Cross-device Synchronization: Mobile <-> PC)
-async function pushCloudState() {
-  if (!appData || !appData.briefings) return;
-  const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
-  lastLocalUpdateTimestamp = Date.now();
-
-  const payload = {
-    name: 'jeegong_sync',
-    data: {
-      timestamp: lastLocalUpdateTimestamp,
-      todos: b.todomateTodos,
-      emails: b.emails,
-      inquiries: b.inquiries,
-      priorities: b.agentPriorities,
-      workState: localStorage.getItem('jeegong_work_state') || 'ready',
-      chatSessions: chatSessions
-    }
-  };
-
-  try {
-    await fetch(CLOUD_SYNC_ENDPOINT, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-  } catch (err) {
-    console.warn('Cloud sync push failed', err);
-  }
-}
-
-async function pullCloudState() {
-  if (isSyncing || !appData || !appData.briefings) return;
-  isSyncing = true;
-  try {
-    const res = await fetch(CLOUD_SYNC_ENDPOINT);
-    if (!res.ok) return;
-    const json = await res.json();
-    const cloud = json.data;
-
-    if (cloud && cloud.timestamp && cloud.timestamp > lastLocalUpdateTimestamp) {
-      lastLocalUpdateTimestamp = cloud.timestamp;
-      const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
-
-      if (cloud.todos) b.todomateTodos = cloud.todos;
-      if (cloud.emails) b.emails = cloud.emails;
-      if (cloud.inquiries) b.inquiries = cloud.inquiries;
-      if (cloud.priorities) b.agentPriorities = cloud.priorities;
-
-      if (cloud.chatSessions) {
-        chatSessions = cloud.chatSessions;
-        try {
-          localStorage.setItem('jeegong_chat_sessions', JSON.stringify(chatSessions));
-        } catch (e) {}
-        renderChatSessionSelect();
-        renderChatMessages();
-      }
-
-      if (cloud.workState) {
-        localStorage.setItem('jeegong_work_state', cloud.workState);
-        updateWorkButtonUI();
-      }
-
-      renderTodayView();
-    }
-  } catch (e) {
-    console.warn('Cloud pull failed', e);
-  } finally {
-    isSyncing = false;
-  }
-}
+// [Duplicate sync removed - unified implementation at bottom]
 
 // Inquiry Action Handlers
 window.toggleInquiryDirectDone = function(id) {
@@ -624,12 +663,14 @@ window.toggleExcludeEmail = function(id) {
   if (mail.status === 'excluded') {
     mail.status = 'pending';
     showToast('메일 항목이 브리핑에 복구되었습니다.');
+  pushCloudState();
   } else {
     mail.status = 'excluded';
     // close draft if open
     const draftBox = document.getElementById(`draft-box-${id}`);
     if (draftBox) draftBox.classList.remove('active');
     showToast('메일 항목이 제외 처리되었습니다.');
+  pushCloudState();
   }
   renderTodayView();
 };
@@ -663,6 +704,7 @@ window.approveAndSendEmail = function(id) {
   closeProcessDraft(id);
   renderTodayView();
   showToast(`[승인 완료] ${mail.from.split('(')[0].trim()} 님께 답장 메일 발송이 접수되었습니다!`);
+  pushCloudState();
 };
 
 // Toggle Todomate Todo
@@ -673,6 +715,7 @@ window.toggleTodomateTodo = function(id) {
   if (t) {
     t.done = !t.done;
     renderTodayView();
+    pushCloudState();
   }
 };
 
@@ -690,9 +733,14 @@ function renderArchiveView() {
   const container = document.getElementById('archive-content-container');
   if (!select || !container || !appData) return;
 
+  // Dynamically populate options from briefings data
+  select.innerHTML = appData.briefings.map(item => `
+    <option value="${item.id}">${item.date} (${item.dayOfWeek}) - ${item.headline}</option>
+  `).join('');
+
   function renderSelectedArchive() {
     const selectedId = select.value;
-    const b = appData.briefings.find(item => item.id === selectedId);
+    const b = appData.briefings.find(item => item.id === selectedId) || appData.briefings[0];
     if (!b) return;
 
     container.innerHTML = `
@@ -759,24 +807,7 @@ function setupInteractions() {
     { id: 'step-drive', text: '구글 드라이브 사전 자료 문서 링크 검색 중...' }
   ];
 
-  // Work state management: 'ready' -> 'checked_in' -> 'finished'
-  let workState = localStorage.getItem('jeegong_work_state') || 'ready';
-
-  function updateWorkButtonUI() {
-    if (workState === 'checked_in') {
-      btnRun.className = 'btn-primary work-active';
-      btnRun.innerHTML = '<span>🌙</span><span id="btn-run-agent-text">업무 종료</span>';
-      btnRun.disabled = false;
-    } else if (workState === 'finished') {
-      btnRun.className = 'btn-primary work-finished';
-      btnRun.innerHTML = '<span>🎉</span><span id="btn-run-agent-text">퇴근 완료 ✓</span>';
-      btnRun.disabled = false;
-    } else {
-      btnRun.className = 'btn-primary';
-      btnRun.innerHTML = '<span>✨</span><span id="btn-run-agent-text">출근 완료</span>';
-      btnRun.disabled = false;
-    }
-  }
+  // Work state uses global workState & updateWorkButtonUI()
   updateWorkButtonUI();
 
   btnRun.addEventListener('click', async () => {
@@ -802,7 +833,7 @@ function setupInteractions() {
       statusText.textContent = '✨ 5대 도구 전수 분석 완료! 오늘의 출근 브리핑이 동기화되었습니다.';
 
       workState = 'checked_in';
-      localStorage.setItem('jeegong_work_state', 'checked_in');
+      const kst = getKSTNow(); try { localStorage.setItem('jeegong_work_date', kst.dateStr); localStorage.setItem('jeegong_work_state', 'checked_in'); } catch (e) {}
       updateWorkButtonUI();
       pushCloudState();
 
@@ -810,7 +841,7 @@ function setupInteractions() {
       const timeStr = now.toTimeString().split(' ')[0];
       appData.history.unshift({
         id: `run-${Date.now()}`,
-        timestamp: `2026-10-21 ${timeStr}`,
+        timestamp: `${getKSTNow().dateStr} ${timeStr}`,
         trigger: '출근 완료 (5대 도구 동기화)',
         duration: '2.7s',
         status: 'success',
@@ -828,7 +859,7 @@ function setupInteractions() {
     } else if (workState === 'checked_in') {
       // 2. End Work (퇴근 처리)
       workState = 'finished';
-      localStorage.setItem('jeegong_work_state', 'finished');
+      const kst = getKSTNow(); try { localStorage.setItem('jeegong_work_date', kst.dateStr); localStorage.setItem('jeegong_work_state', 'finished'); } catch (e) {}
       updateWorkButtonUI();
       pushCloudState();
 
@@ -836,7 +867,7 @@ function setupInteractions() {
       const timeStr = now.toTimeString().split(' ')[0];
       appData.history.unshift({
         id: `run-${Date.now()}`,
-        timestamp: `2026-10-21 ${timeStr}`,
+        timestamp: `${getKSTNow().dateStr} ${timeStr}`,
         trigger: '업무 종료 (퇴근 완료)',
         duration: '0.1s',
         status: 'success',
@@ -863,7 +894,7 @@ function setupInteractions() {
     } else if (workState === 'finished') {
       if (confirm('오늘 업무를 다시 시작(출근 상태로 복원)하시겠습니까?')) {
         workState = 'ready';
-        localStorage.setItem('jeegong_work_state', 'ready');
+        const kst = getKSTNow(); try { localStorage.setItem('jeegong_work_date', kst.dateStr); localStorage.setItem('jeegong_work_state', 'ready'); } catch (e) {}
         updateWorkButtonUI();
         pushCloudState();
         renderTodayView();
@@ -872,32 +903,30 @@ function setupInteractions() {
     }
   });
 
-  // Copy Markdown
+  // Copy Markdown (Dynamically generated from current briefing)
   copyBtn.addEventListener('click', () => {
-    const md = `# 🌅 [지공 출근 에이전트] 오늘 업무 브리핑 (2026-10-21 수요일)
+    const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
+    const calText = b.calendar.note || (b.calendar.items && b.calendar.items.length ? b.calendar.items.map(i => `${i.time}: ${i.title}`).join('\n- ') : '오늘 등록된 캘린더 일정 없음');
+    const emailText = b.emails.map((e, idx) => `${idx + 1}. [${e.priority}] ${e.from}: ${e.subject}`).join('\n');
+    const todoText = b.todomateTodos.map(t => `- ${t.text} ${t.done ? '(완료)' : ''}`).join('\n');
+    const priorityText = b.agentPriorities.map((ap, idx) => `${idx + 1}. [${ap.priority}] ${ap.title}${ap.done ? ' (완료)' : ''}`).join('\n');
+    const guideText = b.guide || b.summary;
+
+    const md = `# 🌅 [지공 출근 에이전트] 오늘 업무 브리핑 (${b.date} ${b.dayOfWeek})
 
 ### 📅 오늘의 일정 & 회의
-- 오늘 등록된 캘린더 일정 없음 (내일 10/22~10/26 [공구] 우주맘마 아넬라 과일퓨레 진행 예정)
+- ${calText}
 
 ### 📬 중요 메일 & 외부 요청
-1. [1순위 긴급] 인플루언서 희수 님: 오슬로앤오십구 겨울 베어메리 공구 일정 소통 희망 (카톡 thou7)
-2. [2순위 진행] OYKA HOME: 식스샵 쇼핑몰 신규 제작 견적 의뢰 (예산 50~100만 원)
-3. [2순위 진행] 라운드커머스: 타이거모닝 진저샷 공구 운영 파트너십 제안
+${emailText}
 
 ### 📱 투두메이트 오늘 할 일
-- 지공 상세페이지 재구성
-- 이벤트 페이지 광고세팅
-- 아넬라 제안 20명
-- 디어커스 제안 15명
-- 듀오링고 일본어 2개
+${todoText}
 
 ### ✨ 에이전트 추천 핵심 우선순위
-1. [1순위] 아넬라 과일퓨레 공구 오픈 최종 세팅 (내일 10/22 오픈 대비)
-2. [1순위] 인플루언서 희수 님 카톡(thou7) 일정·단가 협의
-3. [2순위] 디어커스 단톡방 개설 및 일정 회신
-4. [2순위] 식스샵 OYKA HOME 맞춤 견적서 회신
+${priorityText}
 
-> 💡 한 줄 가이드: 내일 시작되는 우주맘마 아넬라 공구 피드 세팅과 희수 님 카톡 협의를 오전 중 완료하세요.`;
+> 💡 한 줄 가이드: ${guideText}`;
 
     if (navigator.clipboard) {
       navigator.clipboard.writeText(md).then(() => showToast('브리핑 마크다운이 복사되었습니다.'));
@@ -1468,25 +1497,46 @@ async function generateAssistantResponse(prompt, attachments = []) {
 // REAL-TIME CLOUD SYNC (Mobile <-> PC Sync via Cloud DB)
 // =========================================================
 async function pushCloudState() {
-  if (isSyncing) return;
+  if (isSyncing || !appData || !appData.briefings) return;
   try {
     const nowTs = Date.now();
     lastLocalUpdateTimestamp = nowTs;
-    localStorage.setItem('jeegong_last_sync_ts', String(nowTs));
+    try { localStorage.setItem('jeegong_last_sync_ts', String(nowTs)); } catch (e) {}
+
+    const kst = getKSTNow();
+    const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
+
+    const doneTodos = (b.todomateTodos || []).filter(t => t.done).map(t => t.id);
+    const donePriorities = (b.agentPriorities || []).filter(ap => ap.done).map(ap => ap.id);
+    const excludedPriorities = (b.agentPriorities || []).filter(ap => ap.excluded).map(ap => ap.id);
+
+    const emailStatuses = {};
+    (b.emails || []).forEach(e => {
+      if (e.status && e.status !== 'pending') emailStatuses[e.id] = e.status;
+    });
+
+    const inquiryStatuses = {};
+    (b.inquiries || []).forEach(i => {
+      if (i.status && i.status !== 'pending') inquiryStatuses[i.id] = i.status;
+    });
+
+    // Extract recent chats from today's session
+    const todayChats = (chatSessions[kst.dateStr] || []).slice(-10);
 
     const payload = {
       name: "jeegong_sync",
       data: {
         updatedAt: nowTs,
-        workState: localStorage.getItem('jeegong_work_state') || 'ready',
-        chatSessions: chatSessions,
-        activeChatDate: activeChatDate,
-        briefingState: appData && appData.briefings && appData.briefings[0] ? {
-          todomateTodos: appData.briefings[0].todomateTodos,
-          agentPriorities: appData.briefings[0].agentPriorities,
-          emails: appData.briefings[0].emails,
-          inquiries: appData.briefings[0].inquiries
-        } : null
+        workDate: kst.dateStr,
+        workState: workState,
+        briefingId: b.id,
+        briefingDate: b.date,
+        doneTodos: doneTodos,
+        donePriorities: donePriorities,
+        excludedPriorities: excludedPriorities,
+        emailStatuses: emailStatuses,
+        inquiryStatuses: inquiryStatuses,
+        recentChats: todayChats
       }
     };
 
@@ -1501,7 +1551,7 @@ async function pushCloudState() {
 }
 
 async function pullCloudState() {
-  if (isSyncing) return;
+  if (isSyncing || !appData || !appData.briefings) return;
   try {
     const res = await fetch(CLOUD_SYNC_ENDPOINT);
     if (!res.ok) return;
@@ -1514,38 +1564,82 @@ async function pullCloudState() {
     if (remoteTs > lastLocalUpdateTimestamp) {
       isSyncing = true;
       lastLocalUpdateTimestamp = remoteTs;
-      localStorage.setItem('jeegong_last_sync_ts', String(remoteTs));
+      try { localStorage.setItem('jeegong_last_sync_ts', String(remoteTs)); } catch (e) {}
 
-      // 1. Sync work state (출근/퇴근)
-      if (remoteData.workState && remoteData.workState !== workState) {
+      const kst = getKSTNow();
+
+      // 1. Work state sync with daily midnight reset
+      if (remoteData.workDate && remoteData.workDate !== kst.dateStr) {
+        // Stored state is from previous date: reset to ready for today!
+        workState = 'ready';
+        try {
+          localStorage.setItem('jeegong_work_date', kst.dateStr);
+          localStorage.setItem('jeegong_work_state', 'ready');
+        } catch (e) {}
+      } else if (remoteData.workState && remoteData.workState !== workState) {
         workState = remoteData.workState;
-        localStorage.setItem('jeegong_work_state', workState);
-        updateWorkButtonUI();
+        try {
+          localStorage.setItem('jeegong_work_date', kst.dateStr);
+          localStorage.setItem('jeegong_work_state', workState);
+        } catch (e) {}
+      }
+      updateWorkButtonUI();
+
+      // 2. Sync briefing statuses (todos, priorities, emails, inquiries)
+      const b = (remoteData.briefingId ? appData.briefings.find(item => item.id === remoteData.briefingId) : null)
+        || (remoteData.briefingDate ? appData.briefings.find(item => item.date === remoteData.briefingDate) : null)
+        || appData.briefings.find(item => item.id === currentBriefingId)
+        || appData.briefings[0];
+
+      if (b) {
+        if (Array.isArray(remoteData.doneTodos)) {
+          (b.todomateTodos || []).forEach(t => {
+            t.done = remoteData.doneTodos.includes(t.id);
+          });
+        }
+        if (Array.isArray(remoteData.donePriorities)) {
+          (b.agentPriorities || []).forEach(ap => {
+            ap.done = remoteData.donePriorities.includes(ap.id);
+          });
+        }
+        if (Array.isArray(remoteData.excludedPriorities)) {
+          (b.agentPriorities || []).forEach(ap => {
+            ap.excluded = remoteData.excludedPriorities.includes(ap.id);
+          });
+        }
+        if (remoteData.emailStatuses) {
+          (b.emails || []).forEach(e => {
+            if (remoteData.emailStatuses[e.id]) {
+              e.status = remoteData.emailStatuses[e.id];
+            }
+          });
+        }
+        if (remoteData.inquiryStatuses) {
+          (b.inquiries || []).forEach(i => {
+            if (remoteData.inquiryStatuses[i.id]) {
+              i.status = remoteData.inquiryStatuses[i.id];
+            }
+          });
+        }
+        renderTodayView();
       }
 
-      // 2. Sync chat sessions
-      if (remoteData.chatSessions) {
-        chatSessions = remoteData.chatSessions;
-        localStorage.setItem('jeegong_chat_sessions', JSON.stringify(chatSessions));
-        if (remoteData.activeChatDate) {
-          activeChatDate = remoteData.activeChatDate;
-        }
+      // 3. Sync recent chats
+      if (Array.isArray(remoteData.recentChats) && remoteData.recentChats.length > 0) {
+        if (!chatSessions[kst.dateStr]) chatSessions[kst.dateStr] = [];
+        const existingTexts = new Set(chatSessions[kst.dateStr].map(m => m.text));
+        remoteData.recentChats.forEach(m => {
+          if (!existingTexts.has(m.text)) {
+            chatSessions[kst.dateStr].push(m);
+            existingTexts.add(m.text);
+          }
+        });
+        try { localStorage.setItem('jeegong_chat_sessions', JSON.stringify(chatSessions)); } catch (e) {}
         renderChatConversationList();
-        if (currentChatView === 'room') {
-          chatMessages = chatSessions[activeChatDate] || [];
+        if (typeof currentChatView !== 'undefined' && currentChatView === 'room' && activeChatDate === kst.dateStr) {
+          chatMessages = chatSessions[kst.dateStr];
           renderChatMessages();
         }
-      }
-
-      // 3. Sync briefing items
-      if (remoteData.briefingState && appData && appData.briefings && appData.briefings[0]) {
-        const b = appData.briefings[0];
-        if (remoteData.briefingState.todomateTodos) b.todomateTodos = remoteData.briefingState.todomateTodos;
-        if (remoteData.briefingState.agentPriorities) b.agentPriorities = remoteData.briefingState.agentPriorities;
-        if (remoteData.briefingState.emails) b.emails = remoteData.briefingState.emails;
-        if (remoteData.briefingState.inquiries) b.inquiries = remoteData.briefingState.inquiries;
-        renderTodayView();
-        renderInquiriesExclusiveView();
       }
 
       isSyncing = false;
@@ -1555,5 +1649,3 @@ async function pullCloudState() {
     isSyncing = false;
   }
 }
-
-
