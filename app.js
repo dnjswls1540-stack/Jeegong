@@ -83,8 +83,8 @@ function checkMidnightReset() {
   }
 }
 
-// Initialize
-document.addEventListener('DOMContentLoaded', async () => {
+// Initialize Application
+async function initApp() {
   const kst = getKSTNow();
 
   try {
@@ -103,7 +103,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   // 2. Daily reset check on startup
   const savedWorkDate = localStorage.getItem('jeegong_work_date');
   if (savedWorkDate !== kst.dateStr) {
-    // Midnight passed or new day: reset to ready
     workState = 'ready';
     try {
       localStorage.setItem('jeegong_work_date', kst.dateStr);
@@ -150,12 +149,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initial Cloud Pull & Periodic Sync (Cross-device Sync: Mobile <-> PC)
   await pullCloudState();
   setInterval(pullCloudState, 4000);
-  setInterval(checkMidnightReset, 5000); // Check midnight rollover every 5s
+  setInterval(checkMidnightReset, 5000);
   window.addEventListener('focus', () => {
     checkMidnightReset();
     pullCloudState();
   });
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initApp);
+} else {
+  initApp();
+}
+
+
 
 // Theme Management
 function setupTheme() {
