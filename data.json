@@ -45,6 +45,240 @@
   },
   "briefings": [
     {
+      "id": "b-20261023",
+      "date": "2026-10-23",
+      "dayOfWeek": "금요일",
+      "createdAt": "2026-10-23 00:00:00",
+      "headline": "우주맘마 아넬라 공구 2일차 및 저녁 7시 사업자 모임",
+      "summary": "오늘(10/23) 우주맘마 아넬라 과일퓨레 공구 2일차 주문 모니터링과 저녁 7시 사업자 모임 참석이 주요 일정입니다. 온세스 신규 외주 리드 4건(이준석 대표, 수학논술학원, 여행생활, 지아이정보) 검토 및 발송을 챙기세요.",
+      "calendar": {
+        "count": 2,
+        "items": [
+          {
+            "time": "종일",
+            "title": "[공구] 우주맘마 아넬라 과일퓨레 진행 (~10/26)"
+          },
+          {
+            "time": "19:00",
+            "title": "사업자 모임"
+          }
+        ],
+        "note": "오늘(10/23) [공구] 우주맘마 아넬라 과일퓨레 2일차 및 19:00 사업자 모임 일정 등록"
+      },
+      "emails": [
+        {
+          "id": "m1",
+          "service": "지메일 (온세스)",
+          "from": "식스샵 프로 고객지원 (help-pro@sixshop.com)",
+          "subject": "[식스샵 파트너] 바로 상담할 수 있는 웹사이트 제작 신규 프로젝트 (이준석 대표)",
+          "priority": "1순위 긴급",
+          "summary": "이준석 대표 (010-5754-6610, sktboypros@naver.com) - 예산 100~200만 원 홈페이지 리모델링 및 AI 견적 연동 의뢰.",
+          "draft": "안녕하세요 이준석 대표님! 식스샵 파트너사 온세스 스튜디오 지원진 대표입니다. 문의주신 AI 자동 견적 및 영상 배너 홈페이지 구축 관련하여 메일로 상세 답변 초안을 전달드렸습니다. 편하신 시간에 유선(010-7527-6684) 주시면 빠르게 상담 도와드리겠습니다!",
+          "status": "pending"
+        },
+        {
+          "id": "m2",
+          "service": "네이버 메일",
+          "from": "인플루언서 파니맘 (synbe.park@gmail.com)",
+          "subject": "Re: [공구 제안] 100% 생과일 아넬라 퓨레, 공구 협업 제안드립니다.│올쓰컴퍼니",
+          "priority": "1순위 긴급",
+          "summary": "아넬라 과일퓨레 공구 스케줄 검토 후 회신 의사 전달.",
+          "draft": "안녕하세요 파니맘 님! 올쓰컴퍼니 지원진입니다 :)\n제안서 긍정적으로 검토해 주셔서 감사드립니다. 파니맘 님의 공구 희망 스케줄 편하게 말씀해 주시면 일정과 수량 최대한 맞춰 조율해 드리겠습니다!",
+          "status": "pending"
+        },
+        {
+          "id": "m3",
+          "service": "네이버 메일",
+          "from": "지공의 페이노트 (no-reply@paynote.co.kr)",
+          "subject": "[결제완료] 전자책 결제 완료 안내 (이은희 님, 129,000원)",
+          "priority": "2순위 진행",
+          "summary": "10/22 01:20 신규 회원 이은희 님 전자책 신용카드 결제 완료.",
+          "draft": "안녕하세요 이은희 님, 지공 지원진입니다! 전자책 구매 감사드립니다. 구매하신 전자책 다운로드 링크와 노하우 적용 관련 안내드립니다.",
+          "status": "pending"
+        },
+        {
+          "id": "m4",
+          "service": "지메일 (온세스)",
+          "from": "식스샵 프로 고객지원 (help-pro@sixshop.com)",
+          "subject": "[식스샵 파트너] 수학논술학원 프랜차이즈 웹사이트 신규 의뢰",
+          "priority": "1순위 긴급",
+          "preview": "수학논술학원 (010-8008-0115, kkim0826@naver.com) - 예산 100~200만 원 홈페이지 제작 (업무 중 통화 불가, 문자/이메일만 희망).",
+          "actionRequired": true,
+          "draftReady": true,
+          "draftId": "r7882445415602267095",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "m5",
+          "service": "지메일 (온세스)",
+          "from": "식스샵 프로 고객지원 (help-pro@sixshop.com)",
+          "subject": "[식스샵 파트너] 여행생활 홈페이지 사진 수정 및 리터칭 의뢰",
+          "priority": "2순위 진행",
+          "preview": "여행생활 (010-2088-7584, jwnswo1@gmail.com) - 예산 50만 원 이하 AI 제작 홈페이지 사진 수정 및 정돈 의뢰.",
+          "actionRequired": true,
+          "draftReady": true,
+          "draftId": "r6101168657530457142",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "m6",
+          "service": "지메일 (온세스)",
+          "from": "식스샵 프로 고객지원 (help-pro@sixshop.com)",
+          "subject": "[식스샵 파트너] 지아이정보 케이블 권역 및 SEO/GEO 홈페이지 제작 의뢰",
+          "priority": "1순위 긴급",
+          "preview": "지아이정보 (010-9394-9181, knh135@naver.com) - 예산 50~100만 원 케이블 서비스 권역 세부페이지 및 네이버 AI 브리핑 SEO/GEO 최적화 의뢰.",
+          "actionRequired": true,
+          "draftReady": true,
+          "draftId": "r-5642194623250628546",
+          "done": false,
+          "excluded": false
+        }
+      ],
+      "todomateTodos": [
+        {
+          "id": "tm1",
+          "text": "아넬라 제안 20명",
+          "done": false
+        },
+        {
+          "id": "tm2",
+          "text": "디어커스 제안 15명",
+          "done": false
+        },
+        {
+          "id": "tm3",
+          "text": "아임웹 의뢰하기",
+          "done": false
+        },
+        {
+          "id": "tm4",
+          "text": "챔맘 아넬라 샘플 체크",
+          "done": false
+        },
+        {
+          "id": "tm5",
+          "text": "우주맘마 주문건 오후 체크",
+          "done": false
+        },
+        {
+          "id": "tm6",
+          "text": "지공 상세페이지 재구성 기획",
+          "done": false
+        },
+        {
+          "id": "tm7",
+          "text": "듀오링고 일본어 2개",
+          "done": false
+        },
+        {
+          "id": "tm8",
+          "text": "운동",
+          "done": false
+        }
+      ],
+      "agentPriorities": [
+        {
+          "id": "ap1",
+          "priority": "1순위 긴급",
+          "title": "우주맘마 아넬라 공구 주문 모니터링",
+          "detail": "우주맘마 아넬라 퓨레 공구 2일차 링크와 주문 상태를 점검하세요.",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap2",
+          "priority": "1순위 긴급",
+          "title": "온세스 식스샵 신규 리드 4건 검토 및 회신",
+          "detail": "이준석 대표, 수학논술학원, 여행생활, 지아이정보 맞춤 답장 초안(임시보관함)을 검토 후 발송하세요.",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap3",
+          "priority": "2순위 진행",
+          "title": "저녁 7시 사업자 모임 참석 준비",
+          "detail": "오늘 저녁 19:00 예정된 사업자 모임 일정을 확인하세요.",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap4",
+          "priority": "2순위 진행",
+          "title": "인플루언서 파니맘 님 아넬라 일정 조율",
+          "detail": "스케줄 검토 후 회신 예정인 파니맘 님과 아넬라 퓨레 일정 조율 가이드를 준비하세요.",
+          "done": false,
+          "excluded": false
+        }
+      ],
+      "driveFiles": [
+        {
+          "name": "공동구매 인플루언서 List. 2127명(실무).xlsx",
+          "type": "sheet",
+          "modified": "2026-10-21 19:38",
+          "url": "https://docs.google.com/spreadsheets/d/14m88HAa0UiXZHC6TG0uBqmvbCzPno6yh/edit"
+        },
+        {
+          "name": "상품 소싱 리스트",
+          "type": "sheet",
+          "modified": "2026-10-21 14:38",
+          "url": "https://drive.google.com/file/d/1y6r2Q2q-v3z/view"
+        }
+      ],
+      "inquiries": [
+        {
+          "id": "inq-1",
+          "channel": "식스샵",
+          "serviceClass": "channel-sixshop",
+          "from": "이준석 대표 (010-5754-6610)",
+          "email": "sktboypros@naver.com",
+          "time": "10/21 17:48",
+          "subject": "홈페이지 리모델링 및 AI 견적 연동 신규 의뢰 (예산 100~200만 원)",
+          "content": "마스터서버코리아·월드메모리 레퍼런스. 사진 업로드 시 자동 AI 견적 산출 연동 희망, 메인 영상 배너 및 키워드/페이지 무제한 SEO 구축 문의.",
+          "draft": "안녕하세요 이준석 대표님! 식스샵 파트너사 온세스 스튜디오 지원진 대표입니다. 식스샵을 통해 남겨주신 의뢰 내용 잘 확인했습니다. 문의주신 AI 자동 견적 및 영상 배너 홈페이지 구축 관련하여 메일로 상세 답변 초안을 전달드렸습니다. 편하신 시간에 유선(010-7527-6684) 주시면 빠르게 상담 도와드리겠습니다!",
+          "status": "pending"
+        },
+        {
+          "id": "inq-6",
+          "channel": "식스샵",
+          "serviceClass": "channel-sixshop",
+          "from": "수학논술학원 (010-8008-0115)",
+          "email": "kkim0826@naver.com",
+          "time": "10/22 16:12",
+          "subject": "수학논술학원(프랜차이즈 예정) 웹사이트 제작 (예산 100~200만 원)",
+          "content": "수학논술학원(프랜차이즈 예정) 웹사이트를 만들려고 합니다. 업무 중 통화가 어려우니 절대 전화 말고 문자나 이메일로만 보내주세요.",
+          "draft": "[문자/이메일 초안] 안녕하세요 원장님! 식스샵 공식 파트너 온세스 스튜디오 지원진 대표입니다. 통화가 어려우시다는 요청에 맞춰 메일(kkim0826@naver.com)로 프랜차이즈 맞춤 웹사이트 구성안과 견적 안내를 먼저 전달드렸습니다. 편하신 시간에 확인해 주시면 감사하겠습니다!",
+          "status": "pending"
+        },
+        {
+          "id": "inq-7",
+          "channel": "식스샵",
+          "serviceClass": "channel-sixshop",
+          "from": "여행생활 (010-2088-7584)",
+          "email": "jwnswo1@gmail.com",
+          "time": "10/22 15:46",
+          "subject": "AI 제작 홈페이지 사진 수정 및 디테일 리터칭 (예산 50만 원 이하)",
+          "content": "식스샵ai이용해서 홈페이지 툴은 만들어났습니다. 참고사이트에서 사진수정 및 홈페이지 좀 다듬어 주시면 좋을거 같습니다.",
+          "draft": "[답장 초안] 안녕하세요 대표님! 식스샵 파트너 온세스 스튜디오 지원진 대표입니다. 식스샵 AI 초안 확인 완료했습니다. 메일(jwnswo1@gmail.com)로 사진 교체 및 리터칭 30~40만 원대 실속 제안서를 전달드렸습니다. 편하신 시간에 연락(010-7527-6684) 주시면 빠르게 일정 조율해 드리겠습니다!",
+          "status": "pending"
+        },
+        {
+          "id": "inq-8",
+          "channel": "식스샵",
+          "serviceClass": "channel-sixshop",
+          "from": "지아이정보 (010-9394-9181)",
+          "email": "knh135@naver.com",
+          "time": "10/22 18:57",
+          "subject": "케이블 권역 세부페이지 및 네이버 AI 브리핑 SEO/GEO 최적화 (예산 50~100만 원)",
+          "content": "지역별 서비스 권역(안양방송, 수원방송 등) 세부페이지 열리는 구조 및 네이버 검색/AI 브리핑 노출 SEO/GEO 최적화 홈페이지 제작 비용 문의.",
+          "draft": "[답장 초안] 안녕하세요 담당자님! 식스샵 공식 파트너 온세스 스튜디오 지원진 대표입니다. 문의주신 권역별 허브 구조 및 네이버 AI 브리핑 맞춤 SEO 세팅에 대해 메일(knh135@naver.com)로 상세 안내 및 50~100만 원대 패키지 견적을 전달드렸습니다. 편하신 시간에 연락(010-7527-6684) 주시면 빠르게 일정 조율해 드리겠습니다!",
+          "status": "pending"
+        }
+      ],
+      "guide": "오늘 우주맘마 아넬라 공구 2일차 주문 모니터링과 온세스 스튜디오 신규 외주 의뢰 견적 회신, 저녁 7시 사업자 모임 일정을 챙기세요."
+    },
+    {
       "id": "b-20261022",
       "date": "2026-10-22",
       "dayOfWeek": "목요일",
