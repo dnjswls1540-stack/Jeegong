@@ -127,6 +127,19 @@
           "draftId": "r6101168657530457142",
           "done": false,
           "excluded": false
+        },
+        {
+          "id": "m7",
+          "service": "지메일 (온세스)",
+          "from": "식스샵 프로 고객지원 (help-pro@sixshop.com)",
+          "subject": "[식스샵 파트너] 지아이정보 케이블 권역 및 SEO/GEO 홈페이지 제작 의뢰",
+          "priority": "1순위 긴급",
+          "preview": "지아이정보 (010-9394-9181, knh135@naver.com) - 예산 50~100만 원 케이블 서비스 권역 세부페이지 및 네이버 AI 브리핑 SEO/GEO 최적화 의뢰.",
+          "actionRequired": true,
+          "draftReady": true,
+          "draftId": "r-5642194623250628546",
+          "done": false,
+          "excluded": false
         }
       ],
       "todomateTodos": [
@@ -247,13 +260,25 @@
         {
           "id": "inq-7",
           "channel": "식스샵",
-          "serviceClass": "channel-imweb",
+          "serviceClass": "channel-sixshop",
           "from": "여행생활 (010-2088-7584)",
           "email": "jwnswo1@gmail.com",
           "time": "10/22 15:46",
           "subject": "AI 제작 홈페이지 사진 수정 및 디테일 리터칭 (예산 50만 원 이하)",
           "content": "식스샵ai이용해서 홈페이지 툴은 만들어났습니다. 참고사이트에서 사진수정 및 홈페이지 좀 다듬어 주시면 좋을거 같습니다.",
           "draft": "[답장 초안] 안녕하세요 대표님! 식스샵 파트너 온세스 스튜디오 지원진 대표입니다. 식스샵 AI 초안 확인 완료했습니다. 메일(jwnswo1@gmail.com)로 사진 교체 및 리터칭 30~40만 원대 실속 제안서를 전달드렸습니다. 편하신 시간에 연락(010-7527-6684) 주시면 빠르게 일정 조율해 드리겠습니다!",
+          "status": "pending"
+        },
+        {
+          "id": "inq-8",
+          "channel": "식스샵",
+          "serviceClass": "channel-sixshop",
+          "from": "지아이정보 (010-9394-9181)",
+          "email": "knh135@naver.com",
+          "time": "10/22 18:57",
+          "subject": "케이블 권역 세부페이지 및 네이버 AI 브리핑 SEO/GEO 최적화 (예산 50~100만 원)",
+          "content": "지역별 서비스 권역(안양방송, 수원방송 등) 세부페이지 열리는 구조 및 네이버 검색/AI 브리핑 노출 SEO/GEO 최적화 홈페이지 제작 비용 문의.",
+          "draft": "[답장 초안] 안녕하세요 담당자님! 식스샵 공식 파트너 온세스 스튜디오 지원진 대표입니다. 문의주신 권역별 허브 구조 및 네이버 AI 브리핑 맞춤 SEO 세팅에 대해 메일(knh135@naver.com)로 상세 안내 및 50~100만 원대 패키지 견적을 전달드렸습니다. 편하신 시간에 연락(010-7527-6684) 주시면 빠르게 일정 조율해 드리겠습니다!",
           "status": "pending"
         }
       ],
