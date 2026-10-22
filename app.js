@@ -946,8 +946,6 @@ function showToast(msg) {
 // =========================================================
 // CHATBOT WIDGET LOGIC (채널톡 스타일 대화 목록 & 개별 대화방)
 // =========================================================
-let chatMessages = [];
-let currentChatView = 'list'; // 'list' or 'room'
 
 function setupChatbot() {
   const toggleBtn = document.getElementById('btn-chatbot-toggle');
