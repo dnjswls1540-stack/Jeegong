@@ -1,7 +1,8 @@
 // Jeegong Work Agent Dashboard Application (v1.3.0 - Midnight Auto Reset & Real-time Cloud Sync)
 
 let appData = null;
-let currentBriefingId = 'b-20261022';
+let currentBriefingId = 'b-20261023';
+window.currentBriefingId = currentBriefingId;
 let workState = 'ready'; // 'ready' (출근 완료) -> 'checked_in' (업무 종료) -> 'finished' (퇴근 완료)
 let lastLocalUpdateTimestamp = 0;
 let isSyncing = false;
@@ -349,6 +350,8 @@ async function initApp() {
   if (appData && appData.briefings && appData.briefings.length > 0) {
     const todayB = appData.briefings.find(b => b.date === kst.dateStr);
     currentBriefingId = todayB ? todayB.id : appData.briefings[0].id;
+    window.currentBriefingId = currentBriefingId;
+    window.appData = appData;
   }
 
   // 2. Daily reset check on startup
