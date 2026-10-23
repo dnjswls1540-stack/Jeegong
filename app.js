@@ -937,7 +937,7 @@ window.closeInquiryProcessDraft = function(domId) {
   if (box) box.classList.remove('active');
 };
 
-window.approveAndSendInquiry = function(id, domId) {
+window.approveAndSendInquiry = async function(id, domId) {
   if (!appData) return;
   const b = appData.briefings.find(item => item.id === currentBriefingId);
   if (!b || !b.inquiries) return;
