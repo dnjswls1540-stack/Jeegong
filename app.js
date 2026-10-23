@@ -25,6 +25,25 @@ let chatMessages = [];
 // =========================================================
 let handledRegistry = {};
 
+// Core Tag: normalizes entity across both Emails and Inquiries tabs
+function getItemCoreTag(item) {
+  if (!item) return '';
+  const text = `${item.channel || ''} ${item.service || ''} ${item.from || ''} ${item.subject || ''} ${item.email || ''}`.toLowerCase();
+  
+  if (text.includes('이준석') || text.includes('sktboypros')) return 'core::lee_junseok';
+  if (text.includes('파니맘') || text.includes('synbe.park')) return 'core::panimom';
+  if (text.includes('이은희') || text.includes('paynote') || text.includes('페이노트')) return 'core::paynote_eunhee';
+  if (text.includes('라운드커머스') || text.includes('타이거모닝')) return 'core::round_tiger';
+  if (text.includes('희수') || text.includes('베어메리')) return 'core::heesu_bear';
+  if (text.includes('oyka') || text.includes('오이카')) return 'core::oyka_home';
+  if (text.includes('크몽') && text.includes('코칭')) return 'core::kmong_coaching';
+  if (text.includes('수학논술') || text.includes('kkim0826')) return 'core::math_essay';
+  if (text.includes('여행생활') || text.includes('jwnswo1')) return 'core::travel_life';
+  if (text.includes('지아이정보') || text.includes('knh135')) return 'core::gi_info';
+  
+  return '';
+}
+
 function getItemFingerprint(item, type = 'inquiry') {
   if (!item) return '';
   if (type === 'inquiry') {
@@ -41,6 +60,32 @@ function getItemFingerprint(item, type = 'inquiry') {
   return item.id || '';
 }
 
+// Auto-harvest handled items from ALL history in appData
+function syncHandledFromHistory() {
+  if (!appData || !appData.briefings) return;
+  appData.briefings.forEach(b => {
+    const bDate = b.date;
+    (b.emails || []).forEach(e => {
+      if (e.status === 'done' || e.status === 'sent' || e.status === 'excluded') {
+        const fp = getItemFingerprint(e, 'email');
+        const tag = getItemCoreTag(e);
+        const rec = { status: e.status, handledDate: bDate, handledTimestamp: 1729500000000 };
+        if (fp && !handledRegistry[fp]) handledRegistry[fp] = rec;
+        if (tag && !handledRegistry[tag]) handledRegistry[tag] = rec;
+      }
+    });
+    (b.inquiries || []).forEach(i => {
+      if (i.status === 'done' || i.status === 'sent' || i.status === 'excluded') {
+        const fp = getItemFingerprint(i, 'inquiry');
+        const tag = getItemCoreTag(i);
+        const rec = { status: i.status, handledDate: bDate, handledTimestamp: 1729500000000 };
+        if (fp && !handledRegistry[fp]) handledRegistry[fp] = rec;
+        if (tag && !handledRegistry[tag]) handledRegistry[tag] = rec;
+      }
+    });
+  });
+}
+
 function loadHandledRegistry() {
   try {
     const saved = localStorage.getItem('jeegong_handled_registry');
@@ -51,23 +96,30 @@ function loadHandledRegistry() {
     handledRegistry = {};
   }
 
-  // Pre-seed known handled items from 10/21 so they never show as duplicates on 10/22+
+  // Pre-seed known handled items from 10/21 and 10/22 so they NEVER appear as duplicates on 10/23+
   const seedItems = [
-    { type: 'inquiry', channel: '네이버 메일', from: '인플루언서 파니맘', subject: '아넬라 과일퓨레 공구 일정 검토 회신', status: 'done', date: '2026-10-21' },
-    { type: 'inquiry', channel: '네이버 메일', from: '인플루언서 희수 님', subject: '오슬로앤오십구 겨울 베어메리 공구 일정 소통', status: 'done', date: '2026-10-21' },
-    { type: 'inquiry', channel: '아임웹', from: 'OYKA HOME 담당자', subject: '쇼핑몰 신규 구축 견적 및 제작 기간 문의', status: 'done', date: '2026-10-21' },
-    { type: 'inquiry', channel: '크몽', from: '크몽 의뢰인 (김** 님)', subject: '공동구매 중개 노하우 1:1 코칭권 일정 문의', status: 'done', date: '2026-10-21' }
+    // 10/21
+    { tag: 'core::heesu_bear', type: 'inquiry', channel: '네이버 메일', from: '인플루언서 희수 님', subject: '오슬로앤오십구 겨울 베어메리 공구 일정 소통', status: 'done', date: '2026-10-21' },
+    { tag: 'core::oyka_home', type: 'inquiry', channel: '아임웹', from: 'OYKA HOME 담당자', subject: '쇼핑몰 신규 구축 견적 및 제작 기간 문의', status: 'done', date: '2026-10-21' },
+    { tag: 'core::kmong_coaching', type: 'inquiry', channel: '크몽', from: '크몽 의뢰인 (김** 님)', subject: '공동구매 중개 노하우 1:1 코칭권 일정 문의', status: 'done', date: '2026-10-21' },
+    // 10/22
+    { tag: 'core::panimom', type: 'email', service: '네이버 메일', from: '인플루언서 파니맘 (synbe.park@gmail.com)', subject: 'Re: [공구 제안] 100% 생과일 아넬라 퓨레, 공구 협업 제안드립니다.│올쓰컴퍼니', status: 'done', date: '2026-10-22' },
+    { tag: 'core::panimom', type: 'inquiry', channel: '네이버 메일', from: '인플루언서 파니맘', subject: '아넬라 과일퓨레 공구 일정 검토 회신', status: 'done', date: '2026-10-22' },
+    { tag: 'core::lee_junseok', type: 'email', service: '지메일 (온세스)', from: '식스샵 프로 고객지원 (help-pro@sixshop.com)', subject: '[식스샵 파트너] 바로 상담할 수 있는 웹사이트 제작 신규 프로젝트 (이준석 대표)', status: 'done', date: '2026-10-22' },
+    { tag: 'core::lee_junseok', type: 'inquiry', channel: '식스샵', from: '이준석 대표 (010-5754-6610)', subject: '홈페이지 리모델링 및 AI 견적 연동 신규 의뢰 (예산 100~200만 원)', status: 'done', date: '2026-10-22' },
+    { tag: 'core::paynote_eunhee', type: 'email', service: '네이버 메일', from: '지공의 페이노트 (no-reply@paynote.co.kr)', subject: '[결제완료] 전자책 결제 완료 안내 (이은희 님, 129,000원)', status: 'done', date: '2026-10-22' },
+    { tag: 'core::round_tiger', type: 'email', service: '네이버 메일', from: '라운드커머스 마케팅팀 (roundcommerce@gmail.com)', subject: '타이거모닝 진저샷 공동구매 운영 파트너십 제안', status: 'done', date: '2026-10-22' }
   ];
 
   seedItems.forEach(seed => {
     const fp = getItemFingerprint(seed, seed.type);
-    if (!handledRegistry[fp]) {
-      handledRegistry[fp] = {
-        status: seed.status,
-        handledDate: seed.date,
-        handledTimestamp: 1729500000000
-      };
-    }
+    const rec = {
+      status: seed.status,
+      handledDate: seed.date,
+      handledTimestamp: 1729500000000
+    };
+    if (fp && !handledRegistry[fp]) handledRegistry[fp] = rec;
+    if (seed.tag && !handledRegistry[seed.tag]) handledRegistry[seed.tag] = rec;
   });
 
   saveHandledRegistry();
@@ -81,21 +133,54 @@ function saveHandledRegistry() {
 
 function recordHandledItem(item, type, status) {
   const fp = getItemFingerprint(item, type);
+  const tag = getItemCoreTag(item);
   const kst = getKSTNow();
   const b = (appData && appData.briefings) ? (appData.briefings.find(x => x.id === currentBriefingId) || appData.briefings[0]) : null;
   const itemDate = (b && b.date) ? b.date : kst.dateStr;
 
+  const rec = {
+    status: status,
+    handledDate: itemDate,
+    handledTimestamp: Date.now()
+  };
+
   if (status === 'pending') {
-    delete handledRegistry[fp];
+    if (fp) delete handledRegistry[fp];
+    if (tag) delete handledRegistry[tag];
   } else {
-    handledRegistry[fp] = {
-      status: status,
-      handledDate: itemDate,
-      handledTimestamp: Date.now()
-    };
+    if (fp) handledRegistry[fp] = rec;
+    if (tag) handledRegistry[tag] = rec;
   }
   saveHandledRegistry();
   pushCloudState();
+}
+
+function isItemHandledOnPreviousDay(item, type, viewingDate) {
+  if (!item) return false;
+  
+  // 1. Check core tag
+  const tag = getItemCoreTag(item);
+  if (tag && handledRegistry[tag]) {
+    const rec = handledRegistry[tag];
+    if (rec.status && rec.status !== 'pending') {
+      if (!rec.handledDate || rec.handledDate < viewingDate) {
+        return true;
+      }
+    }
+  }
+
+  // 2. Check fingerprint
+  const fp = getItemFingerprint(item, type);
+  if (fp && handledRegistry[fp]) {
+    const rec = handledRegistry[fp];
+    if (rec.status && rec.status !== 'pending') {
+      if (!rec.handledDate || rec.handledDate < viewingDate) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 function getFilteredInquiries(b) {
@@ -104,12 +189,14 @@ function getFilteredInquiries(b) {
   const viewingDate = b.date || kst.dateStr;
 
   return b.inquiries.filter(inq => {
+    // If it was already handled on a previous day, NEVER show it on a subsequent day!
+    if (isItemHandledOnPreviousDay(inq, 'inquiry', viewingDate)) {
+      return false;
+    }
+    const tag = getItemCoreTag(inq);
     const fp = getItemFingerprint(inq, 'inquiry');
-    const rec = handledRegistry[fp];
+    const rec = (tag && handledRegistry[tag]) || (fp && handledRegistry[fp]);
     if (rec) {
-      if (rec.handledDate && rec.handledDate < viewingDate) {
-        return false;
-      }
       inq.status = rec.status;
     }
     return true;
@@ -122,12 +209,14 @@ function getFilteredEmails(b) {
   const viewingDate = b.date || kst.dateStr;
 
   return b.emails.filter(mail => {
+    // If it was already handled on a previous day, NEVER show it on a subsequent day!
+    if (isItemHandledOnPreviousDay(mail, 'email', viewingDate)) {
+      return false;
+    }
+    const tag = getItemCoreTag(mail);
     const fp = getItemFingerprint(mail, 'email');
-    const rec = handledRegistry[fp];
+    const rec = (tag && handledRegistry[tag]) || (fp && handledRegistry[fp]);
     if (rec) {
-      if (rec.handledDate && rec.handledDate < viewingDate) {
-        return false;
-      }
       mail.status = rec.status;
     }
     return true;
@@ -257,6 +346,7 @@ async function initApp() {
   }
 
   loadHandledRegistry();
+  syncHandledFromHistory();
   setupTheme();
   setupNavigation();
   updateWorkButtonUI();
@@ -1124,10 +1214,13 @@ window.refreshDashboardData = async function(showNotice = true) {
       appData = await res.json();
     }
 
-    // 2. Pull cloud state from ntfy
+    // 2. Harvest handled items from history
+    syncHandledFromHistory();
+
+    // 3. Pull cloud state from ntfy
     await pullCloudState();
 
-    // 3. Ensure today's briefing is selected
+    // 4. Ensure today's briefing is selected
     if (appData && appData.briefings && appData.briefings.length > 0) {
       const todayB = appData.briefings.find(b => b.date === kst.dateStr);
       if (todayB) {
@@ -1135,10 +1228,10 @@ window.refreshDashboardData = async function(showNotice = true) {
       }
     }
 
-    // 4. Check midnight daily reset
+    // 5. Check midnight daily reset
     checkMidnightReset();
 
-    // 5. Re-render all views
+    // 6. Re-render all views
     renderTodayView();
     if (typeof renderChatConversationList === 'function') renderChatConversationList();
     if (typeof renderChatMessages === 'function') renderChatMessages();
@@ -1827,12 +1920,25 @@ function applyRemoteSync(remoteData) {
         ap.excluded = remoteData.excludedPriorities.includes(ap.id);
       });
     }
+    // Sync handled registry first so it is available for filtering and status checks
+    if (remoteData.handledRegistry && typeof remoteData.handledRegistry === 'object') {
+      Object.assign(handledRegistry, remoteData.handledRegistry);
+      saveHandledRegistry();
+    }
+
     if (remoteData.emailStatuses) {
       (b.emails || []).forEach(e => {
         if (remoteData.emailStatuses[e.id]) {
           e.status = remoteData.emailStatuses[e.id];
         } else {
-          e.status = 'pending';
+          const tag = getItemCoreTag(e);
+          const fp = getItemFingerprint(e, 'email');
+          const rec = (tag && handledRegistry[tag]) || (fp && handledRegistry[fp]);
+          if (rec) {
+            e.status = rec.status;
+          } else {
+            e.status = 'pending';
+          }
         }
       });
     }
@@ -1841,13 +1947,16 @@ function applyRemoteSync(remoteData) {
         if (remoteData.inquiryStatuses[i.id]) {
           i.status = remoteData.inquiryStatuses[i.id];
         } else {
-          i.status = 'pending';
+          const tag = getItemCoreTag(i);
+          const fp = getItemFingerprint(i, 'inquiry');
+          const rec = (tag && handledRegistry[tag]) || (fp && handledRegistry[fp]);
+          if (rec) {
+            i.status = rec.status;
+          } else {
+            i.status = 'pending';
+          }
         }
       });
-    }
-    if (remoteData.handledRegistry && typeof remoteData.handledRegistry === 'object') {
-      Object.assign(handledRegistry, remoteData.handledRegistry);
-      saveHandledRegistry();
     }
     renderTodayView();
   }
