@@ -3,7 +3,7 @@
     "name": "지공 출근 에이전트",
     "version": "1.2.0",
     "status": "ready",
-    "lastRun": "2026-10-23 08:30:00",
+    "lastRun": "2026-10-24 00:35:00",
     "tools": [
       {
         "id": "calendar",
@@ -44,6 +44,147 @@
     ]
   },
   "briefings": [
+    {
+      "id": "b-20261024",
+      "date": "2026-10-24",
+      "dayOfWeek": "토요일",
+      "createdAt": "2026-10-24 00:00:00",
+      "headline": "우주맘마 아넬라 공구 3일차 및 16시 태건 미팅",
+      "summary": "오늘(10/24) 우주맘마 아넬라 과일퓨레 공구 3일차 주말 주문 모니터링과 16:00 태건 미팅이 주요 일정입니다. 어젯밤(10/23 21:04) 크몽 자동 마진계산기 서비스가 최종 승인되어 정상 판매 중입니다.",
+      "calendar": {
+        "count": 2,
+        "items": [
+          {
+            "time": "종일",
+            "title": "[공구] 우주맘마 아넬라 과일퓨레 진행 (~10/26)"
+          },
+          {
+            "time": "16:00",
+            "title": "태건 미팅"
+          }
+        ],
+        "note": "오늘(10/24) [공구] 우주맘마 아넬라 과일퓨레 3일차 및 16:00 태건 미팅 일정 등록"
+      },
+      "emails": [
+        {
+          "id": "m1",
+          "service": "네이버 메일 (크몽)",
+          "from": "크몽 (no-reply@kmong.com)",
+          "subject": "[크몽] 서비스 승인 안내 (오픈마켓 셀러 자동 마진계산기 엑셀)",
+          "priority": "2순위 진행",
+          "summary": "10/23 21:04 수정 권장 사항 없이 정상 승인 완료. 의뢰인 구매 시 시스템에서 자동으로 작업물이 발송됩니다.",
+          "preview": "오픈마켓 셀러 자동 마진계산기 엑셀 스마트스토어 쿠팡 - 신규 서비스 등록 심사 정상 완료 (수정 권장 사항 없음).",
+          "draft": "오픈마켓 셀러 자동 마진계산기 엑셀 서비스가 크몽 전문가 센터에서 최종 승인되었습니다. 구매 즉시 자동 발송되므로 별도 조치가 필요하지 않습니다 :)",
+          "actionRequired": false,
+          "draftReady": false,
+          "status": "done",
+          "done": true,
+          "excluded": false,
+          "account": "dnjsrns123@naver.com"
+        }
+      ],
+      "todomateTodos": [
+        {
+          "id": "tm1",
+          "text": "우주맘마 공구 주문건 체크",
+          "done": false
+        },
+        {
+          "id": "tm2",
+          "text": "16:00 태건 미팅 준비",
+          "done": false
+        },
+        {
+          "id": "tm3",
+          "text": "크몽 마진계산기 판매 상태 점검",
+          "done": false
+        },
+        {
+          "id": "tm4",
+          "text": "듀오링고 일본어 2개",
+          "done": false
+        }
+      ],
+      "agentPriorities": [
+        {
+          "id": "ap1",
+          "priority": "1순위",
+          "title": "우주맘마 아넬라 공구 3일차 주문 모니터링",
+          "desc": "10/22 오픈 이후 주말 유입 및 주문 현황 모니터링",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap2",
+          "priority": "2순위",
+          "title": "16:00 태건 미팅 준비 및 참석",
+          "desc": "16:00 일정 등록 건 준비 및 미팅 참석",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap3",
+          "priority": "3순위",
+          "title": "크몽 승인된 마진계산기 판매 상태 점검",
+          "desc": "10/23 21:04 승인 완료된 자동 마진계산기 서비스 판매 노출 점검",
+          "done": false,
+          "excluded": false
+        }
+      ],
+      "driveFiles": [
+        {
+          "name": "공동구매 인플루언서 List. 2127명(실무).xlsx",
+          "type": "sheet",
+          "modified": "2026-10-21 19:38",
+          "url": "https://docs.google.com/spreadsheets/d/14m88HAa0UiXZHC6TG0uBqmvbCzPno6yh/edit"
+        },
+        {
+          "name": "상품 소싱 리스트",
+          "type": "sheet",
+          "modified": "2026-10-21 14:38",
+          "url": "https://drive.google.com/file/d/1y6r2Q2q-v3z/view"
+        }
+      ],
+      "inquiries": [
+        {
+          "id": "inq-kakao-onsess",
+          "channel": "카카오톡 채널",
+          "serviceClass": "channel-kakao",
+          "from": "온세스 스튜디오 채널 (@_pxiZfn)",
+          "email": "온세스 카카오톡 공식 채널",
+          "time": "실시간 대기",
+          "subject": "[온세스 스튜디오] 카카오톡 1:1 채팅 상담톡 연동 (친구 24명)",
+          "content": "공식 상담 채널(http://pf.kakao.com/_pxiZfn) 연동 완료. 상담시간 09:00~23:00 정상 가동 중이며, 신규 문의 유입 시 대시보드에 실시간 표시됩니다.",
+          "draft": "안녕하세요! 웹사이트 제작 전문 온세스 스튜디오 지원진 대표입니다 :) 무엇을 도와드릴까요?",
+          "status": "pending"
+        },
+        {
+          "id": "inq-kakao-allth",
+          "channel": "카카오톡 채널",
+          "serviceClass": "channel-kakao",
+          "from": "올쓰컴퍼니 채널 (공동구매 벤더)",
+          "email": "올쓰컴퍼니 공식 채널",
+          "time": "실시간 대기",
+          "subject": "[올쓰컴퍼니] 인플루언서·제조사 B2B 상담 채널 연동",
+          "content": "인증 채널 마스터 계정 정상 연결 완료. 브랜드사 제안 및 인플루언서 1:1 문의 채널 대기 중.",
+          "draft": "안녕하세요! 공동구매 중개 전문 올쓰컴퍼니(지공J)입니다 :) 제안 주신 내용 확인 후 안내해 드리겠습니다.",
+          "status": "pending"
+        },
+        {
+          "id": "inq-kmong-margin",
+          "channel": "크몽",
+          "serviceClass": "channel-kmong",
+          "from": "크몽 전문가 센터 (no-reply@kmong.com)",
+          "email": "dnjsrns123@naver.com",
+          "time": "10/23 21:04",
+          "subject": "[크몽] 오픈마켓 셀러 자동 마진계산기 엑셀 신규 등록 승인 완료",
+          "content": "오픈마켓 셀러 자동 마진계산기 엑셀 스마트스토어 쿠팡 심사 결과: 신규 서비스 등록이 정상적으로 진행되었습니다. (수정 권장 사항 없음, 구매 시 자동 발송)",
+          "draft": "마진계산기 엑셀 서비스가 정상 승인되었습니다. 구매 발생 시 자동 발송됩니다 :)",
+          "status": "done"
+        }
+      ],
+      "guide": "오늘 우주맘마 아넬라 공구 3일차 주말 주문 모니터링과 16:00 태건 미팅 일정을 챙기세요. 크몽 마진계산기 서비스는 정상 판매 중입니다."
+    },
     {
       "id": "b-20261023",
       "date": "2026-10-23",
