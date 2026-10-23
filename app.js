@@ -257,6 +257,49 @@ function updateWorkButtonUI() {
   }
 }
 
+
+// Local Persistence for Todos and Priorities (새로고침 시 미처리 할 일 체크 방지 엔진)
+function saveLocalTodosState(briefingId) {
+  if (!appData || !appData.briefings) return;
+  const b = appData.briefings.find(item => item.id === briefingId) || appData.briefings[0];
+  if (!b) return;
+  const kst = getKSTNow();
+  const dateKey = b.date || kst.dateStr;
+
+  const doneTodos = (b.todomateTodos || []).filter(t => t.done).map(t => t.id);
+  const donePriorities = (b.agentPriorities || []).filter(ap => ap.done).map(ap => ap.id);
+
+  try {
+    localStorage.setItem(`jeegong_done_todos_${dateKey}`, JSON.stringify(doneTodos));
+    localStorage.setItem(`jeegong_done_priorities_${dateKey}`, JSON.stringify(donePriorities));
+  } catch (e) {}
+}
+
+function restoreLocalTodosState(briefingId) {
+  if (!appData || !appData.briefings) return;
+  const b = appData.briefings.find(item => item.id === briefingId) || appData.briefings[0];
+  if (!b) return;
+  const kst = getKSTNow();
+  const dateKey = b.date || kst.dateStr;
+
+  try {
+    const savedTodos = localStorage.getItem(`jeegong_done_todos_${dateKey}`);
+    if (savedTodos !== null) {
+      const doneList = JSON.parse(savedTodos);
+      (b.todomateTodos || []).forEach(t => {
+        t.done = doneList.includes(t.id);
+      });
+    }
+    const savedPriorities = localStorage.getItem(`jeegong_done_priorities_${dateKey}`);
+    if (savedPriorities !== null) {
+      const donePriorities = JSON.parse(savedPriorities);
+      (b.agentPriorities || []).forEach(ap => {
+        ap.done = donePriorities.includes(ap.id);
+      });
+    }
+  } catch (e) {}
+}
+
 // Midnight Daily Reset (자정 지나면 퇴근 안 눌러도 출근 버튼 자동 초기화 & 날짜 매일 업데이트)
 function checkMidnightReset() {
   const kst = getKSTNow();
@@ -347,6 +390,7 @@ async function initApp() {
 
   loadHandledRegistry();
   syncHandledFromHistory();
+  restoreLocalTodosState(currentBriefingId);
   setupTheme();
   setupNavigation();
   updateWorkButtonUI();
@@ -717,6 +761,7 @@ window.toggleAgentPriorityDone = function(id) {
   const ap = b.agentPriorities.find(item => item.id === id);
   if (!ap) return;
   ap.done = !ap.done;
+  saveLocalTodosState(currentBriefingId);
   renderTodayView();
   showToast(ap.done ? '해당 우선순위 업무를 완료 처리했습니다!' : '완료 처리를 취소했습니다.');
   pushCloudState();
@@ -903,8 +948,36 @@ window.approveAndSendInquiry = function(id, domId) {
   recordHandledItem(inq, 'inquiry', 'sent');
   closeInquiryProcessDraft(domId);
   renderTodayView();
+
+  // Publish Send Request to ntfy Queue if inquiry has draftId / email
+  if (inq.draftId || inq.account) {
+    try {
+      const sendPayload = {
+        action: 'send_email',
+        timestamp: Date.now(),
+        emailId: inq.id,
+        draftId: inq.draftId || '',
+        account: inq.account || 'onsessdesign@gmail.com',
+        recipient: inq.from,
+        subject: inq.subject,
+        body: inq.draft
+      };
+      await fetch(`${SYNC_ENDPOINT}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Title': `[Jeegong Send Request] ${inq.id}`,
+          'Tags': 'email,outbox'
+        },
+        body: JSON.stringify(sendPayload)
+      });
+    } catch (err) {
+      console.warn('send request publish error:', err);
+    }
+  }
+
   pushCloudState();
-  showToast(`[답변 발송 완료] ${inq.from} 님께 맞춤 답변이 전송되었습니다! (다음 날 목록에서 자동 제외)`);
+  showToast(`[답변 발송 완료] ${inq.from} 님께 맞춤 답변이 전송되었습니다! 🚀 (다음 날 목록에서 자동 제외)`);
 };
 
 window.toggleExcludeEmail = function(id) {
@@ -943,8 +1016,8 @@ window.closeProcessDraft = function(id) {
   if (box) box.classList.remove('active');
 };
 
-// Approve and Send Email
-window.approveAndSendEmail = function(id) {
+// Approve and Send Email (실제 Gmail 발송 큐 연동)
+window.approveAndSendEmail = async function(id) {
   if (!appData) return;
   const b = appData.briefings.find(item => item.id === currentBriefingId);
   const mail = b.emails.find(m => m.id === id);
@@ -959,7 +1032,33 @@ window.approveAndSendEmail = function(id) {
   recordHandledItem(mail, 'email', 'sent');
   closeProcessDraft(id);
   renderTodayView();
-  showToast(`[승인 완료] ${mail.from.split('(')[0].trim()} 님께 답장 메일 발송이 접수되었습니다! (다음 날 목록에서 자동 제외)`);
+  showToast(`[승인 완료] ${mail.from.split('(')[0].trim()} 님께 답장 발송 큐가 접수되었습니다! 🚀 (Gmail 자동 발송 연동)`);
+
+  // Publish Send Request to ntfy Queue for Background Agent Execution
+  try {
+    const sendPayload = {
+      action: 'send_email',
+      timestamp: Date.now(),
+      emailId: mail.id,
+      draftId: mail.draftId || '',
+      account: mail.account || 'onsessdesign@gmail.com',
+      recipient: mail.from,
+      subject: mail.subject,
+      body: mail.draft
+    };
+    await fetch(`${SYNC_ENDPOINT}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Title': `[Jeegong Send Request] ${mail.id}`,
+        'Tags': 'email,outbox'
+      },
+      body: JSON.stringify(sendPayload)
+    });
+  } catch (err) {
+    console.warn('send request publish error:', err);
+  }
+
   pushCloudState();
 };
 
@@ -970,6 +1069,7 @@ window.toggleTodomateTodo = function(id) {
   const t = b.todomateTodos.find(item => item.id === id);
   if (t) {
     t.done = !t.done;
+    saveLocalTodosState(currentBriefingId);
     renderTodayView();
     pushCloudState();
   }
@@ -1219,6 +1319,7 @@ window.refreshDashboardData = async function(showNotice = true) {
 
     // 3. Pull cloud state from ntfy
     await pullCloudState();
+    restoreLocalTodosState(currentBriefingId);
 
     // 4. Ensure today's briefing is selected
     if (appData && appData.briefings && appData.briefings.length > 0) {
@@ -1920,6 +2021,7 @@ function applyRemoteSync(remoteData) {
         ap.excluded = remoteData.excludedPriorities.includes(ap.id);
       });
     }
+    saveLocalTodosState(b.id);
     // Sync handled registry first so it is available for filtering and status checks
     if (remoteData.handledRegistry && typeof remoteData.handledRegistry === 'object') {
       Object.assign(handledRegistry, remoteData.handledRegistry);

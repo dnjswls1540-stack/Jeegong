@@ -918,6 +918,10 @@ body {
   border-left-color: #eab308;
 }
 
+.inquiry-item.channel-kakao {
+  border-left-color: #fee500;
+}
+
 .inquiry-item.channel-sixshop {
   border-left-color: #6366f1;
 }
@@ -954,6 +958,12 @@ body {
 .badge-channel-kmong {
   background-color: #fef08a;
   color: #854d0e;
+  font-weight: 700;
+}
+
+.badge-channel-kakao {
+  background-color: #fee500;
+  color: #191919;
   font-weight: 700;
 }
 

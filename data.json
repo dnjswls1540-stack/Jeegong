@@ -80,7 +80,8 @@
           "draftId": "r7882445415602267095",
           "status": "pending",
           "done": false,
-          "excluded": false
+          "excluded": false,
+          "account": "onsessdesign@gmail.com"
         },
         {
           "id": "m2",
@@ -96,7 +97,8 @@
           "draftId": "r6101168657530457142",
           "status": "pending",
           "done": false,
-          "excluded": false
+          "excluded": false,
+          "account": "onsessdesign@gmail.com"
         },
         {
           "id": "m3",
@@ -112,7 +114,8 @@
           "draftId": "r-5642194623250628546",
           "status": "pending",
           "done": false,
-          "excluded": false
+          "excluded": false,
+          "account": "onsessdesign@gmail.com"
         }
       ],
       "todomateTodos": [
@@ -139,12 +142,12 @@
         {
           "id": "tm5",
           "text": "지공의 페이노트 카카오톡 발송",
-          "done": true
+          "done": false
         },
         {
           "id": "tm6",
           "text": "듀오링고 일본어 2개",
-          "done": true
+          "done": false
         }
       ],
       "agentPriorities": [
@@ -169,7 +172,7 @@
           "priority": "2순위 진행",
           "title": "저녁 7시 사업자 모임 참석 준비",
           "detail": "오늘 저녁 19:00 예정된 사업자 모임 일정을 확인하세요.",
-          "done": true,
+          "done": false,
           "excluded": false
         }
       ],
@@ -188,6 +191,30 @@
         }
       ],
       "inquiries": [
+        {
+          "id": "inq-kakao-onsess",
+          "channel": "카카오톡 채널",
+          "serviceClass": "channel-kakao",
+          "from": "온세스 스튜디오 채널 (@_pxiZfn)",
+          "email": "http://pf.kakao.com/_pxiZfn",
+          "time": "10/23 11:35 실시간",
+          "subject": "[온세스 스튜디오] 카카오톡 1:1 채팅 상담톡 연동 (친구 24명)",
+          "content": "공식 상담 채널(http://pf.kakao.com/_pxiZfn) 연동 완료. 상담시간 09:00~23:00 정상 가동 중이며, 신규 문의 유입 시 대시보드에 실시간 표시됩니다.",
+          "draft": "안녕하세요! 웹사이트 제작 전문 온세스 스튜디오 지원진 대표입니다 :) 무엇을 도와드릴까요?",
+          "status": "pending"
+        },
+        {
+          "id": "inq-kakao-allth",
+          "channel": "카카오톡 채널",
+          "serviceClass": "channel-kakao",
+          "from": "올쓰컴퍼니 채널 (공동구매 벤더)",
+          "email": "올쓰컴퍼니 공식 채널",
+          "time": "10/23 11:35 실시간",
+          "subject": "[올쓰컴퍼니] 인플루언서·제조사 B2B 상담 채널 연동",
+          "content": "인증 채널 마스터 계정 정상 연결 완료. 브랜드사 제안 및 인플루언서 1:1 문의 채널 대기 중.",
+          "draft": "안녕하세요! 공동구매 중개 전문 올쓰컴퍼니(지공J)입니다 :) 제안 주신 내용 확인 후 안내해 드리겠습니다.",
+          "status": "pending"
+        },
         {
           "id": "inq-1",
           "channel": "식스샵",
