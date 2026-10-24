@@ -3,7 +3,7 @@
     "name": "지공 출근 에이전트",
     "version": "1.2.0",
     "status": "ready",
-    "lastRun": "2026-10-24 00:35:00",
+    "lastRun": "2026-10-25 00:35:00",
     "tools": [
       {
         "id": "calendar",
@@ -44,6 +44,191 @@
     ]
   },
   "briefings": [
+    {
+      "id": "b-20261025",
+      "date": "2026-10-25",
+      "dayOfWeek": "일요일",
+      "createdAt": "2026-10-25 00:00:00",
+      "headline": "우주맘마 아넬라 공구 4일차 및 10시 부가가치세 리마인드",
+      "summary": "오늘(10/25) 우주맘마 아넬라 과일퓨레 공구 4일차(~10/26) 주문 모니터링과 10:00 부가가치세 예정고지액(664,000원) 납부 리마인드가 주요 일정입니다. 어젯밤 페이노트 4주 VOD 강의(한수훈 님, 390,000원) 실결제가 완료되었습니다.",
+      "calendar": {
+        "count": 1,
+        "items": [
+          {
+            "time": "종일",
+            "title": "[공구] 우주맘마 아넬라 과일퓨레 진행"
+          }
+        ],
+        "note": "오늘(10/25) [공구] 우주맘마 아넬라 과일퓨레 4일차 진행 중"
+      },
+      "emails": [
+        {
+          "id": "m1",
+          "service": "네이버 메일 (페이노트)",
+          "from": "지공의 페이노트 (dnjsrns123@naver.com)",
+          "subject": "[지공의 페이노트] 한수훈 님 4주 VOD 강의 결제 완료 (390,000원)",
+          "priority": "1순위 신규",
+          "summary": "20:21 한수훈 님 공동구매 중개 수익화 4주 VOD 강의 신용카드 390,000원 실결제 완료 (디지털 다운로드 상품).",
+          "preview": "주문번호 202610249875487 / 한수훈 님 / 공동구매 중개 수익화 4주 VOD 강의 / 390,000원 결제완료.",
+          "draft": "한수훈 님, 지공의 페이노트입니다! '공동구매 중개 수익화 4주 VOD 강의' 수강 신청 및 결제가 완료되었습니다. 주문/배송조회에서 VOD 자료 다운로드가 가능합니다 :)",
+          "actionRequired": false,
+          "draftReady": false,
+          "status": "done",
+          "done": true,
+          "excluded": false,
+          "account": "dnjsrns123@naver.com"
+        },
+        {
+          "id": "m2",
+          "service": "네이버 메일 (올쓰컴퍼니)",
+          "from": "이재석 (aop80@hanmail.net)",
+          "subject": "상품제안서 송부_다크호스",
+          "priority": "2순위 대기",
+          "summary": "13:41 네이버 카페 글 확인 후 (주)다크호스 상품 제안서 송부 (아루홈, 수세미, 위생겔, 테일센트 방향제, 콕스타/엠앤에스코리아 등).",
+          "preview": "네이버 카페 게시글 확인 후 연락을 드리는 (주)다크호스 이재석입니다. 상품제안서 보내드리오니 검토 부탁드립니다.",
+          "draft": "안녕하세요, (주)다크호스 이재석 님.\n올쓰컴퍼니 지원진입니다.\n\n보내주신 상품 제안서 및 리스트(아루홈, 클린 우레탄 수세미, 위생겔, 테일센트 방향제, 콕스타/엠앤에스코리아 등) 잘 확인했습니다.\n\n전달해 주신 제안 품목들은 내부적으로 검토한 후, 현재 진행 중인 공동구매 및 폐쇄몰 채널 일정과 맞는 품목이 있을 경우 다시 연락드리겠습니다.\n\n제안 주셔서 감사드립니다.\n\n지원진 드림\n올쓰컴퍼니 / 지공J",
+          "actionRequired": true,
+          "draftReady": true,
+          "status": "pending",
+          "done": false,
+          "excluded": false,
+          "account": "dnjsrns123@naver.com",
+          "draftFile": "drafts/Re: 상품제안서 송부_다크호스.eml"
+        },
+        {
+          "id": "m3",
+          "service": "네이버 메일 (크몽)",
+          "from": "크몽 (no-reply@kmong.com)",
+          "subject": "[크몽] 서비스 승인 안내 (오픈마켓 셀러 자동 마진계산기 엑셀)",
+          "priority": "3순위 진행",
+          "summary": "10/23 21:04 수정 권장 사항 없이 정상 승인 완료. 의뢰인 구매 시 시스템에서 자동으로 작업물이 발송됩니다.",
+          "preview": "오픈마켓 셀러 자동 마진계산기 엑셀 스마트스토어 쿠팡 - 신규 서비스 등록 심사 정상 완료 (수정 권장 사항 없음).",
+          "draft": "오픈마켓 셀러 자동 마진계산기 엑셀 서비스가 크몽 전문가 센터에서 최종 승인되었습니다. 구매 즉시 자동 발송되므로 별도 조치가 필요하지 않습니다 :)",
+          "actionRequired": false,
+          "draftReady": false,
+          "status": "done",
+          "done": true,
+          "excluded": false,
+          "account": "dnjsrns123@naver.com"
+        }
+      ],
+      "todomateTodos": [
+        {
+          "id": "tm1",
+          "text": "우주맘마 아넬라 공구 주문 현황 점검",
+          "done": false
+        },
+        {
+          "id": "tm2",
+          "text": "부가가치세 664,000원 납부 확인 (10/31 기한)",
+          "done": false
+        }
+      ],
+      "agentPriorities": [
+        {
+          "id": "ap1",
+          "priority": "1순위",
+          "title": "우주맘마 아넬라 공구 4일차 주문 모니터링",
+          "desc": "10/22 오픈 이후 주말 유입 및 주문 현황 모니터링",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap2",
+          "priority": "2순위",
+          "title": "부가가치세 예정고지액(664,000원) 납부 준비",
+          "desc": "10/31 납부 기한, 10:00 리마인드 대기",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap3",
+          "priority": "3순위",
+          "title": "(주)다크호스 B2B 상품제안서 검토 및 회신",
+          "desc": "네이버 메일 임시보관함 초안 검토 후 발송",
+          "done": false,
+          "excluded": false
+        }
+      ],
+      "driveFiles": [
+        {
+          "name": "공동구매 인플루언서 List. 2127명(실무).xlsx",
+          "type": "sheet",
+          "modified": "2026-10-21 19:38",
+          "url": "https://docs.google.com/spreadsheets/d/14m88HAa0UiXZHC6TG0uBqmvbCzPno6yh/edit"
+        },
+        {
+          "name": "상품 소싱 리스트",
+          "type": "sheet",
+          "modified": "2026-10-21 14:38",
+          "url": "https://drive.google.com/file/d/1y6r2Q2q-v3z/view"
+        }
+      ],
+      "inquiries": [
+        {
+          "id": "inq-paynote-vod",
+          "channel": "페이노트",
+          "serviceClass": "channel-mail",
+          "from": "한수훈 (주문번호 202610249875487)",
+          "email": "dnjsrns123@naver.com",
+          "time": "20:21",
+          "subject": "[페이노트 실결제] 공동구매 중개 수익화 4주 VOD 강의 (390,000원)",
+          "content": "한수훈 님 4주 VOD 강의 신용카드 390,000원 결제 완료. 디지털상품으로 주문/배송조회에서 다운로드 가능.",
+          "draft": "한수훈 님, 4주 VOD 강의 결제가 정상 완료되었습니다. 주문/배송 조회에서 다운로드 받으실 수 있습니다 :)",
+          "status": "done"
+        },
+        {
+          "id": "inq-darkhorse",
+          "channel": "네이버 메일",
+          "serviceClass": "channel-mail",
+          "from": "(주)다크호스 이재석 (aop80@hanmail.net)",
+          "email": "aop80@hanmail.net",
+          "time": "13:41",
+          "subject": "[상품 제안] 상품제안서 송부_다크호스 (아루홈·수세미·방향제 등)",
+          "content": "네이버 카페 게시글 확인 후 (주)다크호스 상품 제안서 송부. 아루홈, 클린 우레탄 수세미, 나비영 후앤 위생겔, 테일센트 방향제, 콕스타/엠앤에스코리아/이큐비아 리스트 등.",
+          "draft": "안녕하세요, (주)다크호스 이재석 님.\n올쓰컴퍼니 지원진입니다.\n\n보내주신 상품 제안서 및 리스트(아루홈, 클린 우레탄 수세미, 위생겔, 테일센트 방향제, 콕스타/엠앤에스코리아 등) 잘 확인했습니다.\n\n전달해 주신 제안 품목들은 내부적으로 검토한 후, 현재 진행 중인 공동구매 및 폐쇄몰 채널 일정과 맞는 품목이 있을 경우 다시 연락드리겠습니다.\n\n제안 주셔서 감사드립니다.\n\n지원진 드림\n올쓰컴퍼니 / 지공J",
+          "status": "pending",
+          "draftFile": "drafts/Re: 상품제안서 송부_다크호스.eml"
+        },
+        {
+          "id": "inq-kakao-onsess",
+          "channel": "카카오톡 채널",
+          "serviceClass": "channel-kakao",
+          "from": "온세스 스튜디오 채널 (@_pxiZfn)",
+          "email": "온세스 카카오톡 공식 채널",
+          "time": "실시간 대기",
+          "subject": "[온세스 스튜디오] 카카오톡 1:1 채팅 상담톡 연동 (친구 24명)",
+          "content": "공식 상담 채널(http://pf.kakao.com/_pxiZfn) 연동 완료. 상담시간 09:00~23:00 정상 가동 중이며, 신규 문의 유입 시 대시보드에 실시간 표시됩니다.",
+          "draft": "안녕하세요! 웹사이트 제작 전문 온세스 스튜디오 지원진 대표입니다 :) 무엇을 도와드릴까요?",
+          "status": "pending"
+        },
+        {
+          "id": "inq-kakao-allth",
+          "channel": "카카오톡 채널",
+          "serviceClass": "channel-kakao",
+          "from": "올쓰컴퍼니 채널 (공동구매 벤더)",
+          "email": "올쓰컴퍼니 공식 채널",
+          "time": "실시간 대기",
+          "subject": "[올쓰컴퍼니] 인플루언서·제조사 B2B 상담 채널 연동",
+          "content": "인증 채널 마스터 계정 정상 연결 완료. 브랜드사 제안 및 인플루언서 1:1 문의 채널 대기 중.",
+          "draft": "안녕하세요! 공동구매 중개 전문 올쓰컴퍼니(지공J)입니다 :) 제안 주신 내용 확인 후 안내해 드리겠습니다.",
+          "status": "pending"
+        },
+        {
+          "id": "inq-kmong-margin",
+          "channel": "크몽",
+          "serviceClass": "channel-kmong",
+          "from": "크몽 전문가 센터 (no-reply@kmong.com)",
+          "email": "dnjsrns123@naver.com",
+          "time": "10/23 21:04",
+          "subject": "[크몽] 오픈마켓 셀러 자동 마진계산기 엑셀 신규 등록 승인 완료",
+          "content": "오픈마켓 셀러 자동 마진계산기 엑셀 스마트스토어 쿠팡 심사 결과: 신규 서비스 등록이 정상적으로 진행되었습니다. (수정 권장 사항 없음, 구매 시 자동 발송)",
+          "draft": "마진계산기 엑셀 서비스가 정상 승인되었습니다. 구매 발생 시 자동 발송됩니다 :)",
+          "status": "done"
+        }
+      ],
+      "guide": "오늘 우주맘마 아넬라 공구 4일차 주말 주문 모니터링과 10:00 부가가치세 리마인드를 챙기세요. 페이노트 한수훈 님 VOD 결제가 정상 완료되었습니다."
+    },
     {
       "id": "b-20261024",
       "date": "2026-10-24",
