@@ -98,6 +98,22 @@
           "excluded": false,
           "account": "dnjsrns123@naver.com",
           "draftFile": "drafts/Re: 상품제안서 송부_다크호스.eml"
+        },
+        {
+          "id": "m3",
+          "service": "네이버 메일 (페이노트)",
+          "from": "지공의 페이노트 (dnjsrns123@naver.com)",
+          "subject": "[지공의 페이노트] 한수훈 님 4주 VOD 강의 결제 완료 (390,000원)",
+          "priority": "1순위 신규",
+          "summary": "20:21 한수훈 님 공동구매 중개 수익화 4주 VOD 강의 신용카드 390,000원 실결제 완료 (디지털 다운로드 상품).",
+          "preview": "주문번호 202610249875487 / 한수훈 님 / 공동구매 중개 수익화 4주 VOD 강의 / 390,000원 결제완료.",
+          "draft": "한수훈 님, 지공의 페이노트입니다! '공동구매 중개 수익화 4주 VOD 강의' 수강 신청 및 결제가 완료되었습니다. 주문/배송조회에서 VOD 자료 다운로드가 가능합니다 :)",
+          "actionRequired": false,
+          "draftReady": false,
+          "status": "done",
+          "done": true,
+          "excluded": false,
+          "account": "dnjsrns123@naver.com"
         }
       ],
       "todomateTodos": [
@@ -148,6 +164,18 @@
         }
       ],
       "inquiries": [
+        {
+          "id": "inq-paynote-vod",
+          "channel": "페이노트",
+          "serviceClass": "channel-mail",
+          "from": "한수훈 (주문번호 202610249875487)",
+          "email": "dnjsrns123@naver.com",
+          "time": "20:21",
+          "subject": "[페이노트 실결제] 공동구매 중개 수익화 4주 VOD 강의 (390,000원)",
+          "content": "한수훈 님 4주 VOD 강의 신용카드 390,000원 결제 완료. 디지털상품으로 주문/배송조회에서 다운로드 가능.",
+          "draft": "한수훈 님, 4주 VOD 강의 결제가 정상 완료되었습니다. 주문/배송 조회에서 다운로드 받으실 수 있습니다 :)",
+          "status": "done"
+        },
         {
           "id": "inq-darkhorse",
           "channel": "네이버 메일",
