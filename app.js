@@ -703,7 +703,13 @@ function renderTodayView() {
           </div>
         </div>
         <div class="accordion-content">
-          ${ap.detail}
+          <div style="display: flex; align-items: flex-start; gap: 8px;">
+            <span style="font-size: 14px; line-height: 1.4;">💡</span>
+            <div>
+              <div style="font-size: 11px; font-weight: 700; color: var(--accent-blue); margin-bottom: 2px;">우선순위 선정 사유</div>
+              <div style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.6;">${ap.detail || ap.desc || ap.reason || '상세 사유가 등록되지 않았습니다.'}</div>
+            </div>
+          </div>
         </div>
       </div>
     `;
