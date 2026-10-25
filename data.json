@@ -115,7 +115,20 @@
       "todomateTodos": [
         {
           "id": "tm1",
+          "text": "스레드 업로드",
+          "category": "사업or수익",
+          "done": false
+        },
+        {
+          "id": "tm2",
+          "text": "지공 상세페이지 수정",
+          "category": "사업or수익",
+          "done": false
+        },
+        {
+          "id": "tm3",
           "text": "듀오링고 일본어 2개",
+          "category": "자기계발",
           "done": false
         }
       ],

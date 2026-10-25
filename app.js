@@ -267,7 +267,7 @@ function saveLocalTodosState(briefingId) {
   const kst = getKSTNow();
   const dateKey = b.date || kst.dateStr;
 
-  const doneTodos = (b.todomateTodos || []).filter(t => t.done).map(t => t.id);
+  const doneTodos = (b.todomateTodos || []).filter(t => t.done).map(t => t.text || t.id);
   const donePriorities = (b.agentPriorities || []).filter(ap => ap.done).map(ap => ap.id);
 
   try {
@@ -288,7 +288,7 @@ function restoreLocalTodosState(briefingId) {
     if (savedTodos !== null) {
       const doneList = JSON.parse(savedTodos);
       (b.todomateTodos || []).forEach(t => {
-        t.done = doneList.includes(t.id);
+        t.done = doneList.includes(t.text) || doneList.includes(t.id);
       });
     }
     const savedPriorities = localStorage.getItem(`jeegong_done_priorities_${dateKey}`);
@@ -648,9 +648,9 @@ function renderTodayView() {
   const todoContainer = document.getElementById('todomate-list-container');
   if (todoContainer) todoContainer.innerHTML = '';
   const todoBadge = document.getElementById('todomate-count-badge');
-  if (todoBadge) todoBadge.textContent = `${b.todomateTodos.filter(t => !t.done).length}건 대기`;
+  if (todoBadge) todoBadge.textContent = `${(b.todomateTodos || []).filter(t => !t.done).length}건 대기`;
 
-  const sortedTodos = [...b.todomateTodos].sort((a, b) => {
+  const sortedTodos = [...(b.todomateTodos || [])].sort((a, b) => {
     if (a.done === b.done) return 0;
     return a.done ? 1 : -1;
   });
@@ -663,7 +663,7 @@ function renderTodayView() {
           ${isDone ? '✓' : ''}
         </div>
         <div class="todo-text">${todo.text}</div>
-        <span class="section-badge" style="font-size: 11px;">투두메이트</span>
+        <span class="section-badge" style="font-size: 11px;">${todo.category || '투두메이트'}</span>
       </div>
     `;
   });
@@ -1306,7 +1306,9 @@ ${priorityText}
 // Refresh Dashboard Data (Manual & Background Auto-sync)
 window.refreshDashboardData = async function(showNotice = true) {
   const refreshBtn = document.getElementById('btn-refresh-data');
+  const todoRefreshBtn = document.getElementById('btn-refresh-todomate');
   if (refreshBtn) refreshBtn.classList.add('spinning');
+  if (todoRefreshBtn) todoRefreshBtn.classList.add('spinning');
 
   try {
     const kst = getKSTNow();
@@ -1340,8 +1342,24 @@ window.refreshDashboardData = async function(showNotice = true) {
     if (typeof renderChatConversationList === 'function') renderChatConversationList();
     if (typeof renderChatMessages === 'function') renderChatMessages();
 
+    // 7. Publish refresh signal to ntfy for background agent to sync Todomate
     if (showNotice) {
-      showToast('🔄 최신 메일, 문의, 할 일을 모두 새로고침했습니다.');
+      try {
+        fetch(`${SYNC_ENDPOINT}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Title': '[Jeegong Refresh Request]',
+            'Tags': 'refresh,todomate'
+          },
+          body: JSON.stringify({
+            action: 'refresh_todomate',
+            timestamp: Date.now()
+          })
+        }).catch(e => console.warn('Refresh signal error:', e));
+      } catch (e) {}
+
+      showToast('🔄 최신 메일, 문의, 투두메이트 할 일을 모두 새로고침했습니다.');
     }
   } catch (err) {
     console.error('Refresh dashboard error:', err);
@@ -1352,7 +1370,19 @@ window.refreshDashboardData = async function(showNotice = true) {
         refreshBtn.classList.remove('spinning');
       }, 500);
     }
+    if (todoRefreshBtn) {
+      setTimeout(() => {
+        todoRefreshBtn.classList.remove('spinning');
+      }, 500);
+    }
   }
+};
+
+window.refreshTodomateOnly = async function() {
+  const todoRefreshBtn = document.getElementById('btn-refresh-todomate');
+  if (todoRefreshBtn) todoRefreshBtn.classList.add('spinning');
+  showToast('🔄 투두메이트 최신 할 일을 불러오는 중입니다...');
+  await window.refreshDashboardData(true);
 };
 
 function showToast(msg) {
@@ -2009,9 +2039,16 @@ function applyRemoteSync(remoteData) {
     || appData.briefings[0];
 
   if (b) {
+    if (Array.isArray(remoteData.todomateTodos) && remoteData.todomateTodos.length > 0) {
+      const currentDone = new Set((b.todomateTodos || []).filter(t => t.done).map(t => t.text || t.id));
+      b.todomateTodos = remoteData.todomateTodos.map(rt => ({
+        ...rt,
+        done: rt.done || currentDone.has(rt.text) || currentDone.has(rt.id)
+      }));
+    }
     if (Array.isArray(remoteData.doneTodos)) {
       (b.todomateTodos || []).forEach(t => {
-        t.done = remoteData.doneTodos.includes(t.id);
+        t.done = remoteData.doneTodos.includes(t.id) || remoteData.doneTodos.includes(t.text);
       });
     }
     if (Array.isArray(remoteData.donePriorities)) {
@@ -2097,7 +2134,7 @@ async function pushCloudState() {
     const kst = getKSTNow();
     const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
 
-    const doneTodos = (b.todomateTodos || []).filter(t => t.done).map(t => t.id);
+    const doneTodos = (b.todomateTodos || []).filter(t => t.done).map(t => t.text || t.id);
     const donePriorities = (b.agentPriorities || []).filter(ap => ap.done).map(ap => ap.id);
     const excludedPriorities = (b.agentPriorities || []).filter(ap => ap.excluded).map(ap => ap.id);
 
@@ -2120,6 +2157,7 @@ async function pushCloudState() {
       briefingId: b.id,
       briefingDate: b.date,
       doneTodos: doneTodos,
+      todomateTodos: b.todomateTodos || [],
       donePriorities: donePriorities,
       excludedPriorities: excludedPriorities,
       emailStatuses: emailStatuses,
