@@ -141,14 +141,44 @@
         },
         {
           "id": "tm2",
-          "text": "지공 상세페이지 수정",
+          "text": "아넬라 제안 20명",
           "category": "사업or수익",
           "done": false
         },
         {
           "id": "tm3",
+          "text": "우주맘마 주문건 오후 체크",
+          "category": "사업or수익",
+          "done": false
+        },
+        {
+          "id": "tm4",
+          "text": "뮤즈언니 주문건 오후 체크",
+          "category": "사업or수익",
+          "done": false
+        },
+        {
+          "id": "tm5",
+          "text": "디어커스 제안 15명",
+          "category": "사업or수익",
+          "done": false
+        },
+        {
+          "id": "tm6",
+          "text": "지공 상세페이지 수정",
+          "category": "사업or수익",
+          "done": false
+        },
+        {
+          "id": "tm7",
           "text": "듀오링고 일본어 2개",
           "category": "자기계발",
+          "done": false
+        },
+        {
+          "id": "tm8",
+          "text": "러닝",
+          "category": "해야 할 일",
           "done": false
         }
       ],
