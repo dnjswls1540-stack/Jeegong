@@ -3,7 +3,7 @@
     "name": "지공 출근 에이전트",
     "version": "1.2.0",
     "status": "ready",
-    "lastRun": "2026-10-25 00:35:00",
+    "lastRun": "2026-10-26 00:35:00",
     "tools": [
       {
         "id": "calendar",
@@ -44,6 +44,156 @@
     ]
   },
   "briefings": [
+    {
+      "id": "b-20261026",
+      "date": "2026-10-26",
+      "dayOfWeek": "월요일",
+      "createdAt": "2026-10-26 00:00:00",
+      "headline": "뮤즈언니 아넬라 공구 오픈 및 우주맘마 공구 마감",
+      "summary": "오늘(10/26)부터 인플루언서 뮤즈언니의 아넬라 과일퓨레 공구(7일간)가 시작되며, 기존 우주맘마 공구는 오늘 자정 마감됩니다. 올리브영에서 주문한 그로우어스 두피스케일러 기획 세트는 오늘 밤 도착 예정입니다.",
+      "calendar": {
+        "count": 2,
+        "items": [
+          {
+            "time": "종일",
+            "title": "[공구] 뮤즈언니 아넬라 과일퓨레 진행"
+          },
+          {
+            "time": "종일",
+            "title": "[공구] 우주맘마 아넬라 과일퓨레 진행"
+          }
+        ],
+        "note": "오늘(10/26) 뮤즈언니 공구 1일차 오픈 & 우주맘마 공구 5일차(자정 마감)"
+      },
+      "emails": [
+        {
+          "id": "m1",
+          "service": "개인 Gmail (시스템)",
+          "from": "Ant Wilson (ant.wilson@supabase.com)",
+          "subject": "Your Supabase Project alls-event-studio is going to be paused.",
+          "priority": "1순위 확인",
+          "summary": "10/25 20:02 올쓰컴퍼니 관련 Supabase 프로젝트(alls-event-studio, ID: ipxbmrvadxrvuveujaaq) 7일 이상 비활성으로 일시중지 예정 안내. 대시보드 접속으로 중지 방지 및 90일 내 언제든 재개 가능.",
+          "preview": "Your project alls-event-studio from your organization was identified as inactive for more than 7 days and is scheduled to be paused in the near future.",
+          "draft": "Supabase 대시보드에서 프로젝트를 확인하거나 재개할 수 있습니다. 90일 내 데이터 다운로드 및 복구가 가능합니다.",
+          "actionRequired": false,
+          "draftReady": false,
+          "status": "pending",
+          "done": false,
+          "excluded": false,
+          "account": "dnjswls1540@gmail.com"
+        },
+        {
+          "id": "m2",
+          "service": "네이버 메일 (올쓰컴퍼니)",
+          "from": "이재석 (aop80@hanmail.net)",
+          "subject": "상품제안서 송부_다크호스",
+          "priority": "2순위 대기",
+          "summary": "10/24 네이버 카페 글 확인 후 (주)다크호스 상품 제안서 송부 (아루홈, 수세미, 위생겔, 테일센트 방향제, 콕스타/엠앤에스코리아 등).",
+          "preview": "네이버 카페 게시글 확인 후 연락을 드리는 (주)다크호스 이재석입니다. 상품제안서 보내드리오니 검토 부탁드립니다.",
+          "draft": "안녕하세요, (주)다크호스 이재석 님.\n올쓰컴퍼니 지원진입니다.\n\n보내주신 상품 제안서 및 리스트(아루홈, 클린 우레탄 수세미, 위생겔, 테일센트 방향제, 콕스타/엠앤에스코리아 등) 잘 확인했습니다.\n\n전달해 주신 제안 품목들은 내부적으로 검토한 후, 현재 진행 중인 공동구매 및 폐쇄몰 채널 일정과 맞는 품목이 있을 경우 다시 연락드리겠습니다.\n\n제안 주셔서 감사드립니다.\n\n지원진 드림\n올쓰컴퍼니 / 지공J",
+          "actionRequired": true,
+          "draftReady": true,
+          "status": "pending",
+          "done": false,
+          "excluded": false,
+          "account": "dnjsrns123@naver.com",
+          "draftFile": "drafts/Re: 상품제안서 송부_다크호스.eml"
+        },
+        {
+          "id": "m3",
+          "service": "네이버 메일 (크몽)",
+          "from": "크몽 (no-reply@kmong.com)",
+          "subject": "[크몽] 서비스 승인 안내 (오픈마켓 셀러 자동 마진계산기 엑셀)",
+          "priority": "3순위 진행",
+          "summary": "10/23 21:04 수정 권장 사항 없이 정상 승인 완료. 의뢰인 구매 시 시스템에서 자동으로 작업물이 발송됩니다.",
+          "preview": "오픈마켓 셀러 자동 마진계산기 엑셀 스마트스토어 쿠팡 - 신규 서비스 등록 심사 정상 완료 (수정 권장 사항 없음).",
+          "draft": "오픈마켓 셀러 자동 마진계산기 엑셀 서비스가 크몽 전문가 센터에서 최종 승인되었습니다. 구매 즉시 자동 발송되므로 별도 조치가 필요하지 않습니다 :)",
+          "actionRequired": false,
+          "draftReady": false,
+          "status": "done",
+          "done": true,
+          "excluded": false,
+          "account": "dnjsrns123@naver.com"
+        }
+      ],
+      "todomateTodos": [
+        {
+          "id": "tm1",
+          "text": "스레드 업로드",
+          "category": "사업or수익",
+          "done": false
+        },
+        {
+          "id": "tm2",
+          "text": "지공 상세페이지 수정",
+          "category": "사업or수익",
+          "done": false
+        },
+        {
+          "id": "tm3",
+          "text": "듀오링고 일본어 2개",
+          "category": "자기계발",
+          "done": false
+        }
+      ],
+      "agentPriorities": [
+        {
+          "id": "ap1",
+          "priority": "1순위",
+          "title": "뮤즈언니 아넬라 공구 오픈 및 우주맘마 공구 마감 체크",
+          "desc": "오늘(10/26) 뮤즈언니 공구 오픈 대응 및 우주맘마 공구 막바지 주문 관리",
+          "detail": "오늘부터 7일간 뮤즈언니 아넬라 과일퓨레 공구가 새로 오픈되며, 기존 우주맘마 공구는 오늘 자정에 마감됩니다. 오픈 안내 피드 및 마지막 날 구매 전환 주문 모니터링이 최우선입니다.",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap2",
+          "priority": "2순위",
+          "title": "부가가치세 예정고지액(664,000원) 납부 기한 관리 (D-5)",
+          "desc": "10/31 납부 기한, 홈택스 납부 계좌 잔고 확인",
+          "detail": "10월 31일이 2026년 2기 부가가치세 예정고지 법정 납부 기한입니다. 납부 기한이 5일 앞으로 다가왔으므로 홈택스·손택스 또는 전용 가상계좌 납부 준비가 필요합니다.",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap3",
+          "priority": "3순위",
+          "title": "그로우어스 두피스케일러 기획 세트 수령 및 올쓰컴퍼니 건 확인",
+          "desc": "올리브영 오늘드림 도착(23:59 이내) 및 Supabase 비활성 알림 체크",
+          "detail": "어제 네이버페이로 주문 완료한 그로우어스 씨솔트 두피스케일러 단품기획(20,800원)이 오늘 중 문 앞으로 배송됩니다. 아울러 Supabase alls-event-studio 프로젝트 일시중지 예고 메일을 확인해 두었습니다.",
+          "done": false,
+          "excluded": false
+        }
+      ],
+      "driveFiles": [
+        {
+          "name": "공동구매 인플루언서 List. 2127명(실무).xlsx",
+          "type": "sheet",
+          "modified": "2026-10-21 19:38",
+          "url": "https://docs.google.com/spreadsheets/d/14m88HAa0UiXZHC6TG0uBqmvbCzPno6yh/edit"
+        },
+        {
+          "name": "상품 소싱 리스트",
+          "type": "sheet",
+          "modified": "2026-10-21 14:38",
+          "url": "https://drive.google.com/file/d/1y6r2Q2q-v3z/view"
+        }
+      ],
+      "inquiries": [
+        {
+          "id": "inq-darkhorse",
+          "channel": "네이버 메일",
+          "serviceClass": "channel-mail",
+          "from": "(주)다크호스 이재석 (aop80@hanmail.net)",
+          "email": "aop80@hanmail.net",
+          "time": "10/24 13:41",
+          "subject": "[상품 제안] 상품제안서 송부_다크호스 (아루홈·수세미·방향제 등)",
+          "content": "네이버 카페 게시글 확인 후 (주)다크호스 상품 제안서 송부. 아루홈, 클린 우레탄 수세미, 나비영 후앤 위생겔, 테일센트 방향제, 콕스타/엠앤에스코리아/이큐비아 리스트 등.",
+          "draft": "안녕하세요, (주)다크호스 이재석 님.\n올쓰컴퍼니 지원진입니다.\n\n보내주신 상품 제안서 및 리스트(아루홈, 클린 우레탄 수세미, 위생겔, 테일센트 방향제, 콕스타/엠앤에스코리아 등) 잘 확인했습니다.\n\n전달해 주신 제안 품목들은 내부적으로 검토한 후, 현재 진행 중인 공동구매 및 폐쇄몰 채널 일정과 맞는 품목이 있을 경우 다시 연락드리겠습니다.\n\n제안 주셔서 감사드립니다.\n\n지원진 드림\n올쓰컴퍼니 / 지공J",
+          "status": "pending"
+        }
+      ]
+    },
     {
       "id": "b-20261025",
       "date": "2026-10-25",
