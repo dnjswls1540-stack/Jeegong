@@ -45,6 +45,143 @@
   },
   "briefings": [
     {
+      "id": "b-20261027",
+      "date": "2026-10-27",
+      "dayOfWeek": "화요일",
+      "createdAt": "2026-10-27 00:00:00",
+      "headline": "뮤즈언니 아넬라 공구 2일차 및 화요일 실무 관리",
+      "summary": "뮤즈언니 아넬라 과일퓨레 공구 2일차가 진행 중이며, 우주맘마 공구는 어제(10/26) 성황리에 마감되었습니다. 이경하 님 아넬라 퓨레·떡뻥 동시 제안 회신 및 다크호스 제안서 검토, 10/31 부가세 납부(D-4) 준비가 이어집니다.",
+      "calendar": {
+        "count": 1,
+        "items": [
+          {
+            "time": "종일",
+            "title": "[공구] 뮤즈언니 아넬라 과일퓨레 진행"
+          }
+        ],
+        "note": "오늘(10/27) 뮤즈언니 아넬라 과일퓨레 공구 2일차 진행 중"
+      },
+      "emails": [
+        {
+          "id": "m-leekyungha-20261026",
+          "service": "네이버 메일 (올쓰컴퍼니)",
+          "from": "이경하 (dlrudgk34@naver.com)",
+          "subject": "RE: [공구 제안] 100% 생과일 아넬라 퓨레, 공구 협업 제안드립니다.│올쓰컴퍼니",
+          "priority": "1순위 협업",
+          "summary": "인플루언서 이경하 님의 아넬라 퓨레 및 떡뻥 동시 진행 문의. 노션에 등록된 유기농 쌀과자 떡뻥 12+2봉(공구가 30,800원, 수수료 10%) 옵션을 포함한 맞춤 답장 초안(네이버 메일 임시보관함 저장 완료) 검토 대기.",
+          "preview": "안녕하세요 ! 먼저 협업 제안 감사합니다 :) 혹 퓨레랑 아넬라 떡뻥도 같이 진행하시는 걸까요?",
+          "status": "pending",
+          "actionRequired": true,
+          "draftReady": true
+        },
+        {
+          "id": "m-darkhorse-20261026",
+          "service": "네이버 메일 (올쓰컴퍼니)",
+          "from": "(주)다크호스 이재석 (jslee@darkhorse.kr)",
+          "subject": "[다크호스] 상품제안서 송부 건",
+          "priority": "2순위 제안",
+          "summary": "다크호스 이재석 님의 상품제안서 송부 건에 대한 감사 및 제안 조건 검토 회신 초안(네이버 메일 임시보관함 저장 완료) 검토 대기.",
+          "preview": "안녕하세요 올쓰컴퍼니 지원진 대표님, 다크호스 이재석입니다. 제안서 송부드립니다.",
+          "status": "pending",
+          "actionRequired": true,
+          "draftReady": true
+        },
+        {
+          "id": "m-gsc-paynote-20261027",
+          "service": "개인 Gmail (Google Search Console)",
+          "from": "Google Search Console Team (sc-noreply@google.com)",
+          "subject": "새로운 이유로 인해 https://jeegongpaynote.imweb.me/ 사이트의 사이트맵에 포함된 페이지의 색인이 생성되지 않습니다",
+          "priority": "참고 알림",
+          "summary": "아임웹 페이노트 사이트맵 내 일부 페이지(NOINDEX 태그 및 적절한 표준 태그 포함 페이지) 색인 제외 시스템 알림. 아임웹 CMS 내부 시스템 페이지(주문/회원 등)에 대한 정상적인 noindex 동작으로 확인됨.",
+          "preview": "Search Console에서 사이트의 페이지 일부가 새로운 이유로 색인이 생성되지 않는 것을 확인했습니다.",
+          "status": "done",
+          "actionRequired": false,
+          "draftReady": false
+        }
+      ],
+      "todomateTodos": [
+        {
+          "id": "todo-20261027-1",
+          "text": "아넬라 제안 20명",
+          "done": false
+        },
+        {
+          "id": "todo-20261027-2",
+          "text": "디어커스 제안 15명",
+          "done": false
+        },
+        {
+          "id": "todo-20261027-3",
+          "text": "뮤즈언니 주문건 체크",
+          "done": false
+        },
+        {
+          "id": "todo-20261027-4",
+          "text": "지공 상세페이지 수정",
+          "done": false
+        },
+        {
+          "id": "todo-20261027-5",
+          "text": "스레드 업로드",
+          "done": false
+        },
+        {
+          "id": "todo-20261027-6",
+          "text": "듀오링고 일본어 2개",
+          "done": false
+        },
+        {
+          "id": "todo-20261027-7",
+          "text": "러닝",
+          "done": false
+        }
+      ],
+      "agentPriorities": [
+        {
+          "id": "ap1",
+          "priority": "1순위",
+          "title": "뮤즈언니 아넬라 공구 2일차 주문 모니터링",
+          "desc": "뮤즈언니 공구 2일차 주문 접수 및 배송 준비 현황 체크",
+          "detail": "10/26 시작된 뮤즈언니 아넬라 과일퓨레 공구 2일차로, 본격적인 초기 구매 전환 추이를 점검합니다.",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap2",
+          "priority": "2순위",
+          "title": "부가가치세 예정고지액(664,000원) 납부 기한 관리 (D-4)",
+          "desc": "10/31 납부 기한, 납부 계좌 잔고 확인",
+          "detail": "10월 31일이 2026년 2기 부가가치세 예정고지 법정 납부 기한입니다. 납부 기한 D-4로 홈택스 전용 가상계좌 납부 준비를 체크합니다.",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap3",
+          "priority": "3순위",
+          "title": "인플루언서 이경하 님 아넬라 퓨레·떡뻥 공구 회신 검토",
+          "desc": "네이버 메일 임시보관함 회신 초안 최종 확인 및 발송",
+          "detail": "인플루언서 이경하 님의 떡뻥 병행 공구 문의에 대해 올쓰컴퍼니 단가 및 수수료(10%)가 반영된 초안이 준비되어 있습니다.",
+          "done": false,
+          "excluded": false
+        }
+      ],
+      "driveFiles": [
+        {
+          "name": "공동구매 인플루언서 List. 2127명(실무).xlsx",
+          "type": "sheet",
+          "modified": "2026-10-21 19:38",
+          "url": "https://docs.google.com/spreadsheets/d/14m88HAa0UiXZHC6TG0uBqmvbCzPno6yh/edit"
+        },
+        {
+          "name": "상품 소싱 리스트",
+          "type": "sheet",
+          "modified": "2026-10-21 14:38",
+          "url": "https://drive.google.com/file/d/1y6r2Q2q-v3z/view"
+        }
+      ],
+      "inquiries": []
+    },
+    {
       "id": "b-20261026",
       "date": "2026-10-26",
       "dayOfWeek": "월요일",
