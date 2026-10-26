@@ -137,7 +137,7 @@
           "id": "tm1",
           "text": "스레드 업로드",
           "category": "사업or수익",
-          "done": false
+          "done": true
         },
         {
           "id": "tm2",
@@ -173,7 +173,7 @@
           "id": "tm7",
           "text": "듀오링고 일본어 2개",
           "category": "자기계발",
-          "done": false
+          "done": true
         },
         {
           "id": "tm8",

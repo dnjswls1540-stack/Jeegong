@@ -1330,7 +1330,6 @@ window.refreshDashboardData = async function(showNotice = true) {
 
     // 3. Pull cloud state from ntfy
     await pullCloudState();
-    restoreLocalTodosState(currentBriefingId);
 
     // 4. Ensure today's briefing is selected
     if (appData && appData.briefings && appData.briefings.length > 0) {
@@ -1340,15 +1339,18 @@ window.refreshDashboardData = async function(showNotice = true) {
       }
     }
 
-    // 5. Check midnight daily reset
+    // 5. Sync local storage to match fresh authoritative state
+    saveLocalTodosState(currentBriefingId);
+
+    // 6. Check midnight daily reset
     checkMidnightReset();
 
-    // 6. Re-render all views
+    // 7. Re-render all views
     renderTodayView();
     if (typeof renderChatConversationList === 'function') renderChatConversationList();
     if (typeof renderChatMessages === 'function') renderChatMessages();
 
-    // 7. Publish refresh signal to ntfy for background agent to sync Todomate
+    // 8. Publish refresh signal to ntfy for background agent to sync Todomate
     if (showNotice) {
       try {
         fetch(`${SYNC_ENDPOINT}`, {
@@ -1949,6 +1951,28 @@ async function generateAssistantResponse(prompt, attachments = []) {
 // =========================================================
 // REAL-TIME CLOUD SYNC (Mobile <-> PC Real-time Sync via ntfy SSE)
 // =========================================================
+
+// Parse ntfy payload supporting both inline JSON message and attachment files (>4KB)
+async function parseNtfyPayload(payload) {
+  if (!payload) return null;
+  if (payload.attachment && payload.attachment.url) {
+    try {
+      const aRes = await fetch(payload.attachment.url);
+      if (aRes.ok) return await aRes.json();
+    } catch (e) {
+      console.warn('Failed to fetch ntfy attachment:', e);
+    }
+  }
+  if (payload.message) {
+    try {
+      return JSON.parse(payload.message);
+    } catch (e) {
+      return null;
+    }
+  }
+  return null;
+}
+
 function setupRealtimeSync() {
   if (syncEventSource) {
     try { syncEventSource.close(); } catch (e) {}
@@ -1960,12 +1984,14 @@ function setupRealtimeSync() {
   // 2. Real-time instant SSE stream (Mobile <-> PC 0.1s instant sync)
   try {
     syncEventSource = new EventSource(`${SYNC_ENDPOINT}/sse`);
-    syncEventSource.onmessage = (event) => {
+    syncEventSource.onmessage = async (event) => {
       try {
         const payload = JSON.parse(event.data);
-        if (payload.event === 'message' && payload.message) {
-          const remoteData = JSON.parse(payload.message);
-          applyRemoteSync(remoteData);
+        if (payload.event === 'message') {
+          const remoteData = await parseNtfyPayload(payload);
+          if (remoteData && remoteData.updatedAt) {
+            applyRemoteSync(remoteData);
+          }
         }
       } catch (err) {
         console.warn('Realtime parse error:', err);
@@ -2000,11 +2026,17 @@ async function pullCloudState() {
     const text = await res.text();
     const lines = text.trim().split('\n').filter(Boolean);
     if (lines.length === 0) return;
-    const lastLine = lines[lines.length - 1];
-    const payload = JSON.parse(lastLine);
-    if (payload.message) {
-      const remoteData = JSON.parse(payload.message);
-      applyRemoteSync(remoteData);
+
+    // Scan backwards from newest line to find the latest valid state snapshot
+    for (let i = lines.length - 1; i >= 0; i--) {
+      try {
+        const payload = JSON.parse(lines[i]);
+        const remoteData = await parseNtfyPayload(payload);
+        if (remoteData && remoteData.updatedAt) {
+          applyRemoteSync(remoteData);
+          break;
+        }
+      } catch (e) {}
     }
   } catch (err) {
     console.warn('pullCloudState error:', err);
@@ -2046,13 +2078,12 @@ function applyRemoteSync(remoteData) {
 
   if (b) {
     if (Array.isArray(remoteData.todomateTodos) && remoteData.todomateTodos.length > 0) {
-      const currentDone = new Set((b.todomateTodos || []).filter(t => t.done).map(t => t.text || t.id));
+      // Authoritative sync: preserve explicit done status from Todomate / cloud
       b.todomateTodos = remoteData.todomateTodos.map(rt => ({
         ...rt,
-        done: rt.done || currentDone.has(rt.text) || currentDone.has(rt.id)
+        done: !!rt.done
       }));
-    }
-    if (Array.isArray(remoteData.doneTodos)) {
+    } else if (Array.isArray(remoteData.doneTodos)) {
       (b.todomateTodos || []).forEach(t => {
         t.done = remoteData.doneTodos.includes(t.id) || remoteData.doneTodos.includes(t.text);
       });
@@ -2154,7 +2185,14 @@ async function pushCloudState() {
       if (i.status && i.status !== 'pending') inquiryStatuses[i.id] = i.status;
     });
 
-    const todayChats = (chatSessions[kst.dateStr] || []).slice(-10);
+    const todayChats = (chatSessions[kst.dateStr] || []).slice(-5);
+
+    // Keep handledRegistry compact to prevent payload from exceeding ntfy inline limit
+    const compactHandled = {};
+    const handledKeys = Object.keys(handledRegistry);
+    handledKeys.slice(-15).forEach(k => {
+      compactHandled[k] = handledRegistry[k];
+    });
 
     const payload = {
       updatedAt: nowTs,
@@ -2168,7 +2206,7 @@ async function pushCloudState() {
       excludedPriorities: excludedPriorities,
       emailStatuses: emailStatuses,
       inquiryStatuses: inquiryStatuses,
-      handledRegistry: handledRegistry,
+      handledRegistry: compactHandled,
       recentChats: todayChats
     };
 
