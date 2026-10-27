@@ -146,7 +146,7 @@
           "id": "todo-20261027-4",
           "text": "지공 상세페이지 수정",
           "category": "사업or수익",
-          "done": false
+          "done": true
         },
         {
           "id": "todo-20261027-5",
@@ -170,7 +170,7 @@
           "id": "todo-20261027-8",
           "text": "본인사실확인서 발급",
           "category": "해야 할 일",
-          "done": false
+          "done": true
         }
       ],
       "agentPriorities": [

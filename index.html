@@ -69,6 +69,21 @@
             <span>✨</span>
             <span id="btn-run-agent-text">출근 완료</span>
           </button>
+          <script>
+            (function(){
+              try {
+                var s = localStorage.getItem('jeegong_work_state');
+                var b = document.getElementById('btn-run-agent');
+                if (b && s === 'checked_in') {
+                  b.className = 'btn-primary work-active';
+                  b.innerHTML = '<span>🌙</span><span id="btn-run-agent-text">업무 종료</span>';
+                } else if (b && s === 'finished') {
+                  b.className = 'btn-primary work-finished';
+                  b.innerHTML = '<span>🎉</span><span id="btn-run-agent-text">퇴근 완료 ✓</span>';
+                }
+              } catch(e) {}
+            })();
+          </script>
           <button class="theme-toggle-btn" id="btn-refresh-data" title="최신 데이터 새로고침 (메일·문의·할 일)">
             <svg class="refresh-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>

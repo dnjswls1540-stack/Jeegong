@@ -288,14 +288,19 @@ function restoreLocalTodosState(briefingId) {
     if (savedTodos !== null) {
       const doneList = JSON.parse(savedTodos);
       (b.todomateTodos || []).forEach(t => {
-        t.done = doneList.includes(t.text) || doneList.includes(t.id);
+        // Union: keep true if either server or localStorage marked done
+        if (doneList.includes(t.text) || doneList.includes(t.id)) {
+          t.done = true;
+        }
       });
     }
     const savedPriorities = localStorage.getItem(`jeegong_done_priorities_${dateKey}`);
     if (savedPriorities !== null) {
       const donePriorities = JSON.parse(savedPriorities);
       (b.agentPriorities || []).forEach(ap => {
-        ap.done = donePriorities.includes(ap.id);
+        if (donePriorities.includes(ap.id)) {
+          ap.done = true;
+        }
       });
     }
   } catch (e) {}
@@ -304,6 +309,7 @@ function restoreLocalTodosState(briefingId) {
 // Midnight Daily Reset (자정 지나면 퇴근 안 눌러도 출근 버튼 자동 초기화 & 날짜 매일 업데이트)
 function checkMidnightReset() {
   const kst = getKSTNow();
+  const activeDate = (appData && appData.briefings && appData.briefings[0] && appData.briefings[0].date) || kst.dateStr;
 
   // 1. Always keep current date badge updated
   const dateBadge = document.getElementById('current-date-text');
@@ -313,24 +319,23 @@ function checkMidnightReset() {
 
   // 2. Check if day has changed (Midnight passed)
   const savedWorkDate = localStorage.getItem('jeegong_work_date');
-  if (savedWorkDate !== kst.dateStr) {
+  if (savedWorkDate && savedWorkDate !== activeDate && savedWorkDate !== kst.dateStr) {
     // New day has arrived! Reset work state to ready (출근 완료)
     workState = 'ready';
     try {
-      localStorage.setItem('jeegong_work_date', kst.dateStr);
+      localStorage.setItem('jeegong_work_date', activeDate);
       localStorage.setItem('jeegong_work_state', 'ready');
     } catch (e) {}
     updateWorkButtonUI();
 
     // Automatically select today's briefing if available
     if (appData && appData.briefings) {
-      const todayB = appData.briefings.find(b => b.date === kst.dateStr);
+      const todayB = appData.briefings.find(b => b.date === activeDate);
       if (todayB && currentBriefingId !== todayB.id) {
         currentBriefingId = todayB.id;
         renderTodayView();
       }
     }
-
     pushCloudState();
   }
 }
@@ -347,8 +352,9 @@ async function initApp() {
   }
 
   // 1. Dynamically select today's briefing if available
+  const activeDate = (appData && appData.briefings && appData.briefings[0] && appData.briefings[0].date) || kst.dateStr;
   if (appData && appData.briefings && appData.briefings.length > 0) {
-    const todayB = appData.briefings.find(b => b.date === kst.dateStr);
+    const todayB = appData.briefings.find(b => b.date === activeDate) || appData.briefings.find(b => b.date === kst.dateStr);
     currentBriefingId = todayB ? todayB.id : appData.briefings[0].id;
     window.currentBriefingId = currentBriefingId;
     window.appData = appData;
@@ -356,10 +362,10 @@ async function initApp() {
 
   // 2. Daily reset check on startup
   const savedWorkDate = localStorage.getItem('jeegong_work_date');
-  if (savedWorkDate !== kst.dateStr) {
+  if (savedWorkDate && savedWorkDate !== activeDate && savedWorkDate !== kst.dateStr) {
     workState = 'ready';
     try {
-      localStorage.setItem('jeegong_work_date', kst.dateStr);
+      localStorage.setItem('jeegong_work_date', activeDate);
       localStorage.setItem('jeegong_work_state', 'ready');
     } catch (e) {}
   } else {
@@ -1332,14 +1338,16 @@ window.refreshDashboardData = async function(showNotice = true) {
     await pullCloudState();
 
     // 4. Ensure today's briefing is selected
+    const activeDate = (appData && appData.briefings && appData.briefings[0] && appData.briefings[0].date) || kst.dateStr;
     if (appData && appData.briefings && appData.briefings.length > 0) {
-      const todayB = appData.briefings.find(b => b.date === kst.dateStr);
+      const todayB = appData.briefings.find(b => b.date === activeDate) || appData.briefings.find(b => b.date === kst.dateStr);
       if (todayB) {
         currentBriefingId = todayB.id;
       }
     }
 
-    // 5. Sync local storage to match fresh authoritative state
+    // 5. Restore user's completed todos and priorities, then sync
+    restoreLocalTodosState(currentBriefingId);
     saveLocalTodosState(currentBriefingId);
 
     // 6. Check midnight daily reset
@@ -2055,16 +2063,17 @@ function applyRemoteSync(remoteData) {
   const kst = getKSTNow();
 
   // 1. Work state sync with daily midnight reset
-  if (remoteData.workDate && remoteData.workDate !== kst.dateStr) {
+  const activeDate = (appData && appData.briefings && appData.briefings[0] && appData.briefings[0].date) || kst.dateStr;
+  if (remoteData.workDate && remoteData.workDate !== activeDate && remoteData.workDate !== kst.dateStr) {
     workState = 'ready';
     try {
-      localStorage.setItem('jeegong_work_date', kst.dateStr);
+      localStorage.setItem('jeegong_work_date', activeDate);
       localStorage.setItem('jeegong_work_state', 'ready');
     } catch (e) {}
   } else if (remoteData.workState) {
     workState = remoteData.workState;
     try {
-      localStorage.setItem('jeegong_work_date', kst.dateStr);
+      localStorage.setItem('jeegong_work_date', activeDate);
       localStorage.setItem('jeegong_work_state', workState);
     } catch (e) {}
   }
@@ -2088,6 +2097,8 @@ function applyRemoteSync(remoteData) {
         t.done = remoteData.doneTodos.includes(t.id) || remoteData.doneTodos.includes(t.text);
       });
     }
+    restoreLocalTodosState(b.id);
+    saveLocalTodosState(b.id);
     if (Array.isArray(remoteData.donePriorities)) {
       (b.agentPriorities || []).forEach(ap => {
         ap.done = remoteData.donePriorities.includes(ap.id);
