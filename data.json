@@ -111,20 +111,6 @@
           "draftReady": false
         },
         {
-          "id": "m-sixshop-dalbit-20261027",
-          "service": "온세스 사업용 Gmail (식스샵)",
-          "from": "식스샵 프로 고객지원 (help-pro@sixshop.com)",
-          "subject": "[식스샵 파트너] 바로 상담할 수 있는 웹사이트 제작 신규 프로젝트 (달빛서랍)",
-          "priority": "1순위 신규 의뢰",
-          "summary": "달빛서랍(010-2802-7927, kkojjang1@naver.com)의 식스샵 프로 기반 개인 맞춤형 타로 리포트 쇼핑몰 제작 의뢰(예산 50~100만 원). 온세스 Gmail 임시보관함에 맞춤 답장 초안(draftId: r4953488628473649319) 저장 완료.",
-          "preview": "식스샵 프로를 기반으로 개인 맞춤형 타로 리포트 서비스를 구축하고 싶어 제작을 의뢰드립니다. 다중 페이지형 쇼핑몰...",
-          "status": "pending",
-          "actionRequired": true,
-          "draftReady": true,
-          "draftId": "r4953488628473649319",
-          "account": "onsessdesign@gmail.com"
-        },
-        {
           "id": "m-class101-pricing-20261027",
           "service": "네이버 메일 (클래스101)",
           "from": "크리에이터센터 XAVI (creatorcenter@101.inc)",
@@ -243,20 +229,6 @@
         }
       ],
       "inquiries": [
-        {
-          "id": "inq-sixshop-dalbit-drawer",
-          "channel": "식스샵",
-          "serviceClass": "channel-imweb",
-          "from": "달빛서랍 (010-2802-7927)",
-          "email": "kkojjang1@naver.com",
-          "time": "17:40",
-          "subject": "[식스샵 신규 의뢰] 개인 맞춤형 타로 리포트 다중 페이지 쇼핑몰 (예산 50~100만 원)",
-          "content": "달빛서랍 타로 리포트 식스샵 프로 쇼핑몰 구축 의뢰. 7개 주제 카테고리/3개 상품/FAQ 등 다중 페이지 구축, 1차 디자인·세팅과 2차 맞춤설문·AI리포트 분리 제안 요청. 모바일 최적화 필수.",
-          "draft": "온세스 사업용 Gmail 임시보관함에 맞춤 답장 초안(draftId: r4953488628473649319) 저장 완료. 공식 템플릿(URL·카톡채널·명함 인라인) 준수.",
-          "draftId": "r4953488628473649319",
-          "account": "onsessdesign@gmail.com",
-          "status": "pending"
-        },
         {
           "id": "inq-class101-pricing",
           "channel": "클래스101",
