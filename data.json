@@ -111,6 +111,18 @@
           "draftReady": false
         },
         {
+          "id": "m-class101-pricing-20261027",
+          "service": "네이버 메일 (클래스101)",
+          "from": "크리에이터센터 XAVI (creatorcenter@101.inc)",
+          "subject": "[클래스101] 전자책 패키지 가격 세팅 회신 (109,000원 확인)",
+          "priority": "1순위 확인",
+          "summary": "담당 매니저 XAVI 회신: '전자책 패키지를 60,000원이 아닌 109,000원으로 세팅만 도와드리면 괜찮을까요?' 지원진 님 확인 후 크리에이터 센터에서 답변 필요.",
+          "preview": "전차책 패키지를 60,000원이 아닌 109,000원으로 세팅만 도와드리면 괜찮을까요?",
+          "status": "pending",
+          "actionRequired": true,
+          "draftReady": false
+        },
+        {
           "id": "m-kmong-7698578-20261027",
           "service": "네이버 메일 (크몽)",
           "from": "크몽 (no-reply@kmong.com)",
@@ -217,6 +229,18 @@
         }
       ],
       "inquiries": [
+        {
+          "id": "inq-class101-pricing",
+          "channel": "클래스101",
+          "serviceClass": "channel-kmong",
+          "from": "크리에이터센터 XAVI",
+          "email": "creatorcenter@101.inc",
+          "time": "14:19",
+          "subject": "[클래스101] 전자책 패키지 가격 109,000원 세팅 확인",
+          "content": "XAVI 매니저: '전차책 패키지를 60,000원이 아닌 109,000원으로 세팅만 도와드리면 괜찮을까요?'",
+          "draft": "네, 109,000원으로 세팅 부탁드립니다. 감사합니다!",
+          "status": "pending"
+        },
         {
           "id": "inq-kmong-7698578",
           "channel": "크몽",
