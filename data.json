@@ -97,6 +97,18 @@
           "status": "done",
           "actionRequired": false,
           "draftReady": false
+        },
+        {
+          "id": "m-class101-20261027",
+          "service": "네이버 메일 (클래스101)",
+          "from": "크리에이터센터 (creatorcenter@101.inc)",
+          "subject": "[클래스101] 크리에이터님, 새로운 메시지 2건이 도착했어요.",
+          "priority": "운영 알림",
+          "summary": "클래스 썸네일 및 상세페이지 수정 문의 답변 도착. 크리에이터 센터 상품 상세 > 상단 [클래스 수정] 메뉴에서 직접 수정 가능 안내.",
+          "preview": "썸네일 및 상세페이지 수정은 직접 진행하실 수 있으신데 상품 들어가셔서 상단에 클래스 수정을 클릭해보시겠어요?",
+          "status": "done",
+          "actionRequired": false,
+          "draftReady": false
         }
       ],
       "todomateTodos": [
