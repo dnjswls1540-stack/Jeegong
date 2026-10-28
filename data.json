@@ -85,6 +85,18 @@
           "status": "pending",
           "actionRequired": true,
           "draftReady": true
+        },
+        {
+          "id": "m-kmong-7701597-20261028",
+          "service": "네이버 메일 (크몽)",
+          "from": "크몽 (no-reply@kmong.com)",
+          "subject": "[크몽] 신규 주문 #7701597 접수 안내",
+          "priority": "주문 접수",
+          "summary": "크몽 신규 주문 #7701597(29,000원, 의뢰인 K5202815706) 접수: '인스타 공동구매 인플루언서 2127명+맘카페 리스트'. 템플릿 파일 자동 발송 완료, 세금계산서 미신청 건.",
+          "preview": "인스타 공동구매 인플루언서 2127명+맘카페 리스트 (29,000원) - K5202815706",
+          "status": "done",
+          "actionRequired": false,
+          "draftReady": false
         }
       ],
       "todomateTodos": [
@@ -204,6 +216,18 @@
           "content": "XAVI 매니저: '전차책 패키지를 60,000원이 아닌 109,000원으로 세팅만 도와드리면 괜찮을까요?'",
           "draft": "네, 109,000원으로 세팅 부탁드립니다. 감사합니다!",
           "status": "pending"
+        },
+        {
+          "id": "inq-kmong-7701597",
+          "channel": "크몽",
+          "serviceClass": "channel-kmong",
+          "from": "K5202815706 (주문 #7701597)",
+          "email": "dnjsrns123@naver.com",
+          "time": "13:37",
+          "subject": "[크몽 신규주문] 인스타 공동구매 인플루언서 2127명+맘카페 리스트 (29,000원)",
+          "content": "주문 #7701597 접수 (29,000원). 상품: 인스타 공동구매 인플루언서 2127명+맘카페 리스트. 템플릿 자동 발송 완료 (세금계산서 미신청).",
+          "draft": "자료 전달 완료 (자동 구매 확정 예정 11/04)",
+          "status": "done"
         }
       ]
     },
