@@ -114,25 +114,25 @@
       "todomateTodos": [
         {
           "id": "todo-20261029-1",
-          "text": "챔맘 샘플 체크",
+          "text": "장빵실 결제링크 요청",
           "category": "사업or수익",
           "done": false
         },
         {
           "id": "todo-20261029-2",
-          "text": "럭키지후 샘플 체크",
+          "text": "클레 전화",
           "category": "사업or수익",
           "done": false
         },
         {
           "id": "todo-20261029-3",
-          "text": "디어커스 제안 15명",
+          "text": "아넬라 제안 20명",
           "category": "사업or수익",
           "done": false
         },
         {
           "id": "todo-20261029-4",
-          "text": "아넬라 제안 20명",
+          "text": "디어커스 제안 15명",
           "category": "사업or수익",
           "done": false
         },
@@ -144,19 +144,19 @@
         },
         {
           "id": "todo-20261029-6",
-          "text": "뮤즈언니 주문건 오후 체크",
+          "text": "미미뻥 전화",
           "category": "사업or수익",
           "done": false
         },
         {
           "id": "todo-20261029-7",
-          "text": "쥬랜드 샘플 체크",
+          "text": "스레드 업로드",
           "category": "사업or수익",
           "done": false
         },
         {
           "id": "todo-20261029-8",
-          "text": "클레 전화",
+          "text": "데이원 결제링크 요청",
           "category": "사업or수익",
           "done": false
         },
@@ -164,12 +164,6 @@
           "id": "todo-20261029-9",
           "text": "듀오링고 일본어 2개",
           "category": "자기계발",
-          "done": false
-        },
-        {
-          "id": "todo-20261029-10",
-          "text": "컴퓨터 폴더 정리",
-          "category": "사업or수익",
           "done": false
         }
       ],
