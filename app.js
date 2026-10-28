@@ -259,13 +259,45 @@ function updateWorkButtonUI() {
 }
 
 
-// Local Persistence for Todos and Priorities (새로고침 시 미처리 할 일 체크 방지 엔진)
+// Local Persistence for Todos and Priorities (새로고침 시 미처리 할 일 체크 및 추가/수정/삭제 보존 엔진)
+function saveCustomTodos(briefingId) {
+  if (!appData || !appData.briefings) return;
+  const b = appData.briefings.find(item => item.id === briefingId) || appData.briefings[0];
+  if (!b) return;
+  const kst = getKSTNow();
+  const dateKey = b.date || kst.dateStr;
+
+  try {
+    localStorage.setItem(`jeegong_todos_override_${dateKey}`, JSON.stringify(b.todomateTodos || []));
+  } catch (e) {}
+}
+
+function restoreCustomTodos(briefingId) {
+  if (!appData || !appData.briefings) return;
+  const b = appData.briefings.find(item => item.id === briefingId) || appData.briefings[0];
+  if (!b) return;
+  const kst = getKSTNow();
+  const dateKey = b.date || kst.dateStr;
+
+  try {
+    const saved = localStorage.getItem(`jeegong_todos_override_${dateKey}`);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        b.todomateTodos = parsed;
+      }
+    }
+  } catch (e) {}
+}
+
 function saveLocalTodosState(briefingId) {
   if (!appData || !appData.briefings) return;
   const b = appData.briefings.find(item => item.id === briefingId) || appData.briefings[0];
   if (!b) return;
   const kst = getKSTNow();
   const dateKey = b.date || kst.dateStr;
+
+  saveCustomTodos(briefingId);
 
   const doneTodos = (b.todomateTodos || []).filter(t => t.done).map(t => t.text || t.id);
   const donePriorities = (b.agentPriorities || []).filter(ap => ap.done).map(ap => ap.id);
@@ -282,6 +314,8 @@ function restoreLocalTodosState(briefingId) {
   if (!b) return;
   const kst = getKSTNow();
   const dateKey = b.date || kst.dateStr;
+
+  restoreCustomTodos(briefingId);
 
   try {
     const savedTodos = localStorage.getItem(`jeegong_done_todos_${dateKey}`);
@@ -1905,7 +1939,142 @@ async function generateAssistantResponse(prompt, attachments = []) {
     return `별말씀을요! 오늘 하루도 파이팅이에요 ㅎㅎ 추가로 필요한 작업 있으시면 언제든 말씀해 주세요.`;
   }
 
-  // 5. Modification Request / Bug Feedback / Feature Request
+  // 5-A. Todo Word Removal & Text Cleanup (e.g. '오늘 단어는 삭제해야지', '"오늘" 단어 빼줘', '단어 삭제')
+  if (
+    (clean.includes('단어') || clean.includes('글자') || clean.includes('문구')) &&
+    (clean.includes('삭제') || clean.includes('빼') || clean.includes('지워') || clean.includes('제거') || clean.includes('없애'))
+  ) {
+    if (appData && appData.briefings) {
+      const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
+      let targetWord = '';
+      const quoteMatch = clean.match(/["'“‘]([^"'“”‘’]+)["'”’]/);
+      if (quoteMatch) {
+        targetWord = quoteMatch[1].trim();
+      } else {
+        const match = clean.match(/([^\s]+)\s*(?:단어|글자|문구)/);
+        if (match) targetWord = match[1].trim();
+      }
+      if (!targetWord && clean.includes('오늘')) targetWord = '오늘';
+
+      if (targetWord && b.todomateTodos && b.todomateTodos.length > 0) {
+        const targetTodo = b.todomateTodos.find(t => t.text.includes(targetWord));
+        if (targetTodo) {
+          let newText = targetTodo.text.replace(new RegExp(targetWord, 'g'), '');
+          newText = newText.replace(/["'“”‘’]/g, '').trim();
+          if (!newText) newText = '새로운 업무';
+          targetTodo.text = newText;
+
+          saveCustomTodos(b.id);
+          saveLocalTodosState(b.id);
+          renderTodayView();
+          pushCloudState();
+          return `✏️ 할 일에서 '${targetWord}' 단어를 제외하고 '${newText}'(으)로 깔끔하게 수정했습니다!`;
+        }
+      }
+    }
+  }
+
+  // 5-B. Todo Rename / Edit (e.g. '할 일 X로 수정해줘', 'X로 바꿔줘')
+  if (
+    (clean.includes('수정') || clean.includes('바꿔') || clean.includes('변경')) &&
+    (clean.includes('할 일') || clean.includes('할일') || clean.includes('투두') || clean.includes('로 ') || clean.includes('으로 '))
+  ) {
+    if (appData && appData.briefings) {
+      const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
+      let newName = '';
+      const quoteMatch = clean.match(/["'“‘]([^"'“”‘’]+)["'”’]/);
+      if (quoteMatch) {
+        newName = quoteMatch[1].trim();
+      } else {
+        const match = clean.match(/(?:할\s*일|할일|투두)?\s*(.+?)(?:로|으로)\s*(?:수정|변경|바꿔)/);
+        if (match) newName = match[1].trim();
+      }
+      if (newName && b.todomateTodos && b.todomateTodos.length > 0) {
+        const targetTodo = b.todomateTodos.find(t => t.id.startsWith('custom-')) || b.todomateTodos[0];
+        if (targetTodo) {
+          targetTodo.text = newName;
+          saveCustomTodos(b.id);
+          saveLocalTodosState(b.id);
+          renderTodayView();
+          pushCloudState();
+          return `✏️ 할 일을 '${newName}'(으)로 수정했습니다!`;
+        }
+      }
+    }
+  }
+
+  // 5-C. Todo Deletion (e.g. '컴퓨터 폴더 정리 삭제해줘', '방금 추가한 거 삭제해줘', '할 일 삭제')
+  if (
+    (clean.includes('삭제') || clean.includes('지워') || clean.includes('제거') || clean.includes('빼줘') || clean.includes('없애줘')) &&
+    (clean.includes('할 일') || clean.includes('할일') || clean.includes('투두') || clean.includes('방금') || clean.includes('추가한'))
+  ) {
+    if (appData && appData.briefings) {
+      const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
+      if (b.todomateTodos && b.todomateTodos.length > 0) {
+        let targetIdx = -1;
+        const quoteMatch = clean.match(/["'“‘]([^"'“”‘’]+)["'”’]/);
+        if (quoteMatch) {
+          const query = quoteMatch[1].trim();
+          targetIdx = b.todomateTodos.findIndex(t => t.text.includes(query));
+        }
+        if (targetIdx === -1 && (clean.includes('방금') || clean.includes('마지막'))) {
+          targetIdx = b.todomateTodos.findIndex(t => t.id.startsWith('custom-'));
+          if (targetIdx === -1) targetIdx = 0;
+        }
+        if (targetIdx === -1) {
+          const cleanQuery = clean.replace(/(할 일에|할일에서|투두에서|할 일을|할일을|투두를|할 일|할일|투두|삭제해줘|지워줘|제거해줘|빼줘|삭제|지워|제거)/g, '').trim();
+          if (cleanQuery) {
+            targetIdx = b.todomateTodos.findIndex(t => t.text.includes(cleanQuery));
+          }
+        }
+
+        if (targetIdx !== -1) {
+          const targetName = b.todomateTodos[targetIdx].text;
+          b.todomateTodos.splice(targetIdx, 1);
+          saveCustomTodos(b.id);
+          saveLocalTodosState(b.id);
+          renderTodayView();
+          pushCloudState();
+          return `🗑️ 할 일 '${targetName}'을(를) 대시보드 목록에서 삭제했습니다!`;
+        }
+      }
+    }
+  }
+
+  // 5-D. Todo Addition (e.g. '오늘 할 일에 "컴퓨터 폴더 정리" 추가해줘')
+  if (
+    clean.includes('추가') &&
+    (clean.includes('할 일') || clean.includes('할일') || clean.includes('투두') || clean.includes('등록') || clean.includes('넣어'))
+  ) {
+    if (appData && appData.briefings) {
+      const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
+      let cleanTask = clean;
+      const quoteMatch = clean.match(/["'“‘]([^"'“”‘’]+)["'”’]/);
+      if (quoteMatch && quoteMatch[1].trim()) {
+        cleanTask = quoteMatch[1].trim();
+      } else {
+        cleanTask = cleanTask.replace(/^(오늘|내일|이번주)?\s*(?:할\s*일(?:에|은|도|을|를)?|할일(?:에|은|도|을|를)?|투두(?:에|는|도|를)?)\s*/g, '');
+        cleanTask = cleanTask.replace(/(?:추가해줘|추가해|추가|등록해줘|등록해|등록|넣어줘|넣어)\s*$/g, '');
+        cleanTask = cleanTask.replace(/^(오늘|내일)\s+/g, '');
+        cleanTask = cleanTask.replace(/["'“”‘’]/g, '').trim();
+      }
+      if (!cleanTask) cleanTask = '새로운 업무 확인';
+
+      b.todomateTodos.unshift({
+        id: `custom-${Date.now()}`,
+        text: cleanTask,
+        category: '사업or수익',
+        done: false
+      });
+      saveCustomTodos(b.id);
+      saveLocalTodosState(b.id);
+      renderTodayView();
+      pushCloudState();
+      return `📝 오늘 할 일에 '${cleanTask}'을(를) 추가했습니다! (대시보드 실시간 반영)`;
+    }
+  }
+
+  // 6. General Modification / Bug Feedback
   if (
     clean.includes('수정') || clean.includes('처리') || clean.includes('버튼') ||
     clean.includes('붙여넣기') || clean.includes('줄엔터') || clean.includes('동기화') ||
@@ -1913,23 +2082,6 @@ async function generateAssistantResponse(prompt, attachments = []) {
     clean.includes('안돼')
   ) {
     return `지원진 님, 요청해 주신 내용 확인했습니다! 문제점 즉시 검토해서 대시보드에 바로 반영하겠습니다.`;
-  }
-
-  // 6. Check if user wants to add todo
-  if (clean.includes('추가') && (clean.includes('할 일') || clean.includes('할일') || clean.includes('투두'))) {
-    let cleanTask = clean.replace(/(할 일에|할일에|투두에|추가해줘|추가해|추가)/g, '').trim();
-    if (!cleanTask) cleanTask = '새로운 업무 확인';
-
-    if (appData && appData.briefings) {
-      const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
-      b.todomateTodos.unshift({
-        id: `custom-${Date.now()}`,
-        text: cleanTask,
-        done: false
-      });
-      renderTodayView();
-      return `📝 투두메이트 오늘 할 일에 '${cleanTask}'을(를) 추가했습니다!`;
-    }
   }
 
   // 7. Questions about priorities (ONLY when asked)

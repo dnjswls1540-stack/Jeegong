@@ -141,6 +141,12 @@
           "text": "듀오링고 일본어 2개",
           "category": "자기계발",
           "done": false
+        },
+        {
+          "id": "todo-20261028-10",
+          "text": "컴퓨터 폴더 정리",
+          "category": "사업or수익",
+          "done": false
         }
       ],
       "agentPriorities": [
