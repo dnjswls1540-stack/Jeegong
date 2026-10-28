@@ -63,19 +63,6 @@
       },
       "emails": [
         {
-          "id": "m-hubes-20261028",
-          "service": "온세스 Gmail (식스샵 프로)",
-          "from": "식스샵 고객지원 (help-pro@sixshop.com)",
-          "subject": "[식스샵 파트너] 바로 상담할 수 있는 웹사이트 제작 신규 프로젝트 (고객 의뢰)",
-          "priority": "외주 의뢰",
-          "summary": "휴베스정보센터 쇼핑몰 제작 희망(예산 50만 원 이하).",
-          "preview": "의뢰인: 휴베스정보센터, 연락처: 010-2672-7999, 쇼핑몰 제작 희망",
-          "status": "pending",
-          "actionRequired": true,
-          "draftReady": true,
-          "draftId": "r3037266432310729139"
-        },
-        {
           "id": "m-class101-pricing-20261027",
           "service": "네이버 메일 (클래스101)",
           "from": "크리에이터센터 XAVI (creatorcenter@101.inc)",
@@ -182,7 +169,7 @@
           "desc": "쇼핑몰 구축 외주 의뢰(50만 원 이하) 요구사항 확인",
           "detail": "온세스 사업용 Gmail로 인입된 쇼핑몰 제작 의뢰에 대해 온세스 규격 답장 초안 및 상담 방향을 검토합니다.",
           "done": false,
-          "excluded": false
+          "excluded": true
         }
       ],
       "driveFiles": [
@@ -210,18 +197,6 @@
           "subject": "[클래스101] 전자책 패키지 가격 109,000원 세팅 확인",
           "content": "XAVI 매니저: '전차책 패키지를 60,000원이 아닌 109,000원으로 세팅만 도와드리면 괜찮을까요?'",
           "draft": "네, 109,000원으로 세팅 부탁드립니다. 감사합니다!",
-          "status": "pending"
-        },
-        {
-          "id": "inq-hubes",
-          "channel": "식스샵",
-          "serviceClass": "channel-sixshop",
-          "from": "휴베스정보센터",
-          "email": "search3377@naver.com",
-          "time": "00:04",
-          "subject": "[식스샵] 쇼핑몰 웹사이트 제작 의뢰",
-          "content": "예산 50만 원 이하 쇼핑몰 제작 희망",
-          "draft": "[온세스 스튜디오] 휴베스정보센터 쇼핑몰 웹사이트 제작 문의 안내 및 견적 제안 (초안 생성 완료)",
           "status": "pending"
         }
       ]
