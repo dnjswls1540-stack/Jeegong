@@ -704,6 +704,7 @@ function renderTodayView() {
         </div>
         <div class="todo-text">${todo.text}</div>
         <span class="section-badge" style="font-size: 11px;">${todo.category || '투두메이트'}</span>
+        <button class="todo-delete-btn" onclick="event.stopPropagation(); window.deleteTodomateTodo('${todo.id}')" title="할 일 삭제">✕</button>
       </div>
     `;
   });
@@ -1111,6 +1112,47 @@ window.approveAndSendEmail = async function(id) {
   pushCloudState();
 };
 
+// Quick Add Todo (0.1초 원클릭 엔터 등록)
+window.handleQuickAddTodo = function() {
+  const inputEl = document.getElementById('input-quick-add-todo');
+  if (!inputEl) return;
+  const text = inputEl.value.trim();
+  if (!text) return;
+
+  if (appData && appData.briefings) {
+    const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
+    b.todomateTodos.unshift({
+      id: `custom-${Date.now()}`,
+      text: text,
+      category: '사업or수익',
+      done: false
+    });
+    saveCustomTodos(b.id);
+    saveLocalTodosState(b.id);
+    renderTodayView();
+    pushCloudState();
+    inputEl.value = '';
+    inputEl.focus();
+    showToast(`📝 할 일 '${text}'이(가) 등록되었습니다.`);
+  }
+};
+
+// Delete Todomate Todo (0.1초 원클릭 삭제)
+window.deleteTodomateTodo = function(id) {
+  if (!appData || !appData.briefings) return;
+  const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
+  const idx = (b.todomateTodos || []).findIndex(t => t.id === id);
+  if (idx !== -1) {
+    const deletedName = b.todomateTodos[idx].text;
+    b.todomateTodos.splice(idx, 1);
+    saveCustomTodos(b.id);
+    saveLocalTodosState(b.id);
+    renderTodayView();
+    pushCloudState();
+    showToast(`🗑️ 할 일 '${deletedName}'을(를) 삭제했습니다.`);
+  }
+};
+
 // Toggle Todomate Todo
 window.toggleTodomateTodo = function(id) {
   if (!appData) return;
@@ -1339,6 +1381,17 @@ ${priorityText}
       showToast('브리핑이 복사되었습니다.');
     }
   });
+
+  // Quick Add Todo Input Enter Key
+  const quickInput = document.getElementById('input-quick-add-todo');
+  if (quickInput) {
+    quickInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        window.handleQuickAddTodo();
+      }
+    });
+  }
 
   // Refresh Button Click Listener
   const refreshBtn = document.getElementById('btn-refresh-data');
@@ -2084,24 +2137,38 @@ async function generateAssistantResponse(prompt, attachments = []) {
     return `지원진 님, 요청해 주신 내용 확인했습니다! 문제점 즉시 검토해서 대시보드에 바로 반영하겠습니다.`;
   }
 
-  // 7. Questions about priorities (ONLY when asked)
+  // 7. Questions about priorities (Dynamic from briefing)
   if (clean.includes('우선순위') || clean.includes('핵심')) {
-    return `오늘 집중하셔야 할 핵심 1순위 업무 2가지예요:\n1. 인플루언서 희수 님 카톡(thou7) 협의 (베어메리 공구 일정·단가)\n2. 우주맘마 아넬라 과일퓨레 공구 오픈 준비 (내일 10/22 오픈 대비)`;
+    if (appData && appData.briefings) {
+      const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
+      const items = (b.agentPriorities || []).filter(ap => !ap.excluded).map((ap, i) => `${i + 1}. [${ap.priority}] ${ap.title}${ap.done ? ' (완료)' : ''}`);
+      return `⚡ 오늘 집중하셔야 할 핵심 우선순위예요:\n` + items.join('\n');
+    }
   }
 
-  // 8. Questions about Heesu / Email draft
-  if (clean.includes('희수') || (clean.includes('답장') && clean.includes('다듬'))) {
-    return `희수 님께 보낼 추천 카톡 문구예요:\n"안녕하세요 희수 님! 올쓰컴퍼니 지원진입니다 :) 메일로 말씀해주신 오슬로앤오십구 겨울 베어메리 관련해서 편하신 일정과 조건 조율 나누면 좋겠습니다!"`;
+  // 8. Questions about todos / uncompleted tasks
+  if (clean.includes('투두') || clean.includes('할 일') || clean.includes('할일') || clean.includes('미처리')) {
+    if (appData && appData.briefings) {
+      const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
+      const pending = (b.todomateTodos || []).filter(t => !t.done);
+      if (pending.length === 0) return `오늘 등록된 모든 할 일을 완료하셨어요! 🎉`;
+      return `📋 오늘 처리 대기 중인 할 일(${pending.length}건)이에요:\n` + pending.map((t, i) => `${i + 1}. ${t.text}`).join('\n');
+    }
   }
 
-  // 9. Questions about Anela puree
-  if (clean.includes('아넬라') || clean.includes('우주맘마') || clean.includes('공구')) {
-    return `내일(10/22~10/26) 시작되는 우주맘마 아넬라 과일퓨레 공구 준비 건이에요. 인플루언서 20명 메일 전송과 광고 세팅을 오늘 점검해 두시면 좋습니다!`;
+  // 9. Questions about mails / leads
+  if (clean.includes('메일') || clean.includes('리드') || clean.includes('문의')) {
+    if (appData && appData.briefings) {
+      const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
+      const pendingMails = (b.emails || []).filter(e => e.status !== 'excluded' && e.status !== 'done');
+      if (pendingMails.length === 0) return `현재 미처리된 중요 메일이나 의뢰가 없습니다!`;
+      return `📬 확인 필요한 중요 메일/의뢰 목록이에요:\n` + pendingMails.map((m, i) => `${i + 1}. [${m.priority}] ${m.subject} (${m.from})`).join('\n');
+    }
   }
 
-  // 10. Questions about OYKA HOME / Sixshop
-  if (clean.includes('식스샵') || clean.includes('oyka') || clean.includes('견적')) {
-    return `OYKA HOME에서 요청한 식스샵 쇼핑몰 신규 구축 의뢰건(예산 50~100만 원, 베베드피노 레퍼런스)이에요. 온세스 기본 패키지 견적서 메일 회신을 준비해 두었습니다.`;
+  // 10. Role Guidance / Pickle Assistant vs Web Controller
+  if (clean.includes('역할') || clean.includes('안내') || clean.includes('피클') || clean.includes('비서')) {
+    return `⚡ [역할 안내]\n• 웹 대시보드: 일정·메일·할 일을 0.1초 만에 확인하고 원클릭으로 조작하는 초고속 컨트롤 타워\n• 피클(Pickle) 앱 구름이: 실제 계정(Gmail, 네이버, 캘린더, 투두메이트, 쿠팡 등)을 직접 움직이고, 전화·결제·외주 초안·자동화까지 전담하는 진짜 AI 비서입니다!`;
   }
 
   // Natural Concise Default response (NO repetitive schedule recitation)

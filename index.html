@@ -260,6 +260,16 @@
                       </button>
                     </div>
                   </div>
+
+                  <!-- Inline Quick Add Input Bar (0.1초 원클릭 추가) -->
+                  <div class="todo-quick-add-bar">
+                    <div class="todo-quick-add-input-wrap">
+                      <span class="quick-add-icon">＋</span>
+                      <input type="text" id="input-quick-add-todo" class="todo-quick-input" placeholder="새로운 할 일 입력 후 Enter..." autocomplete="off">
+                      <button type="button" class="btn-quick-add" onclick="window.handleQuickAddTodo()">추가</button>
+                    </div>
+                  </div>
+
                   <div class="todomate-list" id="todomate-list-container">
                     <!-- Injected via JS -->
                   </div>
@@ -453,10 +463,10 @@
             </button>
             <img src="gureumi_avatar.png" alt="구름이" class="chatbot-header-avatar-img">
             <div>
-              <div class="chatbot-title">구름이 (업무 비서)</div>
+              <div class="chatbot-title">구름이 (업무 컨트롤러)</div>
               <div class="chatbot-status">
                 <span class="status-dot"></span>
-                <span>온라인 · 실시간 소통 가능</span>
+                <span>⚡ 초고속 대시보드 도우미</span>
               </div>
             </div>
           </div>
@@ -466,12 +476,18 @@
           </div>
         </div>
 
+        <!-- Role Banner: Pickle App vs Web Controller -->
+        <div class="chatbot-guide-banner">
+          <span>💡</span>
+          <span>실제 계정 조작·통화·업무 실행은 <strong>피클(Pickle) 앱 전담 구름이</strong>가 직접 처리합니다!</span>
+        </div>
+
         <!-- Quick Suggestion Chips -->
         <div class="chatbot-chips-bar" id="chatbot-chips-bar">
-          <button class="chat-chip" onclick="sendQuickMessage('오늘 우선순위 핵심만 다시 짚어줘')">오늘 우선순위 짚어줘</button>
-          <button class="chat-chip" onclick="sendQuickMessage('희수 님 답장 톤을 조금 더 친근하게 다듬어줘')">희수 님 답장 다듬기</button>
-          <button class="chat-chip" onclick="sendQuickMessage('오늘 할 일에 세무사 통화 추가해줘')">새 할 일 추가</button>
-          <button class="chat-chip" onclick="sendQuickMessage('내일 아넬라 공구 준비물 뭐 남았어?')">아넬라 준비물 점검</button>
+          <button class="chat-chip" onclick="sendQuickMessage('오늘 우선순위 핵심 짚어줘')">⚡ 오늘 우선순위</button>
+          <button class="chat-chip" onclick="sendQuickMessage('오늘 미처리 할 일 목록 보여줘')">📋 투두 목록 점검</button>
+          <button class="chat-chip" onclick="sendQuickMessage('미처리 중요 메일 확인해줘')">📬 중요 메일 확인</button>
+          <button class="chat-chip" onclick="sendQuickMessage('피클 앱과 웹 대시보드 역할 안내해줘')">📱 비서 연동 안내</button>
         </div>
 
         <!-- Messages Scroll Area -->
