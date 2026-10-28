@@ -72,7 +72,8 @@
           "preview": "의뢰인: 휴베스정보센터, 연락처: 010-2672-7999, 쇼핑몰 제작 희망",
           "status": "pending",
           "actionRequired": true,
-          "draftReady": false
+          "draftReady": true,
+          "draftId": "r3037266432310729139"
         },
         {
           "id": "m-class101-pricing-20261027",
@@ -220,7 +221,7 @@
           "time": "00:04",
           "subject": "[식스샵] 쇼핑몰 웹사이트 제작 의뢰",
           "content": "예산 50만 원 이하 쇼핑몰 제작 희망",
-          "draft": "온세스 스튜디오 기본형 쇼핑몰 안내 및 사전 요구사항 확인",
+          "draft": "[온세스 스튜디오] 휴베스정보센터 쇼핑몰 웹사이트 제작 문의 안내 및 견적 제안 (초안 생성 완료)",
           "status": "pending"
         }
       ]
