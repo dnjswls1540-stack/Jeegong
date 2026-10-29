@@ -159,6 +159,10 @@ function recordHandledItem(item, type, status) {
 function isItemHandledOnPreviousDay(item, type, viewingDate) {
   if (!item) return false;
   
+  // If item is explicitly dated today or has today's date in ID, it is fresh for today!
+  const vCompact = viewingDate ? viewingDate.replace(/-/g, '') : '';
+  if (item.id && vCompact && item.id.includes(vCompact)) return false;
+
   // 1. Check core tag
   const tag = getItemCoreTag(item);
   if (tag && handledRegistry[tag]) {
@@ -671,12 +675,12 @@ function renderTodayView() {
         </div>
 
         <!-- Inline Draft Editor Box -->
-        <div class="inline-draft-box" id="draft-box-${mail.id}">
+        <div class="inline-draft-box ${window.activeDraftBoxIds && window.activeDraftBoxIds.has(`draft-box-${mail.id}`) ? 'active' : ''}" id="draft-box-${mail.id}">
           <div class="draft-header">
             <span>✍️ 구름이 답장 초안 (수정 후 승인 시 발송)</span>
             <span style="font-size: 11.5px; color: var(--text-tertiary);">수신: ${mail.from}</span>
           </div>
-          <textarea class="draft-textarea" id="draft-text-${mail.id}">${mail.draft}</textarea>
+          <textarea class="draft-textarea" id="draft-text-${mail.id}" oninput="onDraftInput('${mail.id}', this.value)">${mail.draft || ''}</textarea>
           <div class="draft-actions">
             <button class="btn-secondary" onclick="closeProcessDraft('${mail.id}')" style="padding: 5px 12px; font-size: 12px;">닫기</button>
             <button class="btn-primary" onclick="approveAndSendEmail('${mail.id}')" style="padding: 6px 14px; font-size: 12px;">
@@ -925,12 +929,12 @@ function renderInquiries(b, containerId, badgeId) {
         </div>
 
         <!-- Inline Draft Box -->
-        <div class="inline-draft-box" id="inquiry-draft-box-${containerId}-${inq.id}">
+        <div class="inline-draft-box ${window.activeDraftBoxIds && window.activeDraftBoxIds.has(`inquiry-draft-box-${containerId}-${inq.id}`) ? 'active' : ''}" id="inquiry-draft-box-${containerId}-${inq.id}">
           <div class="draft-header">
             <span>✍️ 구름이 고객 응대 초안 (수정 후 승인 시 답변 발송)</span>
             <span style="font-size: 11.5px; color: var(--text-tertiary);">수신: ${inq.from}</span>
           </div>
-          <textarea class="draft-textarea" id="inquiry-draft-text-${containerId}-${inq.id}">${inq.draft}</textarea>
+          <textarea class="draft-textarea" id="inquiry-draft-text-${containerId}-${inq.id}" oninput="onInquiryDraftInput('${inq.id}', this.value)">${inq.draft || ''}</textarea>
           <div class="draft-actions">
             <button class="btn-secondary" onclick="closeInquiryProcessDraft('${containerId}-${inq.id}')" style="padding: 5px 12px; font-size: 12px;">닫기</button>
             <button class="btn-primary" onclick="approveAndSendInquiry('${inq.id}', '${containerId}-${inq.id}')" style="padding: 6px 14px; font-size: 12px;">
@@ -987,16 +991,6 @@ window.toggleInquiryExclude = function(id) {
   pushCloudState();
 };
 
-window.openInquiryProcessDraft = function(domId) {
-  const box = document.getElementById(`inquiry-draft-box-${domId}`);
-  if (box) box.classList.toggle('active');
-};
-
-window.closeInquiryProcessDraft = function(domId) {
-  const box = document.getElementById(`inquiry-draft-box-${domId}`);
-  if (box) box.classList.remove('active');
-};
-
 window.approveAndSendInquiry = async function(id, domId) {
   if (!appData) return;
   const b = appData.briefings.find(item => item.id === currentBriefingId);
@@ -1012,35 +1006,38 @@ window.approveAndSendInquiry = async function(id, domId) {
   closeInquiryProcessDraft(domId);
   renderTodayView();
 
-  // Publish Send Request to ntfy Queue if inquiry has draftId / email
-  if (inq.draftId || inq.account) {
-    try {
-      const sendPayload = {
-        action: 'send_email',
-        timestamp: Date.now(),
-        emailId: inq.id,
-        draftId: inq.draftId || '',
-        account: inq.account || 'onsessdesign@gmail.com',
-        recipient: inq.from,
-        subject: inq.subject,
-        body: inq.draft
-      };
-      await fetch(`${SYNC_ENDPOINT}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Title': `[Jeegong Send Request] ${inq.id}`,
-          'Tags': 'email,outbox'
-        },
-        body: JSON.stringify(sendPayload)
-      });
-    } catch (err) {
-      console.warn('send request publish error:', err);
-    }
+  const account = inq.account || (inq.channel && inq.channel.includes('네이버') ? 'dnjsrns123@naver.com' : 'onsessdesign@gmail.com');
+  const isNaver = account.includes('naver') || (inq.channel && inq.channel.includes('네이버'));
+  const service = isNaver ? 'naver' : 'gmail';
+
+  try {
+    const sendPayload = {
+      action: 'send_email',
+      timestamp: Date.now(),
+      emailId: inq.id,
+      service: service,
+      account: account,
+      recipient: inq.email || inq.from,
+      subject: inq.subject,
+      body: inq.draft,
+      draftId: inq.draftId || '',
+      draftFile: inq.draftFile || (isNaver ? 'drafts/RE: [공구 제안] 100% 생과일 아넬라 퓨레, 공구 협업 제안드립니다.│올쓰컴퍼니-3.eml' : '')
+    };
+    await fetch(`${SYNC_ENDPOINT}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Title': `[Jeegong Send Request] ${inq.id}`,
+        'Tags': 'email,outbox'
+      },
+      body: JSON.stringify(sendPayload)
+    });
+  } catch (err) {
+    console.warn('send request publish error:', err);
   }
 
   pushCloudState();
-  showToast(`[답변 발송 완료] ${inq.from} 님께 맞춤 답변이 전송되었습니다! 🚀 (다음 날 목록에서 자동 제외)`);
+  showToast(`[답변 발송 요청 완료] ${service === 'naver' ? '네이버 메일' : 'Gmail'}을 통해 발송 큐가 전송되었습니다! 🚀 (보낸메일함에 반영)`);
 };
 
 window.toggleExcludeEmail = function(id) {
@@ -1066,20 +1063,68 @@ window.toggleExcludeEmail = function(id) {
   renderTodayView();
 };
 
+// Active draft editor tracking to prevent closing on background sync
+window.activeDraftBoxIds = window.activeDraftBoxIds || new Set();
+
+window.onDraftInput = function(id, val) {
+  if (!appData) return;
+  const b = appData.briefings.find(item => item.id === currentBriefingId);
+  if (!b) return;
+  const mail = (b.emails || []).find(m => m.id === id);
+  if (mail) mail.draft = val;
+};
+
+window.onInquiryDraftInput = function(id, val) {
+  if (!appData) return;
+  const b = appData.briefings.find(item => item.id === currentBriefingId);
+  if (!b) return;
+  const inq = (b.inquiries || []).find(i => i.id === id);
+  if (inq) inq.draft = val;
+};
+
 // Open Process Draft Box
 window.openProcessDraft = function(id) {
   const box = document.getElementById(`draft-box-${id}`);
   if (box) {
     box.classList.toggle('active');
+    if (box.classList.contains('active')) {
+      activeDraftBoxIds.add(`draft-box-${id}`);
+      const ta = document.getElementById(`draft-text-${id}`);
+      if (ta) ta.focus();
+    } else {
+      activeDraftBoxIds.delete(`draft-box-${id}`);
+    }
   }
 };
 
 window.closeProcessDraft = function(id) {
   const box = document.getElementById(`draft-box-${id}`);
   if (box) box.classList.remove('active');
+  activeDraftBoxIds.delete(`draft-box-${id}`);
 };
 
-// Approve and Send Email (실제 Gmail 발송 큐 연동)
+// Open / Close Customer Inquiry Process Draft Box
+window.openInquiryProcessDraft = function(domId) {
+  const box = document.getElementById(`inquiry-draft-box-${domId}`);
+  if (box) {
+    box.classList.toggle('active');
+    if (box.classList.contains('active')) {
+      activeDraftBoxIds.add(`inquiry-draft-box-${domId}`);
+      const ta = document.getElementById(`inquiry-draft-text-${domId}`);
+      if (ta) ta.focus();
+    } else {
+      activeDraftBoxIds.delete(`inquiry-draft-box-${domId}`);
+    }
+  }
+};
+
+window.closeInquiryProcessDraft = function(domId) {
+  const box = document.getElementById(`inquiry-draft-box-${domId}`);
+  if (box) box.classList.remove('active');
+  activeDraftBoxIds.delete(`inquiry-draft-box-${domId}`);
+};
+
+// Approve and Send Email (실제 발송 큐 연동 - Gmail / 네이버 메일 자동 분기)
 window.approveAndSendEmail = async function(id) {
   if (!appData) return;
   const b = appData.briefings.find(item => item.id === currentBriefingId);
@@ -1095,7 +1140,12 @@ window.approveAndSendEmail = async function(id) {
   recordHandledItem(mail, 'email', 'sent');
   closeProcessDraft(id);
   renderTodayView();
-  showToast(`[승인 완료] ${mail.from.split('(')[0].trim()} 님께 답장 발송 큐가 접수되었습니다! 🚀 (Gmail 자동 발송 연동)`);
+
+  const account = mail.account || (mail.service && mail.service.includes('네이버') ? 'dnjsrns123@naver.com' : 'onsessdesign@gmail.com');
+  const isNaver = account.includes('naver') || (mail.service && mail.service.includes('네이버'));
+  const service = isNaver ? 'naver' : 'gmail';
+
+  showToast(`[승인 완료] ${mail.from.split('(')[0].trim()} 님께 답장 발송 큐가 접수되었습니다! 🚀 (${service === 'naver' ? '네이버 메일' : 'Gmail'} 자동 발송 연동)`);
 
   // Publish Send Request to ntfy Queue for Background Agent Execution
   try {
@@ -1103,11 +1153,13 @@ window.approveAndSendEmail = async function(id) {
       action: 'send_email',
       timestamp: Date.now(),
       emailId: mail.id,
-      draftId: mail.draftId || '',
-      account: mail.account || 'onsessdesign@gmail.com',
+      service: service,
+      account: account,
       recipient: mail.from,
       subject: mail.subject,
-      body: mail.draft
+      body: mail.draft,
+      draftId: mail.draftId || '',
+      draftFile: mail.draftFile || (isNaver ? 'drafts/RE: [공구 제안] 100% 생과일 아넬라 퓨레, 공구 협업 제안드립니다.│올쓰컴퍼니-3.eml' : '')
     };
     await fetch(`${SYNC_ENDPOINT}`, {
       method: 'POST',
@@ -1417,6 +1469,12 @@ ${priorityText}
 
 // Refresh Dashboard Data (Manual & Background Auto-sync)
 window.refreshDashboardData = async function(showNotice = true) {
+  const hasActiveDraft = (window.activeDraftBoxIds && window.activeDraftBoxIds.size > 0) || document.querySelector('.inline-draft-box.active');
+  const isTyping = document.activeElement && (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT');
+  if (!showNotice && (hasActiveDraft || isTyping)) {
+    return;
+  }
+
   const refreshBtn = document.getElementById('btn-refresh-data');
   const todoRefreshBtn = document.getElementById('btn-refresh-todomate');
   if (refreshBtn) refreshBtn.classList.add('spinning');
@@ -2259,6 +2317,11 @@ function setupRealtimeSync() {
 
 async function pullCloudState() {
   if (!appData || !appData.briefings) return;
+  const hasActiveDraft = (window.activeDraftBoxIds && window.activeDraftBoxIds.size > 0) || document.querySelector('.inline-draft-box.active');
+  const isTyping = document.activeElement && (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT');
+  if (hasActiveDraft || isTyping) {
+    return;
+  }
   try {
     const res = await fetch(`${SYNC_ENDPOINT}/json?poll=1`);
     if (!res.ok) return;
@@ -2378,7 +2441,11 @@ function applyRemoteSync(remoteData) {
         }
       });
     }
-    renderTodayView();
+    const hasActiveDraft = (window.activeDraftBoxIds && window.activeDraftBoxIds.size > 0) || document.querySelector('.inline-draft-box.active');
+    const isTyping = document.activeElement && (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT');
+    if (!hasActiveDraft && !isTyping) {
+      renderTodayView();
+    }
   }
 
   // 3. Sync recent chats
