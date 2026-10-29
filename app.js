@@ -892,7 +892,10 @@ function renderInquiries(b, containerId, badgeId) {
         </div>
 
         <div class="email-subject">${inq.subject}</div>
-        <div class="email-summary">${inq.content}</div>
+        <div class="inquiry-content-box">
+          <div class="inquiry-content-label">💬 고객 문의 내용 전문</div>
+          <div class="inquiry-content-text">${inq.content}</div>
+        </div>
 
         <div class="email-actions-bar">
           <div class="email-status-text">
