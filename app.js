@@ -301,10 +301,12 @@ function saveLocalTodosState(briefingId) {
 
   const doneTodos = (b.todomateTodos || []).filter(t => t.done).map(t => t.text || t.id);
   const donePriorities = (b.agentPriorities || []).filter(ap => ap.done).map(ap => ap.id);
+  const excludedPriorities = (b.agentPriorities || []).filter(ap => ap.excluded).map(ap => ap.id);
 
   try {
     localStorage.setItem(`jeegong_done_todos_${dateKey}`, JSON.stringify(doneTodos));
     localStorage.setItem(`jeegong_done_priorities_${dateKey}`, JSON.stringify(donePriorities));
+    localStorage.setItem(`jeegong_excluded_priorities_${dateKey}`, JSON.stringify(excludedPriorities));
   } catch (e) {}
 }
 
@@ -322,19 +324,21 @@ function restoreLocalTodosState(briefingId) {
     if (savedTodos !== null) {
       const doneList = JSON.parse(savedTodos);
       (b.todomateTodos || []).forEach(t => {
-        // Union: keep true if either server or localStorage marked done
-        if (doneList.includes(t.text) || doneList.includes(t.id)) {
-          t.done = true;
-        }
+        t.done = doneList.includes(t.text) || doneList.includes(t.id);
       });
     }
     const savedPriorities = localStorage.getItem(`jeegong_done_priorities_${dateKey}`);
     if (savedPriorities !== null) {
       const donePriorities = JSON.parse(savedPriorities);
       (b.agentPriorities || []).forEach(ap => {
-        if (donePriorities.includes(ap.id)) {
-          ap.done = true;
-        }
+        ap.done = donePriorities.includes(ap.id);
+      });
+    }
+    const savedExcluded = localStorage.getItem(`jeegong_excluded_priorities_${dateKey}`);
+    if (savedExcluded !== null) {
+      const excludedPriorities = JSON.parse(savedExcluded);
+      (b.agentPriorities || []).forEach(ap => {
+        ap.excluded = excludedPriorities.includes(ap.id);
       });
     }
   } catch (e) {}
@@ -395,6 +399,11 @@ async function initApp() {
   }
 
   // 2. Daily reset check on startup
+  try {
+    const savedTs = localStorage.getItem('jeegong_last_sync_ts');
+    if (savedTs) lastLocalUpdateTimestamp = Number(savedTs) || 0;
+  } catch (e) {}
+
   const savedWorkDate = localStorage.getItem('jeegong_work_date');
   if (savedWorkDate && savedWorkDate !== activeDate && savedWorkDate !== kst.dateStr) {
     workState = 'ready';
@@ -823,6 +832,7 @@ window.toggleAgentPriorityExclude = function(id) {
   const ap = b.agentPriorities.find(item => item.id === id);
   if (!ap) return;
   ap.excluded = !ap.excluded;
+  saveLocalTodosState(currentBriefingId);
   renderTodayView();
   showToast(ap.excluded ? '해당 우선순위 업무를 제외 처리했습니다.' : '제외 처리를 복구했습니다.');
   pushCloudState();
@@ -1421,10 +1431,7 @@ window.refreshDashboardData = async function(showNotice = true) {
     // 2. Harvest handled items from history
     syncHandledFromHistory();
 
-    // 3. Pull cloud state from ntfy
-    await pullCloudState();
-
-    // 4. Ensure today's briefing is selected
+    // 3. Ensure today's briefing is selected
     const activeDate = (appData && appData.briefings && appData.briefings[0] && appData.briefings[0].date) || kst.dateStr;
     if (appData && appData.briefings && appData.briefings.length > 0) {
       const todayB = appData.briefings.find(b => b.date === activeDate) || appData.briefings.find(b => b.date === kst.dateStr);
@@ -1433,9 +1440,11 @@ window.refreshDashboardData = async function(showNotice = true) {
       }
     }
 
-    // 5. Restore user's completed todos and priorities, then sync
+    // 4. Restore user's completed todos and priorities from local cache first
     restoreLocalTodosState(currentBriefingId);
-    saveLocalTodosState(currentBriefingId);
+
+    // 5. Pull cloud state from ntfy (authoritative remote sync updates and persists if newer)
+    await pullCloudState();
 
     // 6. Check midnight daily reset
     checkMidnightReset();
@@ -2316,8 +2325,6 @@ function applyRemoteSync(remoteData) {
         t.done = remoteData.doneTodos.includes(t.id) || remoteData.doneTodos.includes(t.text);
       });
     }
-    restoreLocalTodosState(b.id);
-    saveLocalTodosState(b.id);
     if (Array.isArray(remoteData.donePriorities)) {
       (b.agentPriorities || []).forEach(ap => {
         ap.done = remoteData.donePriorities.includes(ap.id);
@@ -2328,6 +2335,7 @@ function applyRemoteSync(remoteData) {
         ap.excluded = remoteData.excludedPriorities.includes(ap.id);
       });
     }
+    // Update local storage with the authoritative remote state so local cache stays fresh
     saveLocalTodosState(b.id);
     // Sync handled registry first so it is available for filtering and status checks
     if (remoteData.handledRegistry && typeof remoteData.handledRegistry === 'object') {

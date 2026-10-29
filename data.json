@@ -128,13 +128,13 @@
           "id": "todo-20261029-3",
           "text": "아넬라 제안 20명",
           "category": "사업or수익",
-          "done": false
+          "done": true
         },
         {
           "id": "todo-20261029-4",
           "text": "디어커스 제안 15명",
           "category": "사업or수익",
-          "done": false
+          "done": true
         },
         {
           "id": "todo-20261029-5",
@@ -146,19 +146,19 @@
           "id": "todo-20261029-6",
           "text": "미미뻥 전화",
           "category": "사업or수익",
-          "done": false
+          "done": true
         },
         {
           "id": "todo-20261029-7",
           "text": "스레드 업로드",
           "category": "사업or수익",
-          "done": false
+          "done": true
         },
         {
           "id": "todo-20261029-8",
           "text": "데이원 결제링크 요청",
           "category": "사업or수익",
-          "done": false
+          "done": true
         },
         {
           "id": "todo-20261029-9",
