@@ -221,6 +221,15 @@
       ],
       "agentPriorities": [
         {
+          "id": "ap-class101-lecture-open",
+          "priority": "1순위",
+          "title": "[클래스101] 1-4 강의 공개 설정 요청 응대",
+          "desc": "XAVI 매니저: 1-4 강의 공개 설정 요청 (오늘 할 일 연계)",
+          "detail": "클래스101 담당 매니저 XAVI의 요청: '1-4 강의 만드신거 공개 설정 해주실 수 있을까요?' 크리에이터센터에서 공개 전환 필요.",
+          "done": false,
+          "excluded": false
+        },
+        {
           "id": "ap0-kakao-paynote-eunseon",
           "priority": "1순위",
           "title": "[카카오톡/페이노트] 김은선 님 전자책 환불 요청 응대",
@@ -272,6 +281,18 @@
         }
       ],
       "inquiries": [
+        {
+          "id": "inq-class101-lecture-open-20261030",
+          "channel": "클래스101",
+          "serviceClass": "channel-kmong",
+          "from": "크리에이터센터 XAVI",
+          "email": "creatorcenter@101.inc",
+          "time": "12:38",
+          "subject": "[클래스101] 1-4 강의 공개 설정 요청 회신",
+          "content": "담당 매니저 XAVI:\n\"넵! 혹시 한가지 수정하시고 다시 주실 수 있을까요? 1-4 강의 만드신거 공개 설정 해주실 수 있을까요?\"\n\n(오늘 할 일 '클래스 101 썸네일·상세페이지 수정'과 연계)",
+          "draft": "안녕하세요 매니저님! 1-4 강의 공개 설정으로 변경 완료했습니다. 확인 부탁드립니다. 감사합니다 :)",
+          "status": "pending"
+        },
         {
           "id": "inq-kakao-paynote-eunseon-20261030",
           "channel": "카카오톡",
