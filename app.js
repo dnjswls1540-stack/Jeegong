@@ -520,10 +520,7 @@ function setupNavigation() {
     'inquiry-view': '실시간 문의',
     'work-status-view': '업무 현황',
     'gonggu-view': '공동구매 영업',
-    'sales-view': '정산·매출',
-    'docs-view': '문서함',
-    'history-view': '에이전트 일지',
-    'settings-view': '설정'
+    'sales-view': '정산·매출'
   };
 
   function switchView(viewId) {
