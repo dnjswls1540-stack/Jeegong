@@ -157,7 +157,7 @@
           "id": "todo-20261101-1",
           "text": "가계부 작성",
           "category": "사업or수익",
-          "done": false,
+          "done": true,
           "excluded": false
         },
         {
@@ -171,21 +171,14 @@
           "id": "todo-20261101-3",
           "text": "SEO 최종 점검",
           "category": "사업or수익",
-          "done": false,
+          "done": true,
           "excluded": false
         },
         {
           "id": "todo-20261101-4",
           "text": "듀오링고 일본어 2개",
           "category": "자기계발",
-          "done": false,
-          "excluded": false
-        },
-        {
-          "id": "todo-20261101-5",
-          "text": "운동",
-          "category": "해야 할 일",
-          "done": false,
+          "done": true,
           "excluded": false
         }
       ],

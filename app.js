@@ -548,10 +548,32 @@ function setupNavigation() {
     }
 
     if (topTitle) topTitle.textContent = '지공 출근 에이전트';
+
+    // Close mobile drawer on navigation
+    const sidebarEl = document.querySelector('.sidebar');
+    const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+    if (sidebarEl) sidebarEl.classList.remove('mobile-open');
+    if (sidebarBackdrop) sidebarBackdrop.classList.remove('show');
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   window.switchNavView = switchView;
+
+  // Mobile drawer toggle button & backdrop
+  const mobileToggleBtn = document.getElementById('btn-mobile-sidebar-toggle');
+  const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+  const sidebarEl = document.querySelector('.sidebar');
+  if (mobileToggleBtn && sidebarEl && sidebarBackdrop) {
+    mobileToggleBtn.addEventListener('click', () => {
+      sidebarEl.classList.toggle('mobile-open');
+      sidebarBackdrop.classList.toggle('show');
+    });
+    sidebarBackdrop.addEventListener('click', () => {
+      sidebarEl.classList.remove('mobile-open');
+      sidebarBackdrop.classList.remove('show');
+    });
+  }
 
   navItems.forEach(item => {
     item.addEventListener('click', () => {
@@ -620,7 +642,9 @@ function getWeekDateRange(offset = 0) {
 
 function renderWeeklyCalendar() {
   const container = document.getElementById('week-calendar-container');
-  if (!container || !appData || !appData.briefings) return;
+  const fullContainer = document.getElementById('calendar-full-view-container');
+  const agendaContainer = document.getElementById('calendar-agenda-list');
+  if (!appData || !appData.briefings) return;
   
   const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
   const events = (b.calendarEvents || []);
@@ -629,111 +653,215 @@ function renderWeeklyCalendar() {
   const startDay = days[0];
   const endDay = days[6];
   
+  const rangeStr = `${startDay.month}월 ${startDay.dayNum}일~${endDay.month === startDay.month ? '' : endDay.month + '월 '}${endDay.dayNum}일`;
   const rangeTextEl = document.getElementById('cal-week-range-text');
-  if (rangeTextEl) {
-    rangeTextEl.textContent = `${startDay.month}월 ${startDay.dayNum}일~${endDay.month === startDay.month ? '' : endDay.month + '월 '}${endDay.dayNum}일`;
-  }
-  
-  container.innerHTML = '';
-  
-  days.forEach(day => {
-    const dayEvents = events.filter(ev => {
-      if (ev.startDate && ev.endDate) {
-        return day.dateStr >= ev.startDate && day.dateStr <= ev.endDate;
+  if (rangeTextEl) rangeTextEl.textContent = rangeStr;
+  const fullRangeTextEl = document.getElementById('cal-full-range-text');
+  if (fullRangeTextEl) fullRangeTextEl.textContent = rangeStr;
+
+  const calBannerCount = document.getElementById('calendar-view-banner-count');
+  if (calBannerCount) calBannerCount.textContent = `${events.length}건`;
+  const calAgendaBadge = document.getElementById('calendar-agenda-badge');
+  if (calAgendaBadge) calAgendaBadge.textContent = `${events.length}개 일정`;
+
+  function buildGridHtml() {
+    let html = '';
+    days.forEach(day => {
+      const dayEvents = events.filter(ev => {
+        if (ev.startDate && ev.endDate) {
+          return day.dateStr >= ev.startDate && day.dateStr <= ev.endDate;
+        }
+        return ev.startDate === day.dateStr;
+      });
+      
+      let eventsHtml = '';
+      dayEvents.forEach(ev => {
+        let badgeClass = 'badge-default';
+        if (ev.tag === '공구') badgeClass = 'badge-gonggu';
+        else if (ev.tag === '개인') badgeClass = 'badge-personal';
+        else if (ev.tag === '업무' || ev.tag === '외주') badgeClass = 'badge-biz';
+
+        eventsHtml += `
+          <div class="cal-event-card" style="border-left-color: ${ev.color || '#3b82f6'};" title="${ev.summary} (${ev.time || '종일'})">
+            <div class="cal-event-time">${ev.time || '종일'}</div>
+            <div class="cal-event-title">${ev.summary}</div>
+            <span class="cal-event-badge ${badgeClass}">${ev.tag || '공구'}</span>
+          </div>
+        `;
+      });
+      
+      if (dayEvents.length === 0) {
+        eventsHtml = `<div style="font-size: 11px; color: var(--text-tertiary); text-align: center; margin-top: 24px;">-</div>`;
       }
-      return ev.startDate === day.dateStr;
-    });
-    
-    let eventsHtml = '';
-    dayEvents.forEach(ev => {
-      eventsHtml += `
-        <div class="cal-event-card" style="border-left-color: ${ev.color || '#3b82f6'};" title="${ev.summary} (${ev.time || '종일'})">
-          <div class="cal-event-time">${ev.time || '종일'}</div>
-          <div class="cal-event-title">${ev.summary}</div>
-          <span class="cal-event-badge" style="background-color: ${ev.color || '#3b82f6'}18; color: ${ev.color || '#3b82f6'};">${ev.tag || '공구'}</span>
+      
+      html += `
+        <div class="day-column ${day.isToday ? 'is-today' : ''}">
+          <div class="day-header">
+            <div class="day-name">${day.dayName}</div>
+            <div class="day-num">${day.dayNum}</div>
+          </div>
+          <div class="day-events-list">
+            ${eventsHtml}
+          </div>
         </div>
       `;
     });
-    
-    if (dayEvents.length === 0) {
-      eventsHtml = `<div style="font-size: 11px; color: var(--text-tertiary); text-align: center; margin-top: 24px;">-</div>`;
+    return html;
+  }
+
+  const gridHtml = buildGridHtml();
+  if (container) container.innerHTML = gridHtml;
+  if (fullContainer) fullContainer.innerHTML = gridHtml;
+
+  // Render Agenda List in calendar-view
+  if (agendaContainer) {
+    agendaContainer.innerHTML = '';
+    if (events.length === 0) {
+      agendaContainer.innerHTML = '<div class="empty-state">이번 주 예정된 구글 캘린더 일정이 없습니다.</div>';
+    } else {
+      events.forEach(ev => {
+        let badgeClass = 'badge-yellow';
+        if (ev.tag === '공구') badgeClass = 'badge-orange';
+        else if (ev.tag === '개인') badgeClass = 'badge-red';
+
+        agendaContainer.innerHTML += `
+          <div class="action-item" style="cursor: default;">
+            <div class="action-left">
+              <span class="action-icon">📅</span>
+              <div>
+                <div class="action-text">${ev.summary}</div>
+                <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 2px;">
+                  ${ev.startDate} ${ev.endDate ? '~ ' + ev.endDate : ''} · ${ev.time || '종일'} · ${ev.location || '온라인'}
+                </div>
+              </div>
+            </div>
+            <span class="action-badge ${badgeClass}">${ev.tag || '일정'}</span>
+          </div>
+        `;
+      });
     }
-    
-    container.innerHTML += `
-      <div class="day-column ${day.isToday ? 'is-today' : ''}">
-        <div class="day-header">
-          <div class="day-name">${day.dayName}</div>
-          <div class="day-num">${day.dayNum}</div>
-        </div>
-        <div class="day-events-list">
-          ${eventsHtml}
-        </div>
-      </div>
-    `;
-  });
+  }
 }
 
 function renderTodoTable() {
   const tbody = document.getElementById('todo-table-body');
-  if (!tbody || !appData || !appData.briefings) return;
+  const fullTbody = document.getElementById('todo-full-table-body');
+  if (!appData || !appData.briefings) return;
   
   const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
   const todos = b.todomateTodos || [];
   const priorities = b.agentPriorities || [];
   
-  tbody.innerHTML = '';
-  
-  // 1. Todomate Todos
-  todos.forEach(t => {
-    if (t.excluded) return;
-    tbody.innerHTML += `
-      <tr id="todo-row-${t.id}">
-        <td style="text-align: center;">
-          <input type="checkbox" class="todo-check-input" ${t.done ? 'checked' : ''} onchange="toggleTodomateTodo('${t.id}')">
-        </td>
-        <td>
-          <span class="todo-text-main ${t.done ? 'done' : ''}" id="todo-text-${t.id}">${t.text}</span>
-        </td>
-        <td>
-          <span class="cat-tag">${t.category || '사업or수익'}</span>
-        </td>
-        <td>
-          <span class="source-tag">📱 투두메이트</span>
-        </td>
-        <td style="text-align: right;">
-          <button class="btn-del-todo" onclick="deleteTodomateTodo('${t.id}')" title="삭제">✕</button>
-        </td>
-      </tr>
-    `;
-  });
-  
-  // 2. Agent Priorities
-  priorities.forEach(p => {
-    if (p.excluded) return;
-    tbody.innerHTML += `
-      <tr id="todo-row-${p.id}" style="background-color: rgba(59, 130, 246, 0.02);">
-        <td style="text-align: center;">
-          <input type="checkbox" class="todo-check-input" ${p.done ? 'checked' : ''} onchange="togglePriorityDone('${p.id}')">
-        </td>
-        <td>
-          <span class="todo-text-main ${p.done ? 'done' : ''}" id="todo-text-${p.id}">
-            <strong style="color: var(--accent-blue); font-size: 11px; margin-right: 4px;">${p.priority || '우선'}</strong>
-            ${p.title}
-          </span>
-        </td>
-        <td>
-          <span class="cat-tag" style="background-color: var(--accent-blue-light); color: var(--accent-blue-text);">에이전트 추천</span>
-        </td>
-        <td>
-          <span class="source-tag">✨ 피클 AI</span>
-        </td>
-        <td style="text-align: right;">
-          <button class="btn-del-todo" onclick="toggleExcludePriority('${p.id}')" title="제외">✕</button>
-        </td>
-      </tr>
-    `;
-  });
+  const pendingCount = todos.filter(t => !t.done && !t.excluded).length;
+  const doneCount = todos.filter(t => t.done && !t.excluded).length;
+
+  const sideTodoBadge = document.getElementById('side-todo-badge');
+  if (sideTodoBadge) {
+    if (pendingCount > 0) {
+      sideTodoBadge.style.display = 'inline-flex';
+      sideTodoBadge.textContent = pendingCount;
+      sideTodoBadge.title = `오늘 남은 할 일 ${pendingCount}건`;
+    } else {
+      sideTodoBadge.style.display = 'none';
+    }
+  }
+
+  const todoViewBadge = document.getElementById('todo-view-badge');
+  if (todoViewBadge) todoViewBadge.textContent = `${pendingCount}건 남음`;
+
+  const todoBannerCount = document.getElementById('todo-view-banner-count');
+  if (todoBannerCount) todoBannerCount.textContent = `${pendingCount}건 (완료 ${doneCount}건)`;
+
+  const statTodoEl = document.getElementById('stat-todo-count');
+  if (statTodoEl) statTodoEl.textContent = pendingCount;
+
+  function buildTableRows() {
+    let rowsHtml = '';
+    
+    // 1. Todomate Todos
+    todos.forEach(t => {
+      if (t.excluded) return;
+      let catClass = 'cat-default';
+      if (t.category === '사업or수익') catClass = 'cat-biz';
+      else if (t.category === '자기계발') catClass = 'cat-self';
+      else if (t.category === '해야할일' || t.category === '해야 할 일') catClass = 'cat-todo';
+
+      rowsHtml += `
+        <tr id="todo-row-${t.id}">
+          <td style="text-align: center;">
+            <input type="checkbox" class="todo-check-input" ${t.done ? 'checked' : ''} onchange="toggleTodomateTodo('${t.id}')">
+          </td>
+          <td>
+            <span class="todo-text-main ${t.done ? 'done' : ''}" id="todo-text-${t.id}">${t.text}</span>
+          </td>
+          <td style="text-align: center;">
+            <span class="cat-tag ${catClass}">${t.category || '사업or수익'}</span>
+          </td>
+          <td style="text-align: center;">
+            <span class="source-tag">📱 투두메이트</span>
+          </td>
+          <td style="text-align: center;">
+            <button class="btn-del-todo" onclick="deleteTodomateTodo('${t.id}')" title="삭제">✕</button>
+          </td>
+        </tr>
+      `;
+    });
+    
+    // 2. Agent Priorities
+    priorities.forEach(p => {
+      if (p.excluded) return;
+      rowsHtml += `
+        <tr id="todo-row-${p.id}" style="background-color: rgba(59, 130, 246, 0.02);">
+          <td style="text-align: center;">
+            <input type="checkbox" class="todo-check-input" ${p.done ? 'checked' : ''} onchange="togglePriorityDone('${p.id}')">
+          </td>
+          <td>
+            <span class="todo-text-main ${p.done ? 'done' : ''}" id="todo-text-${p.id}">
+              <strong style="color: var(--accent-blue); font-size: 11px; margin-right: 4px;">${p.priority || '우선'}</strong>
+              ${p.title}
+            </span>
+          </td>
+          <td style="text-align: center;">
+            <span class="cat-tag cat-agent">에이전트 추천</span>
+          </td>
+          <td style="text-align: center;">
+            <span class="source-tag">✨ 피클 AI</span>
+          </td>
+          <td style="text-align: center;">
+            <button class="btn-del-todo" onclick="toggleExcludePriority('${p.id}')" title="제외">✕</button>
+          </td>
+        </tr>
+      `;
+    });
+    return rowsHtml;
+  }
+
+  const tableRows = buildTableRows();
+  if (tbody) tbody.innerHTML = tableRows;
+  if (fullTbody) fullTbody.innerHTML = tableRows;
 }
+
+window.addTodoFromViewInput = function() {
+  const input = document.getElementById('todo-view-quick-input');
+  if (!input || !input.value.trim()) return;
+  const text = input.value.trim();
+  input.value = '';
+  if (!appData) return;
+  const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
+  if (!b.todomateTodos) b.todomateTodos = [];
+  b.todomateTodos.unshift({
+    id: 'todo-' + Date.now(),
+    text: text,
+    category: '사업or수익',
+    done: false,
+    excluded: false
+  });
+  saveLocalTodosState(currentBriefingId);
+  renderTodoTable();
+  renderTodayView();
+  showToast(`할 일에 추가되었습니다: "${text}"`);
+  pushCloudState();
+};
 
 // Render Today's Briefing
 function renderTodayView() {
@@ -757,27 +885,37 @@ function renderTodayView() {
     emailCountEl.textContent = unhandledEmails || '3';
   }
 
-  // Update Sidebar Nav Badges
-  const sideEmailBadge = document.getElementById('side-email-badge');
-  if (sideEmailBadge && b.emails) {
-    const unhandledEmails = b.emails.filter(m => m.status !== 'excluded' && m.status !== 'done' && m.status !== 'sent').length;
-    sideEmailBadge.textContent = unhandledEmails || '0';
-  }
-  const sideTodoBadge = document.getElementById('side-todo-badge');
-  if (sideTodoBadge) {
-    sideTodoBadge.textContent = pendingTodosCount || '0';
-  }
-  const sideInqBadge = document.getElementById('side-inquiry-badge');
-  if (sideInqBadge && b.inquiries) {
-    const unhandledInqs = b.inquiries.filter(i => i.status !== 'excluded' && i.status !== 'done' && i.status !== 'sent').length;
-    sideInqBadge.textContent = unhandledInqs || '0';
+  // Update Sidebar Nav Badges with clear helper
+  function updateNavBadge(badgeEl, count, label) {
+    if (!badgeEl) return;
+    if (count > 0) {
+      badgeEl.style.display = 'inline-flex';
+      badgeEl.textContent = count;
+      badgeEl.title = `${label} ${count}건`;
+    } else {
+      badgeEl.style.display = 'none';
+    }
   }
 
+  const filteredEmails = getFilteredEmails(b);
+  const unhandledEmails = filteredEmails.filter(m => m.status !== 'excluded' && m.status !== 'done' && m.status !== 'sent').length;
+  updateNavBadge(document.getElementById('side-email-badge'), unhandledEmails, '조치 필요 메일');
+
+  const pendingTodosCount = b.todomateTodos ? b.todomateTodos.filter(t => !t.done && !t.excluded).length : 0;
+  updateNavBadge(document.getElementById('side-todo-badge'), pendingTodosCount, '오늘 남은 할 일');
+
+  const filteredInqsForStat = getFilteredInquiries(b);
+  const unhandledInqs = filteredInqsForStat.filter(i => i.status !== 'excluded' && i.status !== 'done' && i.status !== 'sent').length;
+  updateNavBadge(document.getElementById('side-inquiry-badge'), unhandledInqs, '답변 대기 문의');
+
+  const emailCountEl = document.getElementById('stat-email-count');
+  if (emailCountEl) emailCountEl.textContent = `${unhandledEmails}건`;
+  const todoCountEl = document.getElementById('stat-todo-count');
+  if (todoCountEl) todoCountEl.textContent = pendingTodosCount;
+  const inqCountEl = document.getElementById('stat-inquiry-count');
+  if (inqCountEl) inqCountEl.textContent = `${unhandledInqs}건`;
   const driveCountEl = document.getElementById('stat-drive-count');
   if (driveCountEl && b.driveFiles) driveCountEl.textContent = `${b.driveFiles.length}건`;
-
-  const inqCountEl = document.getElementById('stat-inquiry-count');
-  if (inqCountEl && b.inquiries) inqCountEl.textContent = `${b.inquiries.filter(i => i.status !== 'excluded' && i.status !== 'done' && i.status !== 'sent').length}건`;
 
   // Guide
   const guideEl = document.getElementById('guide-banner-text');
@@ -804,22 +942,144 @@ function renderTodayView() {
     }
   }
 
-  // 2. Emails (with Exclude & Process System + Cross-day Deduplication)
-  const emailContainer = document.getElementById('email-list-container');
-  emailContainer.innerHTML = '';
-  
-  const filteredEmails = getFilteredEmails(b);
-  const emailBadge = document.getElementById('email-badge');
-  if (emailBadge) {
-    emailBadge.textContent = `${filteredEmails.filter(e => e.status !== 'excluded' && e.status !== 'done' && e.status !== 'sent').length}건 조치 필요`;
+  // 2. Render Emails into BOTH Home and Dedicated Email View
+  renderEmailList(b, 'email-list-container', 'email-badge', null);
+  renderEmailList(b, 'email-view-container', 'email-view-badge', 'email-view-banner-count');
+
+  // 2-B. Customer Inquiries into BOTH Home and Dedicated Inquiry View
+  renderInquiries(b, 'inquiry-list-container', 'inquiry-badge', null);
+  renderInquiries(b, 'inquiry-exclusive-list-container', 'inquiry-view-badge', 'inquiry-view-banner-count');
+
+  // 3-A. Todomate Todos (Legacy List fallback)
+  const todoContainer = document.getElementById('todomate-list-container');
+  const todoBadge = document.getElementById('todomate-count-badge');
+  if (todoBadge) todoBadge.textContent = `${pendingTodosCount}건 대기`;
+
+  if (todoContainer) {
+    todoContainer.innerHTML = '';
+    const sortedTodos = [...(b.todomateTodos || [])].sort((a, b) => {
+      if (a.done === b.done) return 0;
+      return a.done ? 1 : -1;
+    });
+
+    sortedTodos.forEach(todo => {
+      const isDone = todo.done;
+      todoContainer.innerHTML += `
+        <div class="todo-item ${isDone ? 'completed' : ''}" onclick="toggleTodomateTodo('${todo.id}')">
+          <div class="todo-checkbox ${isDone ? 'checked' : ''}">
+            ${isDone ? '✓' : ''}
+          </div>
+          <div class="todo-text">${todo.text}</div>
+          <span class="section-badge" style="font-size: 11px;">${todo.category || '투두메이트'}</span>
+          <button class="todo-delete-btn" onclick="event.stopPropagation(); window.deleteTodomateTodo('${todo.id}')" title="할 일 삭제">✕</button>
+        </div>
+      `;
+    });
   }
 
-  // Update stat counters with deduplicated counts
-  if (emailCountEl) emailCountEl.textContent = `${filteredEmails.filter(m => m.status !== 'excluded').length}건`;
-  const filteredInqsForStat = getFilteredInquiries(b);
-  if (inqCountEl) inqCountEl.textContent = `${filteredInqsForStat.filter(i => i.status !== 'excluded' && i.status !== 'done' && i.status !== 'sent').length}건`;
+  // 3-B. Agent Recommended Priorities (Accordion Toggles - Finished items sink to bottom)
+  const agentContainer = document.getElementById('agent-priority-container');
+  if (agentContainer) {
+    agentContainer.innerHTML = '';
+    const sortedAgentPriorities = [...b.agentPriorities].sort((a, b) => {
+      const aFinished = a.done || a.excluded;
+      const bFinished = b.done || b.excluded;
+      if (aFinished === bFinished) return 0;
+      return aFinished ? 1 : -1;
+    });
 
-  // Sort emails: actionable first, (done, sent, excluded) at the bottom
+    sortedAgentPriorities.forEach(ap => {
+      const isP1 = ap.priority.includes('1순위');
+      const badgeClass = isP1 ? 'priority-p1' : 'priority-p2';
+      const isDone = ap.done;
+      const isExcluded = ap.excluded;
+
+      agentContainer.innerHTML += `
+        <div class="accordion-item ${isDone ? 'done' : ''} ${isExcluded ? 'excluded' : ''}" id="accordion-${ap.id}">
+          <div class="accordion-header" onclick="toggleAccordion('${ap.id}')">
+            <div class="accordion-header-left">
+              <div class="todo-checkbox ${isDone ? 'checked' : ''}" onclick="event.stopPropagation(); toggleAgentPriorityDone('${ap.id}')" title="직접 완료 표시">
+                ${isDone ? '✓' : ''}
+              </div>
+              <span class="todo-priority ${badgeClass}">${ap.priority}</span>
+              <div class="accordion-title">${ap.title}</div>
+            </div>
+            <div class="accordion-header-right">
+              <button class="btn-exclude-mini" onclick="event.stopPropagation(); toggleAgentPriorityExclude('${ap.id}')">
+                ${isExcluded ? '복구' : '제외'}
+              </button>
+              <span class="accordion-arrow">▾</span>
+            </div>
+          </div>
+          <div class="accordion-content">
+            <div class="priority-reason-box">
+              <div class="priority-reason-title">
+                <span>💡</span>
+                <span>우선순위 선정 사유</span>
+              </div>
+              <div class="priority-reason-text">${ap.detail || ap.desc || ap.reason || '상세 사유가 등록되지 않았습니다.'}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+  }
+
+  // 4. Drive References
+  const driveContainer = document.getElementById('drive-list-container');
+  const docsContainer = document.getElementById('docs-list-container');
+  const driveBadge = document.getElementById('drive-badge');
+  if (b.driveFiles) {
+    if (driveBadge) driveBadge.textContent = `${b.driveFiles.length}개 문서`;
+    let driveHtml = '';
+    b.driveFiles.forEach(file => {
+      const icon = file.type === 'sheet' ? '📊' : file.type === 'pdf' ? '📕' : '📄';
+      driveHtml += `
+        <div class="drive-item">
+          <div class="drive-left">
+            <span class="drive-file-icon">${icon}</span>
+            <div>
+              <div class="drive-filename">${file.name}</div>
+              <div class="drive-meta">최종 수정: ${file.modified} · Google Drive</div>
+            </div>
+          </div>
+          <a href="${file.url}" target="_blank" class="btn-open-link">
+            <span>열기</span>
+            <span>↗</span>
+          </a>
+        </div>
+      `;
+    });
+    if (driveContainer) driveContainer.innerHTML = driveHtml;
+    if (docsContainer) docsContainer.innerHTML = driveHtml;
+  }
+
+  // Render Modern Lean-AX Sections
+  renderWeeklyCalendar();
+  renderTodoTable();
+}
+
+// Dedicated Reusable Email List Renderer
+function renderEmailList(b, containerId, badgeId, bannerCountId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const filteredEmails = getFilteredEmails(b);
+  const unhandledCount = filteredEmails.filter(e => e.status !== 'excluded' && e.status !== 'done' && e.status !== 'sent').length;
+
+  const badge = document.getElementById(badgeId);
+  if (badge) badge.textContent = `${unhandledCount}건 조치 필요`;
+
+  if (bannerCountId) {
+    const bannerEl = document.getElementById(bannerCountId);
+    if (bannerEl) bannerEl.textContent = `${unhandledCount}건`;
+  }
+
+  container.innerHTML = '';
+  if (filteredEmails.length === 0) {
+    container.innerHTML = '<div class="empty-state">조치 필요한 신규 메일이 없습니다. 에이전트가 5분 단위로 수신함을 자동 감시 중입니다.</div>';
+    return;
+  }
+
   const sortedEmails = [...filteredEmails].sort((a, b) => {
     const aHandled = a.status === 'done' || a.status === 'sent' || a.status === 'excluded';
     const bHandled = b.status === 'done' || b.status === 'sent' || b.status === 'excluded';
@@ -828,15 +1088,15 @@ function renderTodayView() {
   });
 
   sortedEmails.forEach(mail => {
-    const isP1 = mail.priority.includes('1순위');
+    const isP1 = mail.priority && mail.priority.includes('1순위');
     const pClass = isP1 ? 'p1' : 'p2';
     const badgeClass = isP1 ? 'badge-p1' : 'badge-p2';
     const isExcluded = mail.status === 'excluded';
     const isDone = mail.status === 'done';
     const isSent = mail.status === 'sent';
 
-    emailContainer.innerHTML += `
-      <div class="email-item ${pClass} ${isExcluded ? 'excluded' : ''} ${isDone || isSent ? 'done' : ''}" id="email-item-${mail.id}">
+    container.innerHTML += `
+      <div class="email-item ${pClass} ${isExcluded ? 'excluded' : ''} ${isDone || isSent ? 'done' : ''}" id="email-item-${containerId}-${mail.id}">
         <div class="email-top">
           <div class="email-badges-row">
             <div class="email-badges-left">
@@ -873,7 +1133,7 @@ function renderTodayView() {
                 </button>
               ` : ''}
               ${!isExcluded && mail.status !== 'done' ? `
-                <button class="btn-process" onclick="openProcessDraft('${mail.id}')">
+                <button class="btn-process" onclick="openProcessDraft('${containerId}-${mail.id}')">
                   답장 처리
                 </button>
               ` : ''}
@@ -882,14 +1142,14 @@ function renderTodayView() {
         </div>
 
         <!-- Inline Draft Editor Box -->
-        <div class="inline-draft-box ${window.activeDraftBoxIds && window.activeDraftBoxIds.has(`draft-box-${mail.id}`) ? 'active' : ''}" id="draft-box-${mail.id}">
+        <div class="inline-draft-box ${window.activeDraftBoxIds && window.activeDraftBoxIds.has(`draft-box-${containerId}-${mail.id}`) ? 'active' : ''}" id="draft-box-${containerId}-${mail.id}">
           <div class="draft-header">
             <span>✍️ 구름이 답장 초안 (수정 후 승인 시 발송)</span>
             <span style="font-size: 11.5px; color: var(--text-tertiary);">수신: ${mail.from}</span>
           </div>
-          <textarea class="draft-textarea" id="draft-text-${mail.id}" oninput="onDraftInput('${mail.id}', this.value)">${mail.draft || ''}</textarea>
+          <textarea class="draft-textarea" id="draft-text-${containerId}-${mail.id}" oninput="onDraftInput('${mail.id}', this.value)">${mail.draft || ''}</textarea>
           <div class="draft-actions">
-            <button class="btn-secondary" onclick="closeProcessDraft('${mail.id}')" style="padding: 5px 12px; font-size: 12px;">닫기</button>
+            <button class="btn-secondary" onclick="closeProcessDraft('${containerId}-${mail.id}')" style="padding: 5px 12px; font-size: 12px;">닫기</button>
             <button class="btn-primary" onclick="approveAndSendEmail('${mail.id}')" style="padding: 6px 14px; font-size: 12px;">
               <span>승인 및 메일 발송</span>
               <span>✈️</span>
@@ -899,112 +1159,6 @@ function renderTodayView() {
       </div>
     `;
   });
-
-  // 2-B. Customer Inquiries (Kmong, Imweb, Mail)
-  renderInquiries(b, 'inquiry-list-container', 'inquiry-badge');
-  renderInquiries(b, 'inquiry-exclusive-list-container', 'inquiry-exclusive-badge');
-
-  // 3-A. Todomate Todos (Legacy List fallback)
-  const todoContainer = document.getElementById('todomate-list-container');
-  const todoBadge = document.getElementById('todomate-count-badge');
-  if (todoBadge) todoBadge.textContent = `${(b.todomateTodos || []).filter(t => !t.done).length}건 대기`;
-
-  if (todoContainer) {
-    todoContainer.innerHTML = '';
-    const sortedTodos = [...(b.todomateTodos || [])].sort((a, b) => {
-      if (a.done === b.done) return 0;
-      return a.done ? 1 : -1;
-    });
-
-    sortedTodos.forEach(todo => {
-      const isDone = todo.done;
-      todoContainer.innerHTML += `
-        <div class="todo-item ${isDone ? 'completed' : ''}" onclick="toggleTodomateTodo('${todo.id}')">
-          <div class="todo-checkbox ${isDone ? 'checked' : ''}">
-            ${isDone ? '✓' : ''}
-          </div>
-          <div class="todo-text">${todo.text}</div>
-          <span class="section-badge" style="font-size: 11px;">${todo.category || '투두메이트'}</span>
-          <button class="todo-delete-btn" onclick="event.stopPropagation(); window.deleteTodomateTodo('${todo.id}')" title="할 일 삭제">✕</button>
-        </div>
-      `;
-    });
-  }
-
-  // 3-B. Agent Recommended Priorities (Accordion Toggles - Finished items sink to bottom)
-  const agentContainer = document.getElementById('agent-priority-container');
-  agentContainer.innerHTML = '';
-
-  const sortedAgentPriorities = [...b.agentPriorities].sort((a, b) => {
-    const aFinished = a.done || a.excluded;
-    const bFinished = b.done || b.excluded;
-    if (aFinished === bFinished) return 0;
-    return aFinished ? 1 : -1;
-  });
-
-  sortedAgentPriorities.forEach(ap => {
-    const isP1 = ap.priority.includes('1순위');
-    const badgeClass = isP1 ? 'priority-p1' : 'priority-p2';
-    const isDone = ap.done;
-    const isExcluded = ap.excluded;
-
-    agentContainer.innerHTML += `
-      <div class="accordion-item ${isDone ? 'done' : ''} ${isExcluded ? 'excluded' : ''}" id="accordion-${ap.id}">
-        <div class="accordion-header">
-          <div class="accordion-header-left" onclick="toggleAccordion('${ap.id}')">
-            <div class="todo-checkbox ${isDone ? 'checked' : ''}" onclick="event.stopPropagation(); toggleAgentPriorityDone('${ap.id}')" title="직접 완료 표시">
-              ${isDone ? '✓' : ''}
-            </div>
-            <span class="todo-priority ${badgeClass}">${ap.priority}</span>
-            <div class="accordion-title">${ap.title}</div>
-          </div>
-          <div class="accordion-header-right">
-            <button class="btn-exclude-mini" onclick="toggleAgentPriorityExclude('${ap.id}')">
-              ${isExcluded ? '복구' : '제외'}
-            </button>
-            <span class="accordion-arrow" onclick="toggleAccordion('${ap.id}')">▼</span>
-          </div>
-        </div>
-        <div class="accordion-content">
-          <div style="display: flex; align-items: flex-start; gap: 8px;">
-            <span style="font-size: 14px; line-height: 1.4;">💡</span>
-            <div>
-              <div style="font-size: 11px; font-weight: 700; color: var(--accent-blue); margin-bottom: 2px;">우선순위 선정 사유</div>
-              <div style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.6;">${ap.detail || ap.desc || ap.reason || '상세 사유가 등록되지 않았습니다.'}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-  });
-
-  // 4. Drive References
-  const driveContainer = document.getElementById('drive-list-container');
-  if (driveContainer && b.driveFiles) {
-    driveContainer.innerHTML = '';
-    b.driveFiles.forEach(file => {
-      const icon = file.type === 'sheet' ? '📊' : file.type === 'pdf' ? '📕' : '📄';
-      driveContainer.innerHTML += `
-        <div class="drive-item">
-          <div class="drive-left">
-            <span class="drive-file-icon">${icon}</span>
-            <div>
-              <div class="drive-filename">${file.name}</div>
-              <div class="drive-meta">최종 수정: ${file.modified} · Google Drive</div>
-            </div>
-          </div>
-          <a href="${file.url}" target="_blank" class="btn-open-link">
-            <span>열기</span>
-            <span>↗</span>
-          </a>
-        </div>
-      `;
-    });
-  }
-
-  // Render Modern Lean-AX Sections
-  renderWeeklyCalendar();
-  renderTodoTable();
 }
 
 // Email Mark Done / Unmark Done
@@ -1059,7 +1213,7 @@ window.toggleAgentPriorityExclude = function(id) {
 
 // Email Exclude / Restore
 // Render Customer Inquiries (Kmong, Imweb, Mail) with Cross-day Deduplication & Responsive Badges
-function renderInquiries(b, containerId, badgeId) {
+function renderInquiries(b, containerId, badgeId, bannerCountId) {
   const container = document.getElementById(containerId);
   if (!container) return;
   if (!b.inquiries) b.inquiries = [];
@@ -1072,9 +1226,14 @@ function renderInquiries(b, containerId, badgeId) {
     badge.textContent = `${pendingCount}건 대기`;
   }
 
+  if (bannerCountId) {
+    const bannerEl = document.getElementById(bannerCountId);
+    if (bannerEl) bannerEl.textContent = `${pendingCount}건`;
+  }
+
   container.innerHTML = '';
   if (filteredInquiries.length === 0) {
-    container.innerHTML = '<div class="empty-state">현재 인입된 신규 고객 문의가 없습니다.</div>';
+    container.innerHTML = '<div class="empty-state">현재 인입된 신규 고객 문의가 없습니다. 에이전트가 크몽·아임웹 채널톡을 실시간 감시 중입니다.</div>';
     return;
   }
 
@@ -1669,6 +1828,16 @@ ${priorityText}
       if (e.key === 'Enter') {
         e.preventDefault();
         window.handleQuickAddTodo();
+      }
+    });
+  }
+
+  const todoViewQuickInput = document.getElementById('todo-view-quick-input');
+  if (todoViewQuickInput) {
+    todoViewQuickInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        window.addTodoFromViewInput();
       }
     });
   }
