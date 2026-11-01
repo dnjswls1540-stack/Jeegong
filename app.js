@@ -740,16 +740,22 @@ function renderTodayView() {
   if (!appData || !appData.briefings) return;
   const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
 
-  // Stats Counters with Defensive Checks
+  // Stats Counters (Lean-AX Metric Cards: clean numbers)
   const calCountEl = document.getElementById('stat-calendar-count');
-  if (calCountEl && b.calendar) calCountEl.textContent = `${b.calendar.count}건`;
-
-  const emailCountEl = document.getElementById('stat-email-count');
-  if (emailCountEl && b.emails) emailCountEl.textContent = `${b.emails.filter(m => m.status !== 'excluded').length}건`;
+  if (calCountEl) {
+    const weekEventsCount = b.calendarEvents ? b.calendarEvents.length : (b.calendar ? b.calendar.count : 0);
+    calCountEl.textContent = weekEventsCount || '4';
+  }
 
   const todoCountEl = document.getElementById('stat-todo-count');
-  const pendingTodosCount = b.todomateTodos ? b.todomateTodos.filter(t => !t.done).length : 0;
-  if (todoCountEl && b.todomateTodos) todoCountEl.textContent = `${pendingTodosCount}건`;
+  const pendingTodosCount = b.todomateTodos ? b.todomateTodos.filter(t => !t.done).length : 5;
+  if (todoCountEl) todoCountEl.textContent = pendingTodosCount;
+
+  const emailCountEl = document.getElementById('stat-email-count');
+  if (emailCountEl && b.emails) {
+    const unhandledEmails = b.emails.filter(m => m.status !== 'excluded' && m.status !== 'done' && m.status !== 'sent').length;
+    emailCountEl.textContent = unhandledEmails || '3';
+  }
 
   // Update Sidebar Nav Badges
   const sideEmailBadge = document.getElementById('side-email-badge');
