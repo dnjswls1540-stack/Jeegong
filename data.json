@@ -60,7 +60,98 @@
         "status": "pending",
         "checkedAt": null
       },
-      "calendarEvents": [],
+      "calendarEvents": [
+        {
+          "id": "cal-20261102-1",
+          "summary": "[공구] 짱빵실 아넬라 과일퓨레 진행",
+          "startDate": "2026-11-02",
+          "endDate": "2026-11-06",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#10b981",
+          "category": "공동구매"
+        },
+        {
+          "id": "cal-20261103-1",
+          "summary": "[공구] 데이원 울렌 겨울부츠 진행",
+          "startDate": "2026-11-03",
+          "endDate": "2026-11-10",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#8b5cf6",
+          "category": "공동구매"
+        },
+        {
+          "id": "cal-20261107-1",
+          "summary": "세빈이 결혼식",
+          "startDate": "2026-11-07",
+          "endDate": "2026-11-07",
+          "time": "오후 1:00",
+          "tag": "개인",
+          "color": "#f59e0b",
+          "category": "개인일정"
+        },
+        {
+          "id": "cal-20261108-1",
+          "summary": "[공구] 손뽀니 아넬라 과일퓨레 진행",
+          "startDate": "2026-11-08",
+          "endDate": "2026-11-12",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#10b981",
+          "category": "공동구매"
+        },
+        {
+          "id": "cal-20261109-1",
+          "summary": "[공구] 챔맘 로지오가닉 쌀과자 진행",
+          "startDate": "2026-11-09",
+          "endDate": "2026-11-12",
+          "time": "오전 10:00",
+          "tag": "공구",
+          "color": "#3b82f6",
+          "category": "공동구매"
+        },
+        {
+          "id": "cal-20261110-1",
+          "summary": "[공구] 장빵실 로지오가닉 쌀과자 진행",
+          "startDate": "2026-11-10",
+          "endDate": "2026-11-14",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#3b82f6",
+          "category": "공동구매"
+        },
+        {
+          "id": "cal-20261111-1",
+          "summary": "[공구] 제이백 울렌 겨울부츠 진행",
+          "startDate": "2026-11-11",
+          "endDate": "2026-11-15",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#8b5cf6",
+          "category": "공동구매"
+        },
+        {
+          "id": "cal-20261114-1",
+          "summary": "[공구] 정뚱환뚱 울렌 겨울부츠 1차",
+          "startDate": "2026-11-14",
+          "endDate": "2026-11-17",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#8b5cf6",
+          "category": "공동구매"
+        },
+        {
+          "id": "cal-20261114-2",
+          "summary": "장지원 약속",
+          "startDate": "2026-11-14",
+          "endDate": "2026-11-14",
+          "time": "오후 6:00",
+          "tag": "개인",
+          "color": "#f59e0b",
+          "category": "개인일정"
+        }
+      ],
       "todomateTodos": [
         {
           "id": "todo-20261101-1",

@@ -513,11 +513,17 @@ function setupNavigation() {
   const topTitle = document.getElementById('page-title');
 
   const titles = {
-    'today-view': '오늘의 브리핑',
-    'inquiry-view': '실시간 고객 문의',
-    'archive-view': '날짜별 아카이브',
-    'history-view': '실행 이력 & 로그',
-    'settings-view': '에이전트 설정'
+    'today-view': '홈',
+    'email-view': '메일',
+    'calendar-view': '캘린더',
+    'todo-view': '할 일',
+    'inquiry-view': '실시간 문의',
+    'work-status-view': '업무 현황',
+    'gonggu-view': '공동구매 영업',
+    'sales-view': '정산·매출',
+    'docs-view': '문서함',
+    'history-view': '에이전트 일지',
+    'settings-view': '설정'
   };
 
   function switchView(viewId) {
@@ -536,9 +542,16 @@ function setupNavigation() {
       else v.classList.remove('active');
     });
 
+    const crumbCurrent = document.getElementById('breadcrumb-current');
+    if (crumbCurrent) {
+      crumbCurrent.textContent = titles[viewId] || '홈';
+    }
+
     if (topTitle) topTitle.textContent = '지공 출근 에이전트';
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  window.switchNavView = switchView;
 
   navItems.forEach(item => {
     item.addEventListener('click', () => {
@@ -550,6 +563,175 @@ function setupNavigation() {
     btn.addEventListener('click', () => {
       switchView(btn.getAttribute('data-view'));
     });
+  });
+
+  // Calendar Controls
+  const btnCalPrev = document.getElementById('btn-cal-prev');
+  const btnCalNext = document.getElementById('btn-cal-next');
+  const btnCalToday = document.getElementById('btn-cal-today');
+  if (btnCalPrev) {
+    btnCalPrev.addEventListener('click', () => {
+      window.currentCalWeekOffset--;
+      renderWeeklyCalendar();
+    });
+  }
+  if (btnCalNext) {
+    btnCalNext.addEventListener('click', () => {
+      window.currentCalWeekOffset++;
+      renderWeeklyCalendar();
+    });
+  }
+  if (btnCalToday) {
+    btnCalToday.addEventListener('click', () => {
+      window.currentCalWeekOffset = 0;
+      renderWeeklyCalendar();
+    });
+  }
+}
+
+// Weekly Google Calendar State
+window.currentCalWeekOffset = 0;
+
+function getWeekDateRange(offset = 0) {
+  // Base reference week: 2026-11-02 (Monday) to 2026-11-08 (Sunday)
+  const baseMonday = new Date(2026, 10, 2);
+  baseMonday.setDate(baseMonday.getDate() + (offset * 7));
+  
+  const days = [];
+  const dayNames = ['월', '화', '수', '목', '금', '토', '일'];
+  
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(baseMonday);
+    d.setDate(baseMonday.getDate() + i);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const dateStr = `${y}-${m}-${day}`;
+    days.push({
+      dateStr: dateStr,
+      month: d.getMonth() + 1,
+      dayNum: d.getDate(),
+      dayName: dayNames[i],
+      isToday: dateStr === '2026-11-01' || (offset === 0 && dateStr === '2026-11-02')
+    });
+  }
+  return days;
+}
+
+function renderWeeklyCalendar() {
+  const container = document.getElementById('week-calendar-container');
+  if (!container || !appData || !appData.briefings) return;
+  
+  const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
+  const events = (b.calendarEvents || []);
+  
+  const days = getWeekDateRange(window.currentCalWeekOffset);
+  const startDay = days[0];
+  const endDay = days[6];
+  
+  const rangeTextEl = document.getElementById('cal-week-range-text');
+  if (rangeTextEl) {
+    rangeTextEl.textContent = `${startDay.month}월 ${startDay.dayNum}일~${endDay.month === startDay.month ? '' : endDay.month + '월 '}${endDay.dayNum}일`;
+  }
+  
+  container.innerHTML = '';
+  
+  days.forEach(day => {
+    const dayEvents = events.filter(ev => {
+      if (ev.startDate && ev.endDate) {
+        return day.dateStr >= ev.startDate && day.dateStr <= ev.endDate;
+      }
+      return ev.startDate === day.dateStr;
+    });
+    
+    let eventsHtml = '';
+    dayEvents.forEach(ev => {
+      eventsHtml += `
+        <div class="cal-event-card" style="border-left-color: ${ev.color || '#3b82f6'};" title="${ev.summary} (${ev.time || '종일'})">
+          <div class="cal-event-time">${ev.time || '종일'}</div>
+          <div class="cal-event-title">${ev.summary}</div>
+          <span class="cal-event-badge" style="background-color: ${ev.color || '#3b82f6'}18; color: ${ev.color || '#3b82f6'};">${ev.tag || '공구'}</span>
+        </div>
+      `;
+    });
+    
+    if (dayEvents.length === 0) {
+      eventsHtml = `<div style="font-size: 11px; color: var(--text-tertiary); text-align: center; margin-top: 24px;">-</div>`;
+    }
+    
+    container.innerHTML += `
+      <div class="day-column ${day.isToday ? 'is-today' : ''}">
+        <div class="day-header">
+          <div class="day-name">${day.dayName}</div>
+          <div class="day-num">${day.dayNum}</div>
+        </div>
+        <div class="day-events-list">
+          ${eventsHtml}
+        </div>
+      </div>
+    `;
+  });
+}
+
+function renderTodoTable() {
+  const tbody = document.getElementById('todo-table-body');
+  if (!tbody || !appData || !appData.briefings) return;
+  
+  const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
+  const todos = b.todomateTodos || [];
+  const priorities = b.agentPriorities || [];
+  
+  tbody.innerHTML = '';
+  
+  // 1. Todomate Todos
+  todos.forEach(t => {
+    if (t.excluded) return;
+    tbody.innerHTML += `
+      <tr id="todo-row-${t.id}">
+        <td style="text-align: center;">
+          <input type="checkbox" class="todo-check-input" ${t.done ? 'checked' : ''} onchange="toggleTodomateTodo('${t.id}')">
+        </td>
+        <td>
+          <span class="todo-text-main ${t.done ? 'done' : ''}" id="todo-text-${t.id}">${t.text}</span>
+        </td>
+        <td>
+          <span class="cat-tag">${t.category || '사업or수익'}</span>
+        </td>
+        <td>
+          <span class="source-tag">📱 투두메이트</span>
+        </td>
+        <td style="text-align: right;">
+          <button class="btn-del-todo" onclick="deleteTodomateTodo('${t.id}')" title="삭제">✕</button>
+        </td>
+      </tr>
+    `;
+  });
+  
+  // 2. Agent Priorities
+  priorities.forEach(p => {
+    if (p.excluded) return;
+    tbody.innerHTML += `
+      <tr id="todo-row-${p.id}" style="background-color: rgba(59, 130, 246, 0.02);">
+        <td style="text-align: center;">
+          <input type="checkbox" class="todo-check-input" ${p.done ? 'checked' : ''} onchange="togglePriorityDone('${p.id}')">
+        </td>
+        <td>
+          <span class="todo-text-main ${p.done ? 'done' : ''}" id="todo-text-${p.id}">
+            <strong style="color: var(--accent-blue); font-size: 11px; margin-right: 4px;">${p.priority || '우선'}</strong>
+            ${p.title}
+          </span>
+        </td>
+        <td>
+          <span class="cat-tag" style="background-color: var(--accent-blue-light); color: var(--accent-blue-text);">에이전트 추천</span>
+        </td>
+        <td>
+          <span class="source-tag">✨ 피클 AI</span>
+        </td>
+        <td style="text-align: right;">
+          <button class="btn-del-todo" onclick="toggleExcludePriority('${p.id}')" title="제외">✕</button>
+        </td>
+      </tr>
+    `;
   });
 }
 
@@ -566,7 +748,24 @@ function renderTodayView() {
   if (emailCountEl && b.emails) emailCountEl.textContent = `${b.emails.filter(m => m.status !== 'excluded').length}건`;
 
   const todoCountEl = document.getElementById('stat-todo-count');
-  if (todoCountEl && b.todomateTodos) todoCountEl.textContent = `${b.todomateTodos.filter(t => !t.done).length}건`;
+  const pendingTodosCount = b.todomateTodos ? b.todomateTodos.filter(t => !t.done).length : 0;
+  if (todoCountEl && b.todomateTodos) todoCountEl.textContent = `${pendingTodosCount}건`;
+
+  // Update Sidebar Nav Badges
+  const sideEmailBadge = document.getElementById('side-email-badge');
+  if (sideEmailBadge && b.emails) {
+    const unhandledEmails = b.emails.filter(m => m.status !== 'excluded' && m.status !== 'done' && m.status !== 'sent').length;
+    sideEmailBadge.textContent = unhandledEmails || '0';
+  }
+  const sideTodoBadge = document.getElementById('side-todo-badge');
+  if (sideTodoBadge) {
+    sideTodoBadge.textContent = pendingTodosCount || '0';
+  }
+  const sideInqBadge = document.getElementById('side-inquiry-badge');
+  if (sideInqBadge && b.inquiries) {
+    const unhandledInqs = b.inquiries.filter(i => i.status !== 'excluded' && i.status !== 'done' && i.status !== 'sent').length;
+    sideInqBadge.textContent = unhandledInqs || '0';
+  }
 
   const driveCountEl = document.getElementById('stat-drive-count');
   if (driveCountEl && b.driveFiles) driveCountEl.textContent = `${b.driveFiles.length}건`;
@@ -771,25 +970,31 @@ function renderTodayView() {
 
   // 4. Drive References
   const driveContainer = document.getElementById('drive-list-container');
-  driveContainer.innerHTML = '';
-  b.driveFiles.forEach(file => {
-    const icon = file.type === 'sheet' ? '📊' : file.type === 'pdf' ? '📕' : '📄';
-    driveContainer.innerHTML += `
-      <div class="drive-item">
-        <div class="drive-left">
-          <span class="drive-file-icon">${icon}</span>
-          <div>
-            <div class="drive-filename">${file.name}</div>
-            <div class="drive-meta">최종 수정: ${file.modified} · Google Drive</div>
+  if (driveContainer && b.driveFiles) {
+    driveContainer.innerHTML = '';
+    b.driveFiles.forEach(file => {
+      const icon = file.type === 'sheet' ? '📊' : file.type === 'pdf' ? '📕' : '📄';
+      driveContainer.innerHTML += `
+        <div class="drive-item">
+          <div class="drive-left">
+            <span class="drive-file-icon">${icon}</span>
+            <div>
+              <div class="drive-filename">${file.name}</div>
+              <div class="drive-meta">최종 수정: ${file.modified} · Google Drive</div>
+            </div>
           </div>
+          <a href="${file.url}" target="_blank" class="btn-open-link">
+            <span>열기</span>
+            <span>↗</span>
+          </a>
         </div>
-        <a href="${file.url}" target="_blank" class="btn-open-link">
-          <span>열기</span>
-          <span>↗</span>
-        </a>
-      </div>
-    `;
-  });
+      `;
+    });
+  }
+
+  // Render Modern Lean-AX Sections
+  renderWeeklyCalendar();
+  renderTodoTable();
 }
 
 // Email Mark Done / Unmark Done

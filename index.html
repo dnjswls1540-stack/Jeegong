@@ -3,68 +3,135 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>지공 출근 에이전트 | 출근 준비 대시보드</title>
-  <link rel="stylesheet" href="styles.css?v=20261023_1035">
+  <title>지공 출근 에이전트 | 업무 현황 대시보드</title>
+  <link rel="stylesheet" href="styles.css?v=20261101_2130">
 </head>
 <body>
   <div class="app-container">
-    <!-- Sidebar (Desktop only) -->
+    <!-- Desktop Sidebar (Dark Theme) -->
     <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-icon">J</div>
-        <div class="brand-text">
-          <h1>지공 출근 에이전트</h1>
-          <div class="status-badge">
-            <span class="status-dot"></span>
-            <span>정상 가동 중</span>
+      <!-- Workspace Brand Header -->
+      <div class="workspace-header">
+        <div class="workspace-brand">
+          <div class="workspace-icon">J</div>
+          <div class="workspace-titles">
+            <div class="workspace-name">지공 출근 에이전트</div>
+            <div class="workspace-role">소유자</div>
           </div>
         </div>
+        <span class="workspace-arrow">▾</span>
       </div>
 
+      <!-- Quick Command / Search Bar -->
+      <div class="sidebar-search">
+        <span class="search-icon">🔍</span>
+        <input type="text" class="search-input" placeholder="검색 및 명령" readonly>
+        <span class="search-shortcut">⌘K</span>
+      </div>
+
+      <!-- Favorites Section -->
+      <div class="sidebar-section-title">
+        <span>즐겨찾기 ▾</span>
+      </div>
+      <div class="sidebar-fav-item">
+        <span class="fav-icon">📁</span>
+        <span>Allth & Onsess Dev</span>
+      </div>
+
+      <!-- Main Navigation Menu -->
       <ul class="nav-menu">
         <li class="nav-item active" data-view="today-view">
-          <span class="nav-icon">🌅</span>
-          <span>오늘의 브리핑</span>
+          <span class="nav-icon">🏠</span>
+          <span class="nav-label">홈</span>
+        </li>
+        <li class="nav-item" data-view="email-view">
+          <span class="nav-icon">✉️</span>
+          <span class="nav-label">메일</span>
+          <span class="nav-badge" id="side-email-badge">1</span>
+        </li>
+        <li class="nav-item" data-view="calendar-view">
+          <span class="nav-icon">📅</span>
+          <span class="nav-label">캘린더</span>
+        </li>
+        <li class="nav-item" data-view="todo-view">
+          <span class="nav-icon">📝</span>
+          <span class="nav-label">할 일</span>
+          <span class="nav-badge" id="side-todo-badge">5</span>
         </li>
         <li class="nav-item" data-view="inquiry-view">
           <span class="nav-icon">💬</span>
-          <span>실시간 문의</span>
+          <span class="nav-label">실시간 문의</span>
+          <span class="nav-badge" id="side-inquiry-badge">3</span>
         </li>
-        <li class="nav-item" data-view="archive-view">
-          <span class="nav-icon">📅</span>
-          <span>날짜별 아카이브</span>
+        <li class="nav-item" data-view="work-status-view">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">업무 현황</span>
+        </li>
+        <li class="nav-item" data-view="gonggu-view">
+          <span class="nav-icon">🤝</span>
+          <span class="nav-label">공동구매 영업</span>
+        </li>
+        <li class="nav-item" data-view="sales-view">
+          <span class="nav-icon">💰</span>
+          <span class="nav-label">정산·매출</span>
+        </li>
+        <li class="nav-item" data-view="docs-view">
+          <span class="nav-icon">📁</span>
+          <span class="nav-label">문서함</span>
         </li>
         <li class="nav-item" data-view="history-view">
           <span class="nav-icon">⚡</span>
-          <span>실행 이력</span>
+          <span class="nav-label">에이전트 일지</span>
         </li>
         <li class="nav-item" data-view="settings-view">
           <span class="nav-icon">⚙️</span>
-          <span>에이전트 설정</span>
+          <span class="nav-label">회사 및 에이전트 설정</span>
         </li>
       </ul>
 
+      <!-- Bottom System Menus -->
+      <div class="sidebar-secondary-menu">
+        <div class="sec-item" onclick="window.scrollTo(0,0)">
+          <span>📋 모듈 보관함</span>
+        </div>
+        <div class="sec-item" onclick="window.open('https://mail.google.com','_blank')">
+          <span>🗑️ 휴지통</span>
+        </div>
+        <div class="sec-item" onclick="switchNavView('settings-view')">
+          <span>⚙️ 설정</span>
+        </div>
+      </div>
+
+      <!-- User Profile at Sidebar Footer -->
       <div class="sidebar-footer">
         <div class="user-profile">
           <div class="avatar">원진</div>
           <div class="user-info">
             <div class="user-name">지원진 님</div>
-            <div class="user-role">올쓰컴퍼니 · 온세스</div>
+            <div class="user-role">올쓰컴퍼니 · 온세스 스튜디오</div>
           </div>
         </div>
       </div>
     </aside>
 
-    <!-- Main Content -->
+    <!-- Main Content Area -->
     <div class="main-wrapper">
-      <!-- Top Navbar -->
-      <header class="top-navbar">
-        <div class="top-left">
-          <div class="brand-icon mobile-logo">J</div>
-          <h2 class="top-title" id="page-title">지공 출근 에이전트</h2>
-          <span class="current-date-badge" id="current-date-text">2026-10-22 (목)</span>
+      <!-- Breadcrumb & Top Bar -->
+      <header class="top-breadcrumb-bar">
+        <div class="breadcrumb-left">
+          <span class="crumb-icon">⊞</span>
+          <span class="crumb-text">지공 출근 에이전트</span>
+          <span class="crumb-sep">&gt;</span>
+          <span class="crumb-active" id="breadcrumb-current">홈</span>
         </div>
-        <div class="top-right">
+        <div class="breadcrumb-right">
+          <span class="status-save-text">저장됨</span>
+          <button class="icon-tool-btn" id="btn-theme-toggle" title="테마 전환">🌓</button>
+          <button class="icon-tool-btn" id="btn-refresh-data" title="최신 데이터 새로고침 (메일·투두·캘린더)">
+            <svg class="refresh-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+            </svg>
+          </button>
           <button class="btn-primary" id="btn-run-agent">
             <span>✨</span>
             <span id="btn-run-agent-text">출근 완료</span>
@@ -84,389 +151,577 @@
               } catch(e) {}
             })();
           </script>
-          <button class="theme-toggle-btn" id="btn-refresh-data" title="최신 데이터 새로고침 (메일·문의·할 일)">
-            <svg class="refresh-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
-            </svg>
-          </button>
-          <button class="theme-toggle-btn" id="btn-theme-toggle" title="테마 전환">🌓</button>
         </div>
       </header>
 
-      <!-- Mobile Nav Tabs (Horizontal Segmented Control) -->
+      <!-- Page Main Title Header -->
+      <div class="dashboard-page-header">
+        <div class="header-titles">
+          <div class="sub-date" id="current-date-text">2026-11-01 (일)</div>
+          <h1 class="main-title" id="page-title">지공 출근 에이전트</h1>
+        </div>
+        <div class="header-actions">
+          <button class="btn-subtle">모듈 맞춤</button>
+          <button class="btn-subtle">💾 저장본</button>
+          <button class="btn-subtle-primary" onclick="window.refreshTodomateOnly()">＋ 모듈 추가</button>
+        </div>
+      </div>
+
+      <!-- Mobile Nav Tabs -->
       <nav class="mobile-nav-tabs">
-        <button class="mobile-tab-btn active" data-view="today-view">🌅 오늘의 브리핑</button>
-        <button class="mobile-tab-btn" data-view="inquiry-view">💬 실시간 문의</button>
-        <button class="mobile-tab-btn" data-view="archive-view">📅 날짜별 아카이브</button>
-        <button class="mobile-tab-btn" data-view="history-view">⚡ 실행 이력</button>
-        <button class="mobile-tab-btn" data-view="settings-view">⚙️ 에이전트 설정</button>
+        <button class="mobile-tab-btn active" data-view="today-view">🏠 홈</button>
+        <button class="mobile-tab-btn" data-view="calendar-view">📅 캘린더</button>
+        <button class="mobile-tab-btn" data-view="todo-view">📝 할 일</button>
+        <button class="mobile-tab-btn" data-view="inquiry-view">💬 문의</button>
+        <button class="mobile-tab-btn" data-view="settings-view">⚙️ 설정</button>
       </nav>
 
       <main class="content-body">
-        <!-- Scanner Animation Banner (Shown during run) -->
-        <div class="scanner-banner" id="scanner-banner">
-          <div class="scanner-header">
-            <div class="scanner-title">
-              <div class="spinner"></div>
-              <span id="scanner-status-text">5개 도구를 순차적으로 스캔하고 있습니다...</span>
-            </div>
-            <span style="font-size: 12px; color: var(--text-tertiary);" id="scanner-progress-count">0 / 5 완료</span>
-          </div>
-          <div class="tool-steps-grid">
-            <div class="tool-step" id="step-calendar">
-              <span>📅 구글 캘린더</span>
-              <span class="step-sub">일정 점검</span>
-            </div>
-            <div class="tool-step" id="step-gmail">
-              <span>📬 지메일 (2계정)</span>
-              <span class="step-sub">중요 메일 선별</span>
-            </div>
-            <div class="tool-step" id="step-naver">
-              <span>✉️ 네이버 메일</span>
-              <span class="step-sub">공구·B2B 회신</span>
-            </div>
-            <div class="tool-step" id="step-todomate">
-              <span>📝 투두메이트</span>
-              <span class="step-sub">할 일 추출</span>
-            </div>
-            <div class="tool-step" id="step-drive">
-              <span>📁 구글 드라이브</span>
-              <span class="step-sub">사전 자료 검색</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- VIEW 1: TODAY'S BRIEFING -->
+        <!-- VIEW 1: HOME (오늘의 업무 현황판) -->
         <section class="view-section active" id="today-view">
-          <!-- 1-Line Stats Grid (Toss Chips) -->
-          <div class="stats-grid">
-            <div class="stat-card">
-              <div class="stat-info">
-                <div class="stat-label">오늘의 일정</div>
-                <div class="stat-val" id="stat-calendar-count">0건</div>
+          
+          <!-- 1. 업무 현황판 (5대 지표 카드 헤더) -->
+          <div class="section-block-title">
+            <span>📋 업무 현황판</span>
+          </div>
+
+          <div class="metrics-card-grid">
+            <!-- 1. 결제 대기 -->
+            <div class="metric-card">
+              <div class="metric-card-top">
+                <span class="metric-title">결제 대기</span>
+                <span class="metric-pill pill-subtle">👤 없음</span>
               </div>
-              <div class="stat-icon">📅</div>
+              <div class="metric-value">0</div>
+              <div class="metric-footer">
+                <span class="metric-sub">꼭 확인할 것 없음</span>
+                <span class="metric-cat">결제함</span>
+              </div>
             </div>
-            <div class="stat-card">
-              <div class="stat-info">
-                <div class="stat-label">중요 수신 메일</div>
-                <div class="stat-val" id="stat-email-count">3건</div>
+
+            <!-- 2. 할 일 -->
+            <div class="metric-card">
+              <div class="metric-card-top">
+                <span class="metric-title">할 일</span>
+                <span class="metric-pill pill-warning">✓ 오늘 마감</span>
               </div>
-              <div class="stat-icon">📬</div>
+              <div class="metric-value" id="stat-todo-count">5</div>
+              <div class="metric-footer">
+                <span class="metric-sub">기한 지남 0 · 오늘까지 5</span>
+                <span class="metric-cat">투두메이트</span>
+              </div>
             </div>
-            <div class="stat-card">
-              <div class="stat-info">
-                <div class="stat-label">오늘의 할 일</div>
-                <div class="stat-val" id="stat-todo-count">5건</div>
+
+            <!-- 3. 이번 주 일정 -->
+            <div class="metric-card">
+              <div class="metric-card-top">
+                <span class="metric-title">이번 주 일정</span>
+                <span class="metric-pill pill-info">📅 7일</span>
               </div>
-              <div class="stat-icon">📝</div>
+              <div class="metric-value" id="stat-calendar-count">4</div>
+              <div class="metric-footer">
+                <span class="metric-sub">공구 3 · 개인 1</span>
+                <span class="metric-cat">구글 캘린더</span>
+              </div>
             </div>
-            <div class="stat-card">
-              <div class="stat-info">
-                <div class="stat-label">사전 참고 자료</div>
-                <div class="stat-val" id="stat-drive-count">2건</div>
+
+            <!-- 4. 중요 메일 -->
+            <div class="metric-card">
+              <div class="metric-card-top">
+                <span class="metric-title">중요 메일</span>
+                <span class="metric-pill pill-success">✉️ 조치 필요</span>
               </div>
-              <div class="stat-icon">📁</div>
+              <div class="metric-value" id="stat-email-count">3</div>
+              <div class="metric-footer">
+                <span class="metric-sub">신규 의뢰 1 · 공구 1</span>
+                <span class="metric-cat">외주 & 리드</span>
+              </div>
             </div>
-            <div class="stat-card">
-              <div class="stat-info">
-                <div class="stat-label">실시간 고객 문의</div>
-                <div class="stat-val" id="stat-inquiry-count">3건</div>
+
+            <!-- 5. 받을 돈 / 정산 -->
+            <div class="metric-card">
+              <div class="metric-card-top">
+                <span class="metric-title">받을 돈 / 정산</span>
+                <span class="metric-pill pill-danger">⏳ 기한 지남</span>
               </div>
-              <div class="stat-icon">💬</div>
+              <div class="metric-value">1</div>
+              <div class="metric-footer">
+                <span class="metric-sub">아넬라 퓨레 공구 정산</span>
+                <span class="metric-cat">스마트스토어</span>
+              </div>
             </div>
           </div>
 
-          <!-- Guide Banner -->
-          <div class="guide-banner">
-            <div class="guide-content">
-              <span class="guide-icon">💡</span>
-              <div class="guide-text">
-                <h3>오늘의 핵심 출근 가이드</h3>
-                <p id="guide-banner-text">내일 시작되는 우주맘마 아넬라 공구 피드 세팅과 희수 님 카톡 협의를 오전 중 완료하세요.</p>
+          <!-- 2. 중간 3단 섹션 (확인 필요 항목 + 구글 캘린더 주간 뷰 + 에이전트 시스템 현황) -->
+          <div class="dashboard-mid-grid">
+            
+            <!-- A. 좌측: 확인 필요 항목 (28%) -->
+            <div class="panel-card panel-action-needed">
+              <div class="panel-header">
+                <div class="panel-title">
+                  <span>📌</span>
+                  <span>확인 필요 항목</span>
+                </div>
+                <span class="panel-more">⋯</span>
+              </div>
+
+              <div class="action-items-list">
+                <div class="action-item" onclick="switchNavView('todo-view')">
+                  <div class="action-left">
+                    <span class="action-icon">📝</span>
+                    <span class="action-text">마감 오늘인 할 일</span>
+                  </div>
+                  <span class="action-badge badge-red">5건</span>
+                </div>
+
+                <div class="action-item" onclick="switchNavView('email-view')">
+                  <div class="action-left">
+                    <span class="action-icon">✉️</span>
+                    <span class="action-text">답장 발송 대기 외주</span>
+                  </div>
+                  <span class="action-badge badge-orange">1건</span>
+                </div>
+
+                <div class="action-item" onclick="switchNavView('sales-view')">
+                  <div class="action-left">
+                    <span class="action-icon">🧾</span>
+                    <span class="action-text">공구 정산 확인 필요</span>
+                  </div>
+                  <span class="action-badge badge-yellow">1건</span>
+                </div>
+
+                <div class="action-item" onclick="switchNavView('todo-view')">
+                  <div class="action-left">
+                    <span class="action-icon">⚙️</span>
+                    <span class="action-text">클래스101 무자본 키워드</span>
+                  </div>
+                  <span class="action-badge badge-red">1건</span>
+                </div>
               </div>
             </div>
-            <button class="btn-secondary" id="btn-copy-briefing">마크다운 복사</button>
-          </div>
 
-          <!-- Main Briefing Sections -->
-          <div class="briefing-sections-grid">
-            <!-- 1. Calendar -->
-            <div class="card-section">
-              <div class="section-header">
-                <div class="section-title">
+            <!-- B. 중앙: 구글 캘린더 주간 뷰 (46%) -->
+            <div class="panel-card panel-calendar-week">
+              <div class="panel-header">
+                <div class="panel-title">
                   <span>📅</span>
-                  <span>오늘의 일정 & 회의</span>
+                  <span>캘린더 · 주 (구글 캘린더)</span>
                 </div>
-                <span class="section-badge" id="calendar-badge">0건 예정</span>
+                <div class="cal-nav-controls">
+                  <span class="cal-range-text" id="cal-week-range-text">11월 2일~8일</span>
+                  <div class="cal-btn-group">
+                    <button class="cal-arrow-btn" id="btn-cal-prev" title="이전 주">&lt;</button>
+                    <button class="cal-today-btn" id="btn-cal-today">오늘</button>
+                    <button class="cal-arrow-btn" id="btn-cal-next" title="다음 주">&gt;</button>
+                  </div>
+                  <span class="panel-add-icon">＋</span>
+                </div>
               </div>
-              <div class="schedule-list" id="calendar-list-container">
-                <!-- Injected via JS -->
+
+              <!-- Weekly 7-Day Grid Container -->
+              <div class="week-calendar-grid" id="week-calendar-container">
+                <!-- Dynamically populated via JS -->
               </div>
             </div>
 
-            <!-- 2. Emails: Exclude & Process System -->
-            <div class="card-section">
-              <div class="section-header">
-                <div class="section-title">
-                  <span>📬</span>
-                  <span>중요 메일 & 외부 요청 (어제 이후)</span>
+            <!-- C. 우측: 업무 현황 및 에이전트 연동 (26%) -->
+            <div class="panel-card panel-system-status">
+              <div class="panel-header">
+                <div class="panel-title">
+                  <span>⏱️</span>
+                  <span>업무 & 연동 현황</span>
                 </div>
-                <span class="section-badge" id="email-badge">3건 조치 필요</span>
+                <span class="panel-more">⋯</span>
+              </div>
+
+              <div class="hub-list">
+                <div class="hub-item">
+                  <div class="hub-info">
+                    <div class="hub-name">구글 캘린더</div>
+                    <div class="hub-detail">dnjswls1540@gmail.com</div>
+                  </div>
+                  <div class="hub-status status-connected">
+                    <span class="dot-green"></span>
+                    <span>연결됨</span>
+                  </div>
+                </div>
+
+                <div class="hub-item">
+                  <div class="hub-info">
+                    <div class="hub-name">지메일 (2계정)</div>
+                    <div class="hub-detail">개인 & 온세스 스튜디오</div>
+                  </div>
+                  <div class="hub-status status-connected">
+                    <span class="dot-green"></span>
+                    <span>연결됨</span>
+                  </div>
+                </div>
+
+                <div class="hub-item">
+                  <div class="hub-info">
+                    <div class="hub-name">네이버 메일</div>
+                    <div class="hub-detail">dnjsrns123@naver.com</div>
+                  </div>
+                  <div class="hub-status status-connected">
+                    <span class="dot-green"></span>
+                    <span>연결됨</span>
+                  </div>
+                </div>
+
+                <div class="hub-item">
+                  <div class="hub-info">
+                    <div class="hub-name">투두메이트</div>
+                    <div class="hub-detail">jeeallth (실시간 동기화)</div>
+                  </div>
+                  <div class="hub-status status-connected">
+                    <span class="dot-green"></span>
+                    <span>동기화됨</span>
+                  </div>
+                </div>
+
+                <div class="hub-item">
+                  <div class="hub-info">
+                    <div class="hub-name">구글 드라이브</div>
+                    <div class="hub-detail">업무 자료 보관함</div>
+                  </div>
+                  <div class="hub-status status-connected">
+                    <span class="dot-green"></span>
+                    <span>연결됨</span>
+                  </div>
+                </div>
+
+                <div class="hub-item">
+                  <div class="hub-info">
+                    <div class="hub-name">카카오 비즈니스</div>
+                    <div class="hub-detail">3개 채널 정상 가동</div>
+                  </div>
+                  <div class="hub-status status-connected">
+                    <span class="dot-green"></span>
+                    <span>연결됨</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- 3. 하단 섹션: ✓ 할 일 · 표 (Table Format) -->
+          <div class="panel-card panel-todo-table-section">
+            <div class="panel-header">
+              <div class="panel-title">
+                <span>✓</span>
+                <span>할 일 · 표</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span class="section-badge" id="todomate-count-badge">5건 대기</span>
+                <button class="btn-subtle" onclick="window.refreshTodomateOnly()" title="투두메이트 실시간 새로고침">🔄 새로고침</button>
+              </div>
+            </div>
+
+            <!-- Quick Add Bar -->
+            <div class="todo-quick-add-bar">
+              <div class="todo-quick-add-input-wrap">
+                <span class="quick-add-icon">＋</span>
+                <input type="text" id="input-quick-add-todo" class="todo-quick-input" placeholder="새로운 할 일 입력 후 Enter..." autocomplete="off">
+                <button type="button" class="btn-quick-add" onclick="window.handleQuickAddTodo()">추가</button>
+              </div>
+            </div>
+
+            <!-- Modern Table Layout for Tasks -->
+            <div class="todo-table-responsive">
+              <table class="todo-modern-table">
+                <thead>
+                  <tr>
+                    <th style="width: 44px; text-align: center;">상태</th>
+                    <th>할 일 내용</th>
+                    <th style="width: 140px;">카테고리</th>
+                    <th style="width: 110px;">출처</th>
+                    <th style="width: 100px; text-align: right;">관리</th>
+                  </tr>
+                </thead>
+                <tbody id="todo-table-body">
+                  <!-- Dynamically rendered via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 4. 중요 메일 & 실시간 문의 & 업무 참고 자료 카드 섹션 -->
+          <div class="dashboard-bottom-grid">
+            <!-- 중요 메일 카드 -->
+            <div class="panel-card">
+              <div class="panel-header">
+                <div class="panel-title">
+                  <span>📬</span>
+                  <span>중요 메일 & 외부 요청</span>
+                </div>
+                <span class="section-badge" id="email-badge">3건</span>
               </div>
               <div class="email-list" id="email-list-container">
                 <!-- Injected via JS -->
               </div>
             </div>
 
-            <!-- 2-B. Inquiries: Kmong, Imweb, Mail Customer Inquiries -->
-            <div class="card-section">
-              <div class="section-header">
-                <div class="section-title">
+            <!-- 실시간 고객 문의 카드 -->
+            <div class="panel-card">
+              <div class="panel-header">
+                <div class="panel-title">
                   <span>💬</span>
-                  <span>실시간 고객 문의 (크몽 · 아임웹 · 메일)</span>
+                  <span>실시간 고객 문의 (크몽·아임웹·메일)</span>
                 </div>
-                <span class="section-badge" id="inquiry-badge" style="background-color: #fff1f2; color: #e11d48;">3건 대기</span>
+                <span class="section-badge" id="inquiry-badge">3건 대기</span>
               </div>
               <div class="inquiry-list" id="inquiry-list-container">
                 <!-- Injected via JS -->
               </div>
             </div>
+          </div>
 
-            <!-- 3. Tasks: Separated Todomate vs Agent Recommended Priority with Toggles -->
-            <div class="card-section">
-              <div class="section-header">
-                <div class="section-title">
-                  <span>📝</span>
-                  <span>오늘의 실행 업무</span>
-                </div>
-                <span class="section-badge" id="tasks-badge">총 9건 진행 중</span>
+          <!-- 5. 에이전트 추천 핵심 우선순위 -->
+          <div class="panel-card" style="margin-top: 16px;">
+            <div class="panel-header">
+              <div class="panel-title">
+                <span>✨</span>
+                <span>에이전트 추천 핵심 우선순위</span>
               </div>
+              <span class="section-badge" style="background-color: var(--accent-blue-light); color: var(--accent-blue-text);">4건 추천</span>
+            </div>
+            <div class="agent-priority-list" id="agent-priority-container">
+              <!-- Injected via JS -->
+            </div>
+          </div>
 
-              <div class="task-group-container">
-                <!-- Group A: Todomate Todos -->
-                <div class="task-subcard">
-                  <div class="task-subcard-header">
-                    <div class="task-subcard-title">
-                      <span>📱</span>
-                      <span>투두메이트 오늘 할 일</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                      <span class="section-badge" id="todomate-count-badge">5건 대기</span>
-                      <button class="theme-toggle-btn" id="btn-refresh-todomate" onclick="window.refreshTodomateOnly()" title="투두메이트 최신 할 일 새로고침" style="width: 28px; height: 28px; padding: 0; display: inline-flex; align-items: center; justify-content: center; font-size: 13px;">
-                        <svg class="refresh-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
+          <!-- 6. 회의 및 업무 참고 자료 -->
+          <div class="panel-card" style="margin-top: 16px;">
+            <div class="panel-header">
+              <div class="panel-title">
+                <span>📎</span>
+                <span>회의 및 업무 사전 자료 (원문 링크)</span>
+              </div>
+              <span class="section-badge" id="drive-badge">2개 문서</span>
+            </div>
+            <div class="drive-list" id="drive-list-container">
+              <!-- Injected via JS -->
+            </div>
+          </div>
 
-                  <!-- Inline Quick Add Input Bar (0.1초 원클릭 추가) -->
-                  <div class="todo-quick-add-bar">
-                    <div class="todo-quick-add-input-wrap">
-                      <span class="quick-add-icon">＋</span>
-                      <input type="text" id="input-quick-add-todo" class="todo-quick-input" placeholder="새로운 할 일 입력 후 Enter..." autocomplete="off">
-                      <button type="button" class="btn-quick-add" onclick="window.handleQuickAddTodo()">추가</button>
-                    </div>
-                  </div>
+        </section>
 
-                  <div class="todomate-list" id="todomate-list-container">
-                    <!-- Injected via JS -->
-                  </div>
-                </div>
-
-                <!-- Group B: Agent Priorities with Accordion Toggles -->
-                <div class="task-subcard">
-                  <div class="task-subcard-header">
-                    <div class="task-subcard-title">
-                      <span>✨</span>
-                      <span>에이전트 추천 핵심 우선순위 (토글 설명)</span>
-                    </div>
-                    <span class="section-badge" style="background-color: var(--accent-blue-light); color: var(--accent-blue-text);">4건 추천</span>
-                  </div>
-                  <div class="agent-priority-list" id="agent-priority-container">
-                    <!-- Injected via JS -->
-                  </div>
-                </div>
+        <!-- VIEW 2: 메일 전용 뷰 -->
+        <section class="view-section" id="email-view">
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-title">
+                <span>✉️</span>
+                <span>수신 메일 및 답장 초안 관리</span>
               </div>
             </div>
-
-            <!-- 4. Drive References -->
-            <div class="card-section">
-              <div class="section-header">
-                <div class="section-title">
-                  <span>📎</span>
-                  <span>회의 및 업무 사전 자료 (원문 링크)</span>
-                </div>
-                <span class="section-badge" id="drive-badge">2개 문서</span>
-              </div>
-              <div class="drive-list" id="drive-list-container">
-                <!-- Injected via JS -->
-              </div>
+            <div class="email-list" id="email-view-container">
+              <!-- Injected via JS -->
             </div>
           </div>
         </section>
 
-        <!-- VIEW 1-B: INQUIRIES EXCLUSIVE VIEW -->
-        <section class="view-section" id="inquiry-view">
-          <div class="card-section">
-            <div class="section-header">
-              <div class="section-title">
-                <span>💬</span>
-                <span>실시간 고객 문의 통합 관리</span>
+        <!-- VIEW 3: 캘린더 전용 뷰 -->
+        <section class="view-section" id="calendar-view">
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-title">
+                <span>📅</span>
+                <span>구글 캘린더 주간 전체 보기</span>
               </div>
-              <span class="section-badge" id="inquiry-exclusive-badge" style="background-color: #fff1f2; color: #e11d48;">3건 대기</span>
             </div>
-            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">
-              크몽, 아임웹, 네이버/지메일에서 인입된 신규 제작 견적, 공구 협의, 코칭 문의를 실시간으로 확인하고 초안을 승인하여 회신합니다.
-            </p>
+            <div id="calendar-full-view-container">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW 4: 할 일 전용 뷰 -->
+        <section class="view-section" id="todo-view">
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-title">
+                <span>📝</span>
+                <span>투두메이트 & 에이전트 우선순위 통합 관리</span>
+              </div>
+            </div>
+            <div id="todo-full-view-container">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW 5: 실시간 문의 전용 뷰 -->
+        <section class="view-section" id="inquiry-view">
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-title">
+                <span>💬</span>
+                <span>실시간 고객 문의 통합 센터</span>
+              </div>
+            </div>
             <div class="inquiry-list" id="inquiry-exclusive-list-container">
               <!-- Injected via JS -->
             </div>
           </div>
         </section>
 
-        <!-- VIEW 2: ARCHIVE -->
-        <section class="view-section" id="archive-view">
-          <div style="display: flex; gap: 16px; margin-bottom: 20px;">
-            <select class="btn-secondary" id="archive-date-select" style="padding: 10px 16px; font-size: 14px; min-width: 220px; border-radius: var(--radius-sm);">
-              <option value="b-20261022">2026-10-22 (목) - 우주맘마 아넬라 과일퓨레 공구 오픈</option>
-              <option value="b-20261021">2026-10-21 (수) - 내일 아넬라 공구 준비</option>
-              <option value="b-20261020">2026-10-20 (화) - 크몽 정산 세금계산서</option>
-            </select>
-          </div>
-          <div id="archive-content-container">
-            <!-- Selected date briefing rendered here -->
+        <!-- VIEW 6: 업무 현황 뷰 -->
+        <section class="view-section" id="work-status-view">
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-title">
+                <span>📊</span>
+                <span>멀티 사업 업무 현황판</span>
+              </div>
+            </div>
+            <div style="padding: 16px; line-height: 1.8; color: var(--text-secondary);">
+              <strong>올쓰컴퍼니 · 온세스 스튜디오 · 지공J</strong><br>
+              - 공동구매 중개: 11월 짱빵실 아넬라 퓨레, 데이원 울렌 겨울부츠, 로지오가닉 쌀과자 순차 진행<br>
+              - 온세스 스튜디오: 식스샵 켈빈조명 리디자인 외주 고객 회신 대기 중<br>
+              - 지공J: 클래스101 크리에이터센터 무자본 키워드 대체 수정 진행 중
+            </div>
           </div>
         </section>
 
-        <!-- VIEW 3: HISTORY -->
+        <!-- VIEW 7: 공동구매 영업 뷰 -->
+        <section class="view-section" id="gonggu-view">
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-title">
+                <span>🤝</span>
+                <span>공동구매 영업 파이프라인</span>
+              </div>
+            </div>
+            <div style="padding: 16px; line-height: 1.8; color: var(--text-secondary);">
+              - 아넬라 과일퓨레 (우주맘마 11/2~5 오픈 예정, 손뽀니 11/8~11 오픈 예정)<br>
+              - 울렌 겨울부츠 (데이원 11/3~10, 제이백 11/11~15, 정뚱환뚱 11/14~17)<br>
+              - 로지오가닉 쌀과자 (챔맘 11/9~12, 장빵실 11/10~14)<br>
+              - 이경하 님 2월 일정 조율 대기
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW 8: 정산·매출 뷰 -->
+        <section class="view-section" id="sales-view">
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-title">
+                <span>💰</span>
+                <span>정산 및 매출 현황</span>
+              </div>
+            </div>
+            <div style="padding: 16px; line-height: 1.8; color: var(--text-secondary);">
+              - 크몽: 10월 판매 수수료 전자세금계산서 역발행 (공급가액 17,136원) 확인 완료<br>
+              - 페이노트: 대표 전자책 129,000원 결제 완료<br>
+              - 스마트스토어 더올쓰: 빠른정산 유지 정상 가동 중
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW 9: 문서함 뷰 -->
+        <section class="view-section" id="docs-view">
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-title">
+                <span>📁</span>
+                <span>업무 문서 및 사전 자료함</span>
+              </div>
+            </div>
+            <div class="drive-list" id="docs-list-container">
+              <!-- Injected via JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW 10: 에이전트 일지 뷰 -->
         <section class="view-section" id="history-view">
-          <div class="timeline-container" id="history-container">
-            <!-- Injected via JS -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-title">
+                <span>⚡</span>
+                <span>에이전트 실행 일지 & 감사 로그</span>
+              </div>
+            </div>
+            <div class="timeline-container" id="history-container">
+              <!-- Injected via JS -->
+            </div>
           </div>
         </section>
 
-        <!-- VIEW 4: SETTINGS -->
+        <!-- VIEW 11: 설정 뷰 -->
         <section class="view-section" id="settings-view">
-          <div class="settings-group">
-            <h3 class="settings-group-title" style="font-size: 15px; font-weight: 700; margin-bottom: 12px;">연결된 5대 도구 현황</h3>
-            <div class="card-section" style="padding: 12px 18px; margin-bottom: 20px;">
-              <div class="tool-status-item" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-subtle);">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                  <span>📅</span>
-                  <div>
-                    <div style="font-size: 13.5px; font-weight: 600;">구글 캘린더</div>
-                    <div style="font-size: 11.5px; color: var(--text-tertiary);">dnjswls1540@gmail.com</div>
-                  </div>
-                </div>
-                <span class="section-badge" style="background-color: var(--accent-green-light); color: var(--accent-green);">연결 완료</span>
-              </div>
-              <div class="tool-status-item" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-subtle);">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                  <span>📬</span>
-                  <div>
-                    <div style="font-size: 13.5px; font-weight: 600;">지메일 (개인)</div>
-                    <div style="font-size: 11.5px; color: var(--text-tertiary);">dnjswls1540@gmail.com</div>
-                  </div>
-                </div>
-                <span class="section-badge" style="background-color: var(--accent-green-light); color: var(--accent-green);">연결 완료</span>
-              </div>
-              <div class="tool-status-item" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-subtle);">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                  <span>💼</span>
-                  <div>
-                    <div style="font-size: 13.5px; font-weight: 600;">지메일 (온세스 사업용)</div>
-                    <div style="font-size: 11.5px; color: var(--text-tertiary);">onsessdesign@gmail.com</div>
-                  </div>
-                </div>
-                <span class="section-badge" style="background-color: var(--accent-green-light); color: var(--accent-green);">연결 완료</span>
-              </div>
-              <div class="tool-status-item" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-subtle);">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                  <span>✉️</span>
-                  <div>
-                    <div style="font-size: 13.5px; font-weight: 600;">네이버 메일</div>
-                    <div style="font-size: 11.5px; color: var(--text-tertiary);">dnjsrns123@naver.com</div>
-                  </div>
-                </div>
-                <span class="section-badge" style="background-color: var(--accent-green-light); color: var(--accent-green);">연결 완료</span>
-              </div>
-              <div class="tool-status-item" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-subtle);">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                  <span>📝</span>
-                  <div>
-                    <div style="font-size: 13.5px; font-weight: 600;">투두메이트</div>
-                    <div style="font-size: 11.5px; color: var(--text-tertiary);">jeeallth</div>
-                  </div>
-                </div>
-                <span class="section-badge" style="background-color: var(--accent-green-light); color: var(--accent-green);">세션 유지 중</span>
-              </div>
-              <div class="tool-status-item" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                  <span>📁</span>
-                  <div>
-                    <div style="font-size: 13.5px; font-weight: 600;">구글 드라이브</div>
-                    <div style="font-size: 11.5px; color: var(--text-tertiary);">dnjswls1540@gmail.com</div>
-                  </div>
-                </div>
-                <span class="section-badge" style="background-color: var(--accent-green-light); color: var(--accent-green);">연결 완료</span>
+          <div class="panel-card">
+            <div class="panel-header">
+              <div class="panel-title">
+                <span>⚙️</span>
+                <span>연결된 5대 도구 현황 및 규칙</span>
               </div>
             </div>
-          </div>
-
-          <div class="settings-group">
-            <h3 class="settings-group-title" style="font-size: 15px; font-weight: 700; margin-bottom: 12px;">지공 출근 에이전트 엄격 규칙</h3>
-            <div class="card-section">
-              <pre style="font-family: monospace; font-size: 12.5px; line-height: 1.6; color: var(--text-secondary); white-space: pre-wrap;">
-1. 매일 08:30 출근 알림을 발송하고, 출근 완료 시 5대 도구를 전수 스캔한다.
-2. 오늘 회의에 필요한 자료를 찾아 반드시 원문 링크(URL)와 함께 제공한다.
-3. 확인한 사실(Fact)과 제안/추론(Proposal)을 명확히 구분하고 모르는 정보는 만들어 내지 않는다.
-4. 중요 메일 처리 시 답장 초안을 작성하여 사용자 승인 후 메일을 발송한다.
-5. 투두메이트 할 일과 에이전트 추천 핵심 우선순위를 엄격히 분리하여 제공한다.
-              </pre>
+            <div class="hub-list" style="margin-top: 12px;">
+              <div class="hub-item">
+                <div class="hub-info">
+                  <div class="hub-name">구글 캘린더</div>
+                  <div class="hub-detail">dnjswls1540@gmail.com</div>
+                </div>
+                <div class="hub-status status-connected"><span class="dot-green"></span><span>연결 완료</span></div>
+              </div>
+              <div class="hub-item">
+                <div class="hub-info">
+                  <div class="hub-name">지메일 (개인)</div>
+                  <div class="hub-detail">dnjswls1540@gmail.com</div>
+                </div>
+                <div class="hub-status status-connected"><span class="dot-green"></span><span>연결 완료</span></div>
+              </div>
+              <div class="hub-item">
+                <div class="hub-info">
+                  <div class="hub-name">지메일 (온세스 사업용)</div>
+                  <div class="hub-detail">onsessdesign@gmail.com</div>
+                </div>
+                <div class="hub-status status-connected"><span class="dot-green"></span><span>연결 완료</span></div>
+              </div>
+              <div class="hub-item">
+                <div class="hub-info">
+                  <div class="hub-name">네이버 메일</div>
+                  <div class="hub-detail">dnjsrns123@naver.com</div>
+                </div>
+                <div class="hub-status status-connected"><span class="dot-green"></span><span>연결 완료</span></div>
+              </div>
+              <div class="hub-item">
+                <div class="hub-info">
+                  <div class="hub-name">투두메이트</div>
+                  <div class="hub-detail">jeeallth</div>
+                </div>
+                <div class="hub-status status-connected"><span class="dot-green"></span><span>세션 유지</span></div>
+              </div>
+              <div class="hub-item">
+                <div class="hub-info">
+                  <div class="hub-name">구글 드라이브</div>
+                  <div class="hub-detail">dnjswls1540@gmail.com</div>
+                </div>
+                <div class="hub-status status-connected"><span class="dot-green"></span><span>연결 완료</span></div>
+              </div>
             </div>
           </div>
         </section>
+
       </main>
     </div>
   </div>
 
-  <!-- Floating Chatbot Widget -->
+  <!-- Floating Chatbot Widget (구름이 업무 컨트롤러) -->
   <div class="chatbot-floating-wrapper" id="chatbot-wrapper">
-    <!-- Chat Modal Window -->
     <div class="chatbot-modal" id="chatbot-modal">
-      
-      <!-- VIEW A: CONVERSATION LIST (Channel.io Style 대화 목록 뷰) -->
-      <div class="chatbot-view" id="chat-view-list">
-        <div class="chat-list-header">
-          <h2 class="chat-list-title">대화</h2>
-          <button class="chat-circle-btn" id="btn-chat-list-close" title="닫기">✕</button>
-        </div>
-        <div class="chat-conv-scroll" id="chat-conv-list-container">
-          <!-- Injected via JS -->
-        </div>
-        <div class="chat-list-footer">
-          <button class="chat-new-inquiry-btn" id="btn-chat-new-inquiry">
-            <span>새 문의하기</span>
-            <span style="font-size: 13px;">✈</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- VIEW B: CHAT ROOM (개별 대화방 상세 뷰) -->
-      <div class="chatbot-view" id="chat-view-room" style="display: none;">
+      <div class="chatbot-view" id="chat-view-room">
         <div class="chatbot-header">
           <div class="chatbot-header-left">
-            <button class="chat-back-btn" id="btn-chat-back" title="대화 목록으로 돌아가기">
-              <span>←</span>
-            </button>
             <img src="gureumi_avatar.png" alt="구름이" class="chatbot-header-avatar-img">
             <div>
               <div class="chatbot-title">구름이 (업무 컨트롤러)</div>
               <div class="chatbot-status">
                 <span class="status-dot"></span>
-                <span>⚡ 초고속 대시보드 도우미</span>
+                <span>초고속 대시보드 도우미</span>
               </div>
             </div>
           </div>
@@ -476,34 +731,20 @@
           </div>
         </div>
 
-        <!-- Role Banner: Pickle App vs Web Controller -->
         <div class="chatbot-guide-banner">
           <span>💡</span>
-          <span>실제 계정 조작·통화·업무 실행은 <strong>피클(Pickle) 앱 전담 구름이</strong>가 직접 처리합니다!</span>
+          <span>실제 계정 조작·통화·업무 실행은 <strong>피클(Pickle) 앱 구름이</strong>가 직접 처리합니다!</span>
         </div>
 
-        <!-- Quick Suggestion Chips -->
         <div class="chatbot-chips-bar" id="chatbot-chips-bar">
           <button class="chat-chip" onclick="sendQuickMessage('오늘 우선순위 핵심 짚어줘')">⚡ 오늘 우선순위</button>
           <button class="chat-chip" onclick="sendQuickMessage('오늘 미처리 할 일 목록 보여줘')">📋 투두 목록 점검</button>
           <button class="chat-chip" onclick="sendQuickMessage('미처리 중요 메일 확인해줘')">📬 중요 메일 확인</button>
-          <button class="chat-chip" onclick="sendQuickMessage('피클 앱과 웹 대시보드 역할 안내해줘')">📱 비서 연동 안내</button>
         </div>
 
-        <!-- Messages Scroll Area -->
-        <div class="chatbot-messages" id="chatbot-messages">
-          <!-- Messages rendered by app.js -->
-        </div>
+        <div class="chatbot-messages" id="chatbot-messages"></div>
 
-        <!-- File Attachment Preview Bar -->
-        <div class="chatbot-file-preview-bar" id="chatbot-file-preview-bar" style="display: none;">
-          <!-- Preview chips rendered by app.js -->
-        </div>
-
-        <!-- Chat Input Area (Supports Shift+Enter, Clipboard Paste) -->
         <div class="chatbot-input-bar">
-          <input type="file" id="chatbot-file-input" style="display: none;" accept="image/*,video/*,.mp4,.mov,.avi,.webm,.pdf,.doc,.docx,.xlsx,.txt" multiple>
-          <button class="chatbot-attach-btn" id="btn-chatbot-attach" title="사진, 동영상 및 파일 첨부">📎</button>
           <textarea id="chatbot-input" rows="1" placeholder="메시지를 입력하세요..." autocomplete="off"></textarea>
           <button id="chatbot-send-btn" class="chatbot-send-btn">
             <span>전송</span>
@@ -513,7 +754,6 @@
       </div>
     </div>
 
-    <!-- Floating Toggle Button -->
     <button class="chatbot-trigger-btn" id="btn-chatbot-toggle" title="구름이와 실시간 대화">
       <img src="gureumi_avatar.png" alt="구름이" class="trigger-avatar-img">
       <span class="trigger-badge" id="trigger-unread-badge">1</span>
@@ -522,6 +762,6 @@
 
   <div class="toast-notice" id="toast-notice">클립보드에 복사되었습니다.</div>
 
-  <script src="app.js?v=1793250100"></script>
+  <script src="app.js?v=20261101_2135"></script>
 </body>
 </html>
