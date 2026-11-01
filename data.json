@@ -50,7 +50,7 @@
       "dayOfWeek": "일요일",
       "createdAt": "2026-11-01 08:30:00",
       "headline": "11월 첫날 주말 일정 점검 및 투두메이트 실사",
-      "summary": "금일 등록된 캘린더 일정은 없으며, 투두메이트 미완료 할 일 2건(가계부 작성, 듀오링고 일본어 2개)이 확인되었습니다.",
+      "summary": "금일 등록된 캘린더 일정은 없으며, 투두메이트 미완료 할 일 5건(가계부 작성, 클래스 101 썸네일 및 상세페이지 수정, SEO 최종 점검, 듀오링고 일본어 2개, 운동)이 확인되었습니다.",
       "calendar": {
         "count": 0,
         "items": [],
@@ -71,8 +71,29 @@
         },
         {
           "id": "todo-20261101-2",
+          "text": "클래스 101 썸네일 및 상세페이지 수정",
+          "category": "사업or수익",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "todo-20261101-3",
+          "text": "SEO 최종 점검",
+          "category": "사업or수익",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "todo-20261101-4",
           "text": "듀오링고 일본어 2개",
           "category": "자기계발",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "todo-20261101-5",
+          "text": "운동",
+          "category": "해야 할 일",
           "done": false,
           "excluded": false
         }
