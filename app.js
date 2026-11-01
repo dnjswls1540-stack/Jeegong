@@ -875,16 +875,6 @@ function renderTodayView() {
     calCountEl.textContent = weekEventsCount || '4';
   }
 
-  const todoCountEl = document.getElementById('stat-todo-count');
-  const pendingTodosCount = b.todomateTodos ? b.todomateTodos.filter(t => !t.done).length : 5;
-  if (todoCountEl) todoCountEl.textContent = pendingTodosCount;
-
-  const emailCountEl = document.getElementById('stat-email-count');
-  if (emailCountEl && b.emails) {
-    const unhandledEmails = b.emails.filter(m => m.status !== 'excluded' && m.status !== 'done' && m.status !== 'sent').length;
-    emailCountEl.textContent = unhandledEmails || '3';
-  }
-
   // Update Sidebar Nav Badges with clear helper
   function updateNavBadge(badgeEl, count, label) {
     if (!badgeEl) return;
