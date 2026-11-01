@@ -1518,6 +1518,7 @@ window.refreshDashboardData = async function(showNotice = true) {
     // 8. Publish refresh signal to ntfy for background agent to sync Todomate
     if (showNotice) {
       try {
+        window._isAwaitingTodomateSync = true;
         fetch(`${SYNC_ENDPOINT}`, {
           method: 'POST',
           headers: {
@@ -1530,9 +1531,22 @@ window.refreshDashboardData = async function(showNotice = true) {
             timestamp: Date.now()
           })
         }).catch(e => console.warn('Refresh signal error:', e));
-      } catch (e) {}
 
-      showToast('🔄 최신 메일, 문의, 투두메이트 할 일을 모두 새로고침했습니다.');
+        if (todoRefreshBtn) todoRefreshBtn.classList.add('spinning');
+        showToast('🔄 최신 메일·문의 조회 완료! 투두메이트 실시간 동기화 요청 중...');
+
+        if (window._todomateSyncTimer) clearTimeout(window._todomateSyncTimer);
+        window._todomateSyncTimer = setTimeout(() => {
+          if (window._isAwaitingTodomateSync) {
+            window._isAwaitingTodomateSync = false;
+            const tBtn = document.getElementById('btn-refresh-todomate');
+            if (tBtn) tBtn.classList.remove('spinning');
+            showToast('ℹ️ 백그라운드 에이전트 동기화 진행 중입니다. 잠시 후 자동 반영됩니다.');
+          }
+        }, 15000);
+      } catch (e) {
+        showToast('🔄 최신 메일, 문의를 새로고침했습니다.');
+      }
     }
   } catch (err) {
     console.error('Refresh dashboard error:', err);
@@ -1543,7 +1557,7 @@ window.refreshDashboardData = async function(showNotice = true) {
         refreshBtn.classList.remove('spinning');
       }, 500);
     }
-    if (todoRefreshBtn) {
+    if (todoRefreshBtn && !window._isAwaitingTodomateSync) {
       setTimeout(() => {
         todoRefreshBtn.classList.remove('spinning');
       }, 500);
@@ -1554,7 +1568,6 @@ window.refreshDashboardData = async function(showNotice = true) {
 window.refreshTodomateOnly = async function() {
   const todoRefreshBtn = document.getElementById('btn-refresh-todomate');
   if (todoRefreshBtn) todoRefreshBtn.classList.add('spinning');
-  showToast('🔄 투두메이트 최신 할 일을 불러오는 중입니다...');
   await window.refreshDashboardData(true);
 };
 
@@ -2386,6 +2399,13 @@ function applyRemoteSync(remoteData) {
         ...rt,
         done: !!rt.done
       }));
+      if (window._isAwaitingTodomateSync) {
+        window._isAwaitingTodomateSync = false;
+        if (window._todomateSyncTimer) clearTimeout(window._todomateSyncTimer);
+        const tBtn = document.getElementById('btn-refresh-todomate');
+        if (tBtn) tBtn.classList.remove('spinning');
+        showToast(`✅ 투두메이트 최신 할 일(${b.todomateTodos.length}건) 동기화 완료!`);
+      }
     } else if (Array.isArray(remoteData.doneTodos)) {
       (b.todomateTodos || []).forEach(t => {
         t.done = remoteData.doneTodos.includes(t.id) || remoteData.doneTodos.includes(t.text);
