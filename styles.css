@@ -619,12 +619,10 @@ body {
 }
 
 /* =========================================================
-   4. 중간 3단 섹션 (확인 필요 + 캘린더 주간 뷰 + 연동 현황)
+   4. 구글 캘린더 주간 뷰 (단일 와이드 패널)
    ========================================================= */
 .dashboard-mid-grid {
-  display: grid;
-  grid-template-columns: 270px 1fr 260px;
-  gap: 14px;
+  display: block;
   margin-bottom: 16px;
 }
 
@@ -743,20 +741,20 @@ body {
 .week-calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
+  gap: 8px;
   flex: 1;
-  min-height: 220px;
+  min-height: 200px;
 }
 
 .day-column {
   background-color: var(--bg-card-subtle);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  padding: 8px 6px;
+  padding: 10px 8px;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  min-height: 180px;
+  min-height: 190px;
   transition: background-color 0.15s, border-color 0.15s;
 }
 .day-column.is-today {

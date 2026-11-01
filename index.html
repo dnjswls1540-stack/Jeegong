@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>지공 출근 에이전트 | 업무 현황 대시보드</title>
-  <link rel="stylesheet" href="styles.css?v=20261101_2230">
+  <link rel="stylesheet" href="styles.css?v=20261101_2235">
 </head>
 <body>
   <div class="app-container">
@@ -220,55 +220,8 @@
             </div>
           </div>
 
-          <!-- 2. 중간 3단 섹션 (확인 필요 항목 + 구글 캘린더 주간 뷰 + 에이전트 시스템 현황) -->
+          <!-- 2. 구글 캘린더 주간 뷰 (단일 와이드 패널) -->
           <div class="dashboard-mid-grid">
-            
-            <!-- A. 좌측: 확인 필요 항목 (28%) -->
-            <div class="panel-card panel-action-needed">
-              <div class="panel-header">
-                <div class="panel-title">
-                  <span>📌</span>
-                  <span>확인 필요 항목</span>
-                </div>
-                <span class="panel-more">⋯</span>
-              </div>
-
-              <div class="action-items-list">
-                <div class="action-item" onclick="switchNavView('todo-view')">
-                  <div class="action-left">
-                    <span class="action-icon">📝</span>
-                    <span class="action-text">마감 오늘인 할 일</span>
-                  </div>
-                  <span class="action-badge badge-red">5건</span>
-                </div>
-
-                <div class="action-item" onclick="switchNavView('email-view')">
-                  <div class="action-left">
-                    <span class="action-icon">✉️</span>
-                    <span class="action-text">답장 발송 대기 외주</span>
-                  </div>
-                  <span class="action-badge badge-orange">1건</span>
-                </div>
-
-                <div class="action-item" onclick="switchNavView('sales-view')">
-                  <div class="action-left">
-                    <span class="action-icon">🧾</span>
-                    <span class="action-text">공구 정산 확인 필요</span>
-                  </div>
-                  <span class="action-badge badge-yellow">1건</span>
-                </div>
-
-                <div class="action-item" onclick="switchNavView('todo-view')">
-                  <div class="action-left">
-                    <span class="action-icon">⚙️</span>
-                    <span class="action-text">클래스101 무자본 키워드</span>
-                  </div>
-                  <span class="action-badge badge-red">1건</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- B. 중앙: 구글 캘린더 주간 뷰 (46%) -->
             <div class="panel-card panel-calendar-week">
               <div class="panel-header">
                 <div class="panel-title">
@@ -282,7 +235,6 @@
                     <button class="cal-today-btn" id="btn-cal-today">오늘</button>
                     <button class="cal-arrow-btn" id="btn-cal-next" title="다음 주">&gt;</button>
                   </div>
-                  <span class="panel-add-icon">＋</span>
                 </div>
               </div>
 
@@ -291,86 +243,6 @@
                 <!-- Dynamically populated via JS -->
               </div>
             </div>
-
-            <!-- C. 우측: 업무 현황 및 에이전트 연동 (26%) -->
-            <div class="panel-card panel-system-status">
-              <div class="panel-header">
-                <div class="panel-title">
-                  <span>⏱️</span>
-                  <span>업무 & 연동 현황</span>
-                </div>
-                <span class="panel-more">⋯</span>
-              </div>
-
-              <div class="hub-list">
-                <div class="hub-item">
-                  <div class="hub-info">
-                    <div class="hub-name">구글 캘린더</div>
-                    <div class="hub-detail">dnjswls1540@gmail.com</div>
-                  </div>
-                  <div class="hub-status status-connected">
-                    <span class="dot-green"></span>
-                    <span>연결됨</span>
-                  </div>
-                </div>
-
-                <div class="hub-item">
-                  <div class="hub-info">
-                    <div class="hub-name">지메일 (2계정)</div>
-                    <div class="hub-detail">개인 & 온세스 스튜디오</div>
-                  </div>
-                  <div class="hub-status status-connected">
-                    <span class="dot-green"></span>
-                    <span>연결됨</span>
-                  </div>
-                </div>
-
-                <div class="hub-item">
-                  <div class="hub-info">
-                    <div class="hub-name">네이버 메일</div>
-                    <div class="hub-detail">dnjsrns123@naver.com</div>
-                  </div>
-                  <div class="hub-status status-connected">
-                    <span class="dot-green"></span>
-                    <span>연결됨</span>
-                  </div>
-                </div>
-
-                <div class="hub-item">
-                  <div class="hub-info">
-                    <div class="hub-name">투두메이트</div>
-                    <div class="hub-detail">jeeallth (실시간 동기화)</div>
-                  </div>
-                  <div class="hub-status status-connected">
-                    <span class="dot-green"></span>
-                    <span>동기화됨</span>
-                  </div>
-                </div>
-
-                <div class="hub-item">
-                  <div class="hub-info">
-                    <div class="hub-name">구글 드라이브</div>
-                    <div class="hub-detail">업무 자료 보관함</div>
-                  </div>
-                  <div class="hub-status status-connected">
-                    <span class="dot-green"></span>
-                    <span>연결됨</span>
-                  </div>
-                </div>
-
-                <div class="hub-item">
-                  <div class="hub-info">
-                    <div class="hub-name">카카오 비즈니스</div>
-                    <div class="hub-detail">3개 채널 정상 가동</div>
-                  </div>
-                  <div class="hub-status status-connected">
-                    <span class="dot-green"></span>
-                    <span>연결됨</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
           </div>
 
           <!-- 3. 하단 섹션: ✓ 할 일 · 표 (Table Format) -->
@@ -821,6 +693,6 @@
 
   <div class="toast-notice" id="toast-notice">클립보드에 복사되었습니다.</div>
 
-  <script src="app.js?v=20261101_2230"></script>
+  <script src="app.js?v=20261101_2235"></script>
 </body>
 </html>
