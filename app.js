@@ -777,23 +777,25 @@ function renderTodayView() {
   const guideEl = document.getElementById('guide-banner-text');
   if (guideEl) guideEl.textContent = b.guide;
 
-  // 1. Calendar
+  // 1. Calendar (Legacy List fallback)
   const calContainer = document.getElementById('calendar-list-container');
-  calContainer.innerHTML = '';
-  if (b.calendar.count === 0) {
-    calContainer.innerHTML = `<div class="empty-state">${b.calendar.note}</div>`;
-  } else {
-    b.calendar.items.forEach(cal => {
-      calContainer.innerHTML += `
-        <div class="schedule-item">
-          <div class="schedule-time">${cal.time}</div>
-          <div class="schedule-main">
-            <div class="schedule-title">${cal.title}</div>
-            <div class="schedule-meta">${cal.location || '온라인'} · ${cal.attendees || '단독'}</div>
+  if (calContainer) {
+    calContainer.innerHTML = '';
+    if (b.calendar && b.calendar.count === 0) {
+      calContainer.innerHTML = `<div class="empty-state">${b.calendar.note}</div>`;
+    } else if (b.calendar && b.calendar.items) {
+      b.calendar.items.forEach(cal => {
+        calContainer.innerHTML += `
+          <div class="schedule-item">
+            <div class="schedule-time">${cal.time}</div>
+            <div class="schedule-main">
+              <div class="schedule-title">${cal.title}</div>
+              <div class="schedule-meta">${cal.location || '온라인'} · ${cal.attendees || '단독'}</div>
+            </div>
           </div>
-        </div>
-      `;
-    });
+        `;
+      });
+    }
   }
 
   // 2. Emails (with Exclude & Process System + Cross-day Deduplication)
@@ -896,30 +898,32 @@ function renderTodayView() {
   renderInquiries(b, 'inquiry-list-container', 'inquiry-badge');
   renderInquiries(b, 'inquiry-exclusive-list-container', 'inquiry-exclusive-badge');
 
-  // 3-A. Todomate Todos (Separated - Completed items sink to bottom)
+  // 3-A. Todomate Todos (Legacy List fallback)
   const todoContainer = document.getElementById('todomate-list-container');
-  if (todoContainer) todoContainer.innerHTML = '';
   const todoBadge = document.getElementById('todomate-count-badge');
   if (todoBadge) todoBadge.textContent = `${(b.todomateTodos || []).filter(t => !t.done).length}건 대기`;
 
-  const sortedTodos = [...(b.todomateTodos || [])].sort((a, b) => {
-    if (a.done === b.done) return 0;
-    return a.done ? 1 : -1;
-  });
+  if (todoContainer) {
+    todoContainer.innerHTML = '';
+    const sortedTodos = [...(b.todomateTodos || [])].sort((a, b) => {
+      if (a.done === b.done) return 0;
+      return a.done ? 1 : -1;
+    });
 
-  sortedTodos.forEach(todo => {
-    const isDone = todo.done;
-    todoContainer.innerHTML += `
-      <div class="todo-item ${isDone ? 'completed' : ''}" onclick="toggleTodomateTodo('${todo.id}')">
-        <div class="todo-checkbox ${isDone ? 'checked' : ''}">
-          ${isDone ? '✓' : ''}
+    sortedTodos.forEach(todo => {
+      const isDone = todo.done;
+      todoContainer.innerHTML += `
+        <div class="todo-item ${isDone ? 'completed' : ''}" onclick="toggleTodomateTodo('${todo.id}')">
+          <div class="todo-checkbox ${isDone ? 'checked' : ''}">
+            ${isDone ? '✓' : ''}
+          </div>
+          <div class="todo-text">${todo.text}</div>
+          <span class="section-badge" style="font-size: 11px;">${todo.category || '투두메이트'}</span>
+          <button class="todo-delete-btn" onclick="event.stopPropagation(); window.deleteTodomateTodo('${todo.id}')" title="할 일 삭제">✕</button>
         </div>
-        <div class="todo-text">${todo.text}</div>
-        <span class="section-badge" style="font-size: 11px;">${todo.category || '투두메이트'}</span>
-        <button class="todo-delete-btn" onclick="event.stopPropagation(); window.deleteTodomateTodo('${todo.id}')" title="할 일 삭제">✕</button>
-      </div>
-    `;
-  });
+      `;
+    });
+  }
 
   // 3-B. Agent Recommended Priorities (Accordion Toggles - Finished items sink to bottom)
   const agentContainer = document.getElementById('agent-priority-container');
