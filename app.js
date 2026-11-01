@@ -1696,109 +1696,114 @@ function setupInteractions() {
   // Work state uses global workState & updateWorkButtonUI()
   updateWorkButtonUI();
 
-  btnRun.addEventListener('click', async () => {
-    if (workState === 'ready') {
-      // 1. Run Check-in scan
-      btnRun.disabled = true;
-      banner.classList.add('active');
+  if (btnRun) {
+    btnRun.addEventListener('click', async () => {
+      if (workState === 'ready') {
+        // 1. Run Check-in scan
+        btnRun.disabled = true;
+        if (banner) banner.classList.add('active');
 
-      for (let i = 0; i < steps.length; i++) {
-        const s = steps[i];
-        const el = document.getElementById(s.id);
-        el.classList.add('running');
-        statusText.textContent = s.text;
-        progressText.textContent = `${i} / 5 진행`;
+        for (let i = 0; i < steps.length; i++) {
+          const s = steps[i];
+          const el = document.getElementById(s.id);
+          if (el) el.classList.add('running');
+          if (statusText) statusText.textContent = s.text;
+          if (progressText) progressText.textContent = `${i} / 5 진행`;
 
-        await new Promise(r => setTimeout(r, 550));
+          await new Promise(r => setTimeout(r, 550));
 
-        el.classList.remove('running');
-        el.classList.add('done');
-        progressText.textContent = `${i + 1} / 5 완료`;
-      }
+          if (el) {
+            el.classList.remove('running');
+            el.classList.add('done');
+          }
+          if (progressText) progressText.textContent = `${i + 1} / 5 완료`;
+        }
 
-      statusText.textContent = '✨ 5대 도구 전수 분석 완료! 오늘의 출근 브리핑이 동기화되었습니다.';
+        if (statusText) statusText.textContent = '✨ 5대 도구 전수 분석 완료! 오늘의 출근 브리핑이 동기화되었습니다.';
 
-      workState = 'checked_in';
-      const kst = getKSTNow(); try { localStorage.setItem('jeegong_work_date', kst.dateStr); localStorage.setItem('jeegong_work_state', 'checked_in'); } catch (e) {}
-      updateWorkButtonUI();
-      pushCloudState();
-
-      const now = new Date();
-      const timeStr = now.toTimeString().split(' ')[0];
-      appData.history.unshift({
-        id: `run-${Date.now()}`,
-        timestamp: `${getKSTNow().dateStr} ${timeStr}`,
-        trigger: '출근 완료 (5대 도구 동기화)',
-        duration: '2.7s',
-        status: 'success',
-        itemsFound: { calendar: 0, emails: 3, todos: 5, driveFiles: 2 }
-      });
-
-      renderTodayView();
-      renderHistoryView();
-
-      setTimeout(() => {
-        banner.classList.remove('active');
-        showToast('🎉 출근이 완료되었습니다! 하루 일과 후 상단 [업무 종료]를 눌러 퇴근하세요.');
-      }, 1000);
-
-    } else if (workState === 'checked_in') {
-      // 2. End Work (퇴근 처리)
-      workState = 'finished';
-      const kst = getKSTNow(); try { localStorage.setItem('jeegong_work_date', kst.dateStr); localStorage.setItem('jeegong_work_state', 'finished'); } catch (e) {}
-      updateWorkButtonUI();
-      pushCloudState();
-
-      const now = new Date();
-      const timeStr = now.toTimeString().split(' ')[0];
-      appData.history.unshift({
-        id: `run-${Date.now()}`,
-        timestamp: `${getKSTNow().dateStr} ${timeStr}`,
-        trigger: '업무 종료 (퇴근 완료)',
-        duration: '0.1s',
-        status: 'success',
-        itemsFound: { calendar: 0, emails: 3, todos: 5, driveFiles: 2 }
-      });
-
-      const guideText = document.getElementById('guide-banner-text');
-      if (guideText) {
-        guideText.textContent = '👏 오늘 하루도 정말 고생 많으셨습니다! 오늘의 모든 업무가 성공적으로 마감되었습니다.';
-      }
-
-      renderHistoryView();
-      showToast('🌙 오늘 하루도 고생 많으셨습니다! 업무가 성공적으로 종료되었습니다.');
-
-      // Add farewell bot chat message
-      chatMessages.push({
-        role: 'bot',
-        text: '지원진 님, 오늘 하루도 정말 고생 많으셨어요! 👏\n내일 오전 8시 30분 출근 알람 때 산뜻하게 다시 찾아뵐게요. 편안한 저녁 보내세요 ㅎㅎ',
-        time: `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`
-      });
-      saveChatHistory();
-      renderChatMessages();
-
-    } else if (workState === 'finished') {
-      if (confirm('오늘 업무를 다시 시작(출근 상태로 복원)하시겠습니까?')) {
-        workState = 'ready';
-        const kst = getKSTNow(); try { localStorage.setItem('jeegong_work_date', kst.dateStr); localStorage.setItem('jeegong_work_state', 'ready'); } catch (e) {}
+        workState = 'checked_in';
+        const kst = getKSTNow(); try { localStorage.setItem('jeegong_work_date', kst.dateStr); localStorage.setItem('jeegong_work_state', 'checked_in'); } catch (e) {}
         updateWorkButtonUI();
         pushCloudState();
+
+        const now = new Date();
+        const timeStr = now.toTimeString().split(' ')[0];
+        appData.history.unshift({
+          id: `run-${Date.now()}`,
+          timestamp: `${getKSTNow().dateStr} ${timeStr}`,
+          trigger: '출근 완료 (5대 도구 동기화)',
+          duration: '2.7s',
+          status: 'success',
+          itemsFound: { calendar: 0, emails: 3, todos: 5, driveFiles: 2 }
+        });
+
         renderTodayView();
-        showToast('출근 준비 상태로 복원되었습니다.');
+        renderHistoryView();
+
+        setTimeout(() => {
+          if (banner) banner.classList.remove('active');
+          showToast('🎉 출근이 완료되었습니다! 하루 일과 후 상단 [업무 종료]를 눌러 퇴근하세요.');
+        }, 1000);
+
+      } else if (workState === 'checked_in') {
+        // 2. End Work (퇴근 처리)
+        workState = 'finished';
+        const kst = getKSTNow(); try { localStorage.setItem('jeegong_work_date', kst.dateStr); localStorage.setItem('jeegong_work_state', 'finished'); } catch (e) {}
+        updateWorkButtonUI();
+        pushCloudState();
+
+        const now = new Date();
+        const timeStr = now.toTimeString().split(' ')[0];
+        appData.history.unshift({
+          id: `run-${Date.now()}`,
+          timestamp: `${getKSTNow().dateStr} ${timeStr}`,
+          trigger: '업무 종료 (퇴근 완료)',
+          duration: '0.1s',
+          status: 'success',
+          itemsFound: { calendar: 0, emails: 3, todos: 5, driveFiles: 2 }
+        });
+
+        const guideText = document.getElementById('guide-banner-text');
+        if (guideText) {
+          guideText.textContent = '👏 오늘 하루도 정말 고생 많으셨습니다! 오늘의 모든 업무가 성공적으로 마감되었습니다.';
+        }
+
+        renderHistoryView();
+        showToast('🌙 오늘 하루도 고생 많으셨습니다! 업무가 성공적으로 종료되었습니다.');
+
+        // Add farewell bot chat message
+        chatMessages.push({
+          role: 'bot',
+          text: '지원진 님, 오늘 하루도 정말 고생 많으셨어요! 👏\n내일 오전 8시 30분 출근 알람 때 산뜻하게 다시 찾아뵐게요. 편안한 저녁 보내세요 ㅎㅎ',
+          time: `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`
+        });
+        saveChatHistory();
+        renderChatMessages();
+
+      } else if (workState === 'finished') {
+        if (confirm('오늘 업무를 다시 시작(출근 상태로 복원)하시겠습니까?')) {
+          workState = 'ready';
+          const kst = getKSTNow(); try { localStorage.setItem('jeegong_work_date', kst.dateStr); localStorage.setItem('jeegong_work_state', 'ready'); } catch (e) {}
+          updateWorkButtonUI();
+          pushCloudState();
+          renderTodayView();
+          showToast('출근 준비 상태로 복원되었습니다.');
+        }
       }
-    }
-  });
+    });
+  }
 
   // Copy Markdown (Dynamically generated from current briefing)
-  copyBtn.addEventListener('click', () => {
-    const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
-    const calText = b.calendar.note || (b.calendar.items && b.calendar.items.length ? b.calendar.items.map(i => `${i.time}: ${i.title}`).join('\n- ') : '오늘 등록된 캘린더 일정 없음');
-    const emailText = b.emails.map((e, idx) => `${idx + 1}. [${e.priority}] ${e.from}: ${e.subject}`).join('\n');
-    const todoText = b.todomateTodos.map(t => `- ${t.text} ${t.done ? '(완료)' : ''}`).join('\n');
-    const priorityText = b.agentPriorities.map((ap, idx) => `${idx + 1}. [${ap.priority}] ${ap.title}${ap.done ? ' (완료)' : ''}`).join('\n');
-    const guideText = b.guide || b.summary;
+  if (copyBtn) {
+    copyBtn.addEventListener('click', () => {
+      const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
+      const calText = b.calendar.note || (b.calendar.items && b.calendar.items.length ? b.calendar.items.map(i => `${i.time}: ${i.title}`).join('\n- ') : '오늘 등록된 캘린더 일정 없음');
+      const emailText = b.emails.map((e, idx) => `${idx + 1}. [${e.priority}] ${e.from}: ${e.subject}`).join('\n');
+      const todoText = b.todomateTodos.map(t => `- ${t.text} ${t.done ? '(완료)' : ''}`).join('\n');
+      const priorityText = b.agentPriorities.map((ap, idx) => `${idx + 1}. [${ap.priority}] ${ap.title}${ap.done ? ' (완료)' : ''}`).join('\n');
+      const guideText = b.guide || b.summary;
 
-    const md = `# 🌅 [지공 출근 에이전트] 오늘 업무 브리핑 (${b.date} ${b.dayOfWeek})
+      const md = `# 🌅 [지공 출근 에이전트] 오늘 업무 브리핑 (${b.date} ${b.dayOfWeek})
 
 ### 📅 오늘의 일정 & 회의
 - ${calText}
@@ -1814,12 +1819,13 @@ ${priorityText}
 
 > 💡 한 줄 가이드: ${guideText}`;
 
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(md).then(() => showToast('브리핑 마크다운이 복사되었습니다.'));
-    } else {
-      showToast('브리핑이 복사되었습니다.');
-    }
-  });
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(md).then(() => showToast('브리핑 마크다운이 복사되었습니다.'));
+      } else {
+        showToast('브리핑이 복사되었습니다.');
+      }
+    });
+  }
 
   // Quick Add Todo Input Enter Key
   const quickInput = document.getElementById('input-quick-add-todo');
