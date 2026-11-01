@@ -2014,9 +2014,22 @@ function setupChatbot() {
     ];
   }
 
-  activeChatDate = '2026-10-21';
+  const kst = getKSTNow();
+  activeChatDate = kst.dateStr;
+  if (!chatSessions[activeChatDate] || chatSessions[activeChatDate].length === 0) {
+    chatSessions[activeChatDate] = [
+      {
+        role: 'bot',
+        text: '지원진 님 안녕하세요! 구름이예요 ㅎㅎ 오늘 일정이나 메일, 할 일 관련해서 처리할 작업 있으시면 편하게 말씀해 주세요!',
+        time: '08:30'
+      }
+    ];
+  }
   chatMessages = chatSessions[activeChatDate];
-  renderChatConversationList();
+
+  currentChatView = 'room';
+  const initialRoomView = document.getElementById('chat-view-room');
+  if (initialRoomView) initialRoomView.style.display = 'flex';
 
   // Navigation: Back to List
   if (backBtn) {
@@ -2151,12 +2164,10 @@ function setupChatbot() {
     modal.classList.toggle('open');
     if (modal.classList.contains('open')) {
       markAsRead();
-      if (currentChatView === 'list') {
-        showChatList();
-      } else {
-        renderChatMessages();
-        if (inputEl) inputEl.focus();
-      }
+      const rView = document.getElementById('chat-view-room');
+      if (rView) rView.style.display = 'flex';
+      renderChatMessages();
+      if (inputEl) inputEl.focus();
     }
   });
 
@@ -2193,16 +2204,14 @@ function setupChatbot() {
     });
   }
 
-  showChatList();
+  renderChatMessages();
 }
 
 window.showChatList = function() {
-  currentChatView = 'list';
-  const listView = document.getElementById('chat-view-list');
+  currentChatView = 'room';
   const roomView = document.getElementById('chat-view-room');
-  if (listView) listView.style.display = 'flex';
-  if (roomView) roomView.style.display = 'none';
-  renderChatConversationList();
+  if (roomView) roomView.style.display = 'flex';
+  renderChatMessages();
 };
 
 window.showChatRoom = function(sessionId) {
@@ -2210,6 +2219,8 @@ window.showChatRoom = function(sessionId) {
   if (sessionId) {
     activeChatDate = sessionId;
   }
+  const kst = getKSTNow();
+  if (!activeChatDate) activeChatDate = kst.dateStr;
   if (!chatSessions[activeChatDate]) {
     chatSessions[activeChatDate] = [
       {
@@ -2221,9 +2232,7 @@ window.showChatRoom = function(sessionId) {
   }
   chatMessages = chatSessions[activeChatDate];
   
-  const listView = document.getElementById('chat-view-list');
   const roomView = document.getElementById('chat-view-room');
-  if (listView) listView.style.display = 'none';
   if (roomView) roomView.style.display = 'flex';
   renderChatMessages();
   const inputEl = document.getElementById('chatbot-input');
