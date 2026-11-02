@@ -215,7 +215,7 @@
           "id": "todo-20261102-8",
           "text": "본인사실확인서 발급",
           "category": "해야 할 일",
-          "done": false,
+          "done": true,
           "excluded": false
         },
         {
