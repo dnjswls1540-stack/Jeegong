@@ -267,7 +267,10 @@ function updateWorkButtonUI() {
 function getCustomAddedTodos(dateKey) {
   try {
     const saved = localStorage.getItem(`jeegong_custom_todos_${dateKey}`);
-    return saved ? JSON.parse(saved) : [];
+    if (!saved) return [];
+    const list = JSON.parse(saved);
+    if (!Array.isArray(list)) return [];
+    return list.filter(t => t && t.id && (t.id.startsWith('custom-') || t.source === 'dashboard'));
   } catch (e) {
     return [];
   }
@@ -302,7 +305,7 @@ function saveCustomTodos(briefingId) {
   const dateKey = b.date || kst.dateStr;
 
   (b.todomateTodos || []).forEach(t => {
-    if (t.id && (t.id.startsWith('custom-') || t.id.startsWith('todo-') || t.source === 'dashboard')) {
+    if (t.id && (t.id.startsWith('custom-') || t.source === 'dashboard')) {
       saveCustomAddedTodo(dateKey, t);
     }
   });
@@ -877,7 +880,7 @@ function renderTodoTable() {
             <span class="cat-tag ${catClass}">${t.category || '사업or수익'}</span>
           </td>
           <td style="text-align: center;">
-            <span class="source-tag">${t.id.startsWith('custom-') || t.id.startsWith('todo-') || t.source === 'dashboard' ? '💻 대시보드' : '📱 투두메이트'}</span>
+            <span class="source-tag">${t.id.startsWith('custom-') || t.source === 'dashboard' ? '💻 대시보드' : '📱 투두메이트'}</span>
           </td>
           <td style="text-align: center;">
             <button class="btn-del-todo" onclick="deleteTodomateTodo('${t.id}')" title="삭제">✕</button>
@@ -1655,7 +1658,7 @@ window.toggleTodomateTodo = function(id) {
     t.done = !t.done;
     const kst = getKSTNow();
     const dateKey = b.date || kst.dateStr;
-    if (t.id.startsWith('custom-') || t.id.startsWith('todo-') || t.source === 'dashboard') {
+    if (t.id.startsWith('custom-') || t.source === 'dashboard') {
       saveCustomAddedTodo(dateKey, t);
     }
     saveLocalTodosState(currentBriefingId);
