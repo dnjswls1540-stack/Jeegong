@@ -749,28 +749,36 @@ function renderTodoTable() {
   const todos = b.todomateTodos || [];
   const priorities = b.agentPriorities || [];
   
-  const pendingCount = todos.filter(t => !t.done && !t.excluded).length;
-  const doneCount = todos.filter(t => t.done && !t.excluded).length;
+  const pendingTodos = todos.filter(t => !t.done && !t.excluded);
+  const doneTodos = todos.filter(t => t.done && !t.excluded);
+  const pendingPriorities = priorities.filter(p => !p.done && !p.excluded);
+  const donePriorities = priorities.filter(p => p.done && !p.excluded);
+
+  const totalPending = pendingTodos.length + pendingPriorities.length;
+  const totalDone = doneTodos.length + donePriorities.length;
 
   const sideTodoBadge = document.getElementById('side-todo-badge');
   if (sideTodoBadge) {
-    if (pendingCount > 0) {
+    if (totalPending > 0) {
       sideTodoBadge.style.display = 'inline-flex';
-      sideTodoBadge.textContent = pendingCount;
-      sideTodoBadge.title = `오늘 남은 할 일 ${pendingCount}건`;
+      sideTodoBadge.textContent = totalPending;
+      sideTodoBadge.title = `오늘 남은 할 일 ${totalPending}건`;
     } else {
       sideTodoBadge.style.display = 'none';
     }
   }
 
   const todoViewBadge = document.getElementById('todo-view-badge');
-  if (todoViewBadge) todoViewBadge.textContent = `${pendingCount}건 남음`;
+  if (todoViewBadge) todoViewBadge.textContent = `${totalPending}건 남음`;
 
   const todoBannerCount = document.getElementById('todo-view-banner-count');
-  if (todoBannerCount) todoBannerCount.textContent = `${pendingCount}건 (완료 ${doneCount}건)`;
+  if (todoBannerCount) todoBannerCount.textContent = `${totalPending}건 (완료 ${totalDone}건)`;
 
   const statTodoEl = document.getElementById('stat-todo-count');
-  if (statTodoEl) statTodoEl.textContent = pendingCount;
+  if (statTodoEl) statTodoEl.textContent = totalPending;
+
+  const todomateCountBadge = document.getElementById('todomate-count-badge');
+  if (todomateCountBadge) todomateCountBadge.textContent = `${totalPending}건 대기`;
 
   function buildTableRows() {
     let rowsHtml = '';
@@ -804,19 +812,20 @@ function renderTodoTable() {
       `;
     });
     
-    // 2. Agent Priorities
+    // 2. Agent Priorities (에이전트 추천 핵심 우선순위 통합 행)
     priorities.forEach(p => {
       if (p.excluded) return;
       rowsHtml += `
-        <tr id="todo-row-${p.id}" style="background-color: rgba(59, 130, 246, 0.02);">
+        <tr id="todo-row-${p.id}" class="todo-agent-row" style="background-color: rgba(59, 130, 246, 0.02);">
           <td style="text-align: center;">
-            <input type="checkbox" class="todo-check-input" ${p.done ? 'checked' : ''} onchange="togglePriorityDone('${p.id}')">
+            <input type="checkbox" class="todo-check-input" ${p.done ? 'checked' : ''} onchange="toggleAgentPriorityDone('${p.id}')">
           </td>
           <td>
-            <span class="todo-text-main ${p.done ? 'done' : ''}" id="todo-text-${p.id}">
+            <div class="todo-text-main ${p.done ? 'done' : ''}" id="todo-text-${p.id}">
               <strong style="color: var(--accent-blue); font-size: 11px; margin-right: 4px;">${p.priority || '우선'}</strong>
-              ${p.title}
-            </span>
+              <span>${p.title}</span>
+              ${(p.detail || p.desc) ? `<div style="font-size: 11.5px; color: var(--text-tertiary); margin-top: 3px; line-height: 1.4; font-weight: normal; text-decoration: none;">💡 ${p.detail || p.desc}</div>` : ''}
+            </div>
           </td>
           <td style="text-align: center;">
             <span class="cat-tag cat-agent">에이전트 추천</span>
@@ -825,7 +834,7 @@ function renderTodoTable() {
             <span class="source-tag">✨ 피클 AI</span>
           </td>
           <td style="text-align: center;">
-            <button class="btn-del-todo" onclick="toggleExcludePriority('${p.id}')" title="제외">✕</button>
+            <button class="btn-del-todo" onclick="deleteAgentPriority('${p.id}')" title="삭제">✕</button>
           </td>
         </tr>
       `;
@@ -964,52 +973,10 @@ function renderTodayView() {
     });
   }
 
-  // 3-B. Agent Recommended Priorities (Accordion Toggles - Finished items sink to bottom)
+  // 3-B. Agent Recommended Priorities (Consolidated into Modern Table above)
   const agentContainer = document.getElementById('agent-priority-container');
   if (agentContainer) {
     agentContainer.innerHTML = '';
-    const sortedAgentPriorities = [...b.agentPriorities].sort((a, b) => {
-      const aFinished = a.done || a.excluded;
-      const bFinished = b.done || b.excluded;
-      if (aFinished === bFinished) return 0;
-      return aFinished ? 1 : -1;
-    });
-
-    sortedAgentPriorities.forEach(ap => {
-      const isP1 = ap.priority.includes('1순위');
-      const badgeClass = isP1 ? 'priority-p1' : 'priority-p2';
-      const isDone = ap.done;
-      const isExcluded = ap.excluded;
-
-      agentContainer.innerHTML += `
-        <div class="accordion-item ${isDone ? 'done' : ''} ${isExcluded ? 'excluded' : ''}" id="accordion-${ap.id}">
-          <div class="accordion-header" onclick="toggleAccordion('${ap.id}')">
-            <div class="accordion-header-left">
-              <div class="todo-checkbox ${isDone ? 'checked' : ''}" onclick="event.stopPropagation(); toggleAgentPriorityDone('${ap.id}')" title="직접 완료 표시">
-                ${isDone ? '✓' : ''}
-              </div>
-              <span class="todo-priority ${badgeClass}">${ap.priority}</span>
-              <div class="accordion-title">${ap.title}</div>
-            </div>
-            <div class="accordion-header-right">
-              <button class="btn-exclude-mini" onclick="event.stopPropagation(); toggleAgentPriorityExclude('${ap.id}')">
-                ${isExcluded ? '복구' : '제외'}
-              </button>
-              <span class="accordion-arrow">▾</span>
-            </div>
-          </div>
-          <div class="accordion-content">
-            <div class="priority-reason-box">
-              <div class="priority-reason-title">
-                <span>💡</span>
-                <span>우선순위 선정 사유</span>
-              </div>
-              <div class="priority-reason-text">${ap.detail || ap.desc || ap.reason || '상세 사유가 등록되지 않았습니다.'}</div>
-            </div>
-          </div>
-        </div>
-      `;
-    });
   }
 
   // 4. Drive References
@@ -1173,30 +1140,39 @@ window.unmarkDoneEmail = function(id) {
   pushCloudState();
 };
 
-// Agent Priority Done / Exclude Handlers
+// Agent Priority Done / Delete Handlers (Unified Table Management)
+window.deleteAgentPriority = function(id) {
+  if (!appData) return;
+  const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
+  if (!b || !b.agentPriorities) return;
+  const ap = b.agentPriorities.find(item => item.id === id);
+  if (!ap) return;
+  ap.excluded = true;
+  saveLocalTodosState(currentBriefingId);
+  renderTodoTable();
+  renderTodayView();
+  showToast(`🗑️ 에이전트 추천 '${ap.title}'을(를) 삭제했습니다.`);
+  pushCloudState();
+};
+
+window.toggleAgentPriorityExclude = window.deleteAgentPriority;
+window.toggleExcludePriority = window.deleteAgentPriority;
+
 window.toggleAgentPriorityDone = function(id) {
   if (!appData) return;
-  const b = appData.briefings.find(item => item.id === currentBriefingId);
+  const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
+  if (!b || !b.agentPriorities) return;
   const ap = b.agentPriorities.find(item => item.id === id);
   if (!ap) return;
   ap.done = !ap.done;
   saveLocalTodosState(currentBriefingId);
+  renderTodoTable();
   renderTodayView();
-  showToast(ap.done ? '해당 우선순위 업무를 완료 처리했습니다!' : '완료 처리를 취소했습니다.');
+  showToast(ap.done ? `✅ '${ap.title}' 완료 처리되었습니다!` : `완료 처리를 취소했습니다.`);
   pushCloudState();
 };
 
-window.toggleAgentPriorityExclude = function(id) {
-  if (!appData) return;
-  const b = appData.briefings.find(item => item.id === currentBriefingId);
-  const ap = b.agentPriorities.find(item => item.id === id);
-  if (!ap) return;
-  ap.excluded = !ap.excluded;
-  saveLocalTodosState(currentBriefingId);
-  renderTodayView();
-  showToast(ap.excluded ? '해당 우선순위 업무를 제외 처리했습니다.' : '제외 처리를 복구했습니다.');
-  pushCloudState();
-};
+window.togglePriorityDone = window.toggleAgentPriorityDone;
 
 // Email Exclude / Restore
 // Render Customer Inquiries (Kmong, Imweb, Mail) with Cross-day Deduplication & Responsive Badges
