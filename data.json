@@ -159,7 +159,7 @@
           "id": "todo-20261102-1",
           "text": "디어커스 제안 15명",
           "category": "사업or수익",
-          "done": false,
+          "done": true,
           "excluded": false
         },
         {
@@ -187,7 +187,7 @@
           "id": "todo-20261102-5",
           "text": "아넬라 제안 20명",
           "category": "사업or수익",
-          "done": false,
+          "done": true,
           "excluded": false
         },
         {
@@ -201,7 +201,7 @@
           "id": "todo-20261102-7-imweb",
           "text": "아임웹 지원하기",
           "category": "사업or수익",
-          "done": false,
+          "done": true,
           "excluded": false
         },
         {
