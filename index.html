@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>지공 출근 에이전트 | 업무 현황 대시보드</title>
-  <link rel="stylesheet" href="styles.css?v=20261102_0940">
+  <link rel="stylesheet" href="styles.css?v=20261102_1020">
 </head>
 <body>
   <div class="app-container">
@@ -96,11 +96,15 @@
         </div>
         <div class="breadcrumb-right">
           <span class="status-save-text">저장됨</span>
-          <button class="icon-tool-btn" id="btn-theme-toggle" title="테마 전환">🌓</button>
-          <button class="icon-tool-btn" id="btn-refresh-data" title="최신 데이터 새로고침 (메일·투두·캘린더)">
-            <svg class="refresh-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <button class="btn-header-tool" id="btn-theme-toggle" title="테마 전환">
+            <span id="btn-theme-icon">🌙</span>
+            <span id="btn-theme-label">다크모드</span>
+          </button>
+          <button class="btn-header-tool" id="btn-refresh-data" title="최신 데이터 새로고침 (메일·투두·캘린더)">
+            <svg class="refresh-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
             </svg>
+            <span id="btn-refresh-label">새로고침</span>
           </button>
           <button class="btn-primary" id="btn-run-agent">
             <span>✨</span>
@@ -679,6 +683,6 @@
 
   <div class="toast-notice" id="toast-notice">클립보드에 복사되었습니다.</div>
 
-  <script src="app.js?v=20261102_1000"></script>
+  <script src="app.js?v=20261102_1020"></script>
 </body>
 </html>

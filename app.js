@@ -264,12 +264,48 @@ function updateWorkButtonUI() {
 
 
 // Local Persistence for Todos and Priorities (새로고침 시 미처리 할 일 체크 및 추가/수정/삭제 보존 엔진)
+function getCustomAddedTodos(dateKey) {
+  try {
+    const saved = localStorage.getItem(`jeegong_custom_todos_${dateKey}`);
+    return saved ? JSON.parse(saved) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveCustomAddedTodo(dateKey, todo) {
+  try {
+    const list = getCustomAddedTodos(dateKey);
+    const existingIdx = list.findIndex(t => t.id === todo.id || t.text === todo.text);
+    if (existingIdx !== -1) {
+      list[existingIdx] = { ...list[existingIdx], ...todo };
+    } else {
+      list.unshift(todo);
+    }
+    localStorage.setItem(`jeegong_custom_todos_${dateKey}`, JSON.stringify(list));
+  } catch (e) {}
+}
+
+function removeCustomAddedTodo(dateKey, id) {
+  try {
+    let list = getCustomAddedTodos(dateKey);
+    list = list.filter(t => t.id !== id);
+    localStorage.setItem(`jeegong_custom_todos_${dateKey}`, JSON.stringify(list));
+  } catch (e) {}
+}
+
 function saveCustomTodos(briefingId) {
   if (!appData || !appData.briefings) return;
   const b = appData.briefings.find(item => item.id === briefingId) || appData.briefings[0];
   if (!b) return;
   const kst = getKSTNow();
   const dateKey = b.date || kst.dateStr;
+
+  (b.todomateTodos || []).forEach(t => {
+    if (t.id && (t.id.startsWith('custom-') || t.id.startsWith('todo-') || t.source === 'dashboard')) {
+      saveCustomAddedTodo(dateKey, t);
+    }
+  });
 
   try {
     localStorage.setItem(`jeegong_todos_override_${dateKey}`, JSON.stringify(b.todomateTodos || []));
@@ -283,12 +319,40 @@ function restoreCustomTodos(briefingId) {
   const kst = getKSTNow();
   const dateKey = b.date || kst.dateStr;
 
+  // 1. Dedicated custom added todos restore
+  const customList = getCustomAddedTodos(dateKey);
+  if (Array.isArray(customList) && customList.length > 0) {
+    if (!b.todomateTodos) b.todomateTodos = [];
+    const existingIds = new Set(b.todomateTodos.map(t => t.id));
+    const existingTexts = new Set(b.todomateTodos.map(t => t.text));
+
+    const toPrepend = [];
+    customList.forEach(ct => {
+      if (!existingIds.has(ct.id) && !existingTexts.has(ct.text)) {
+        toPrepend.push(ct);
+        existingIds.add(ct.id);
+        existingTexts.add(ct.text);
+      }
+    });
+    if (toPrepend.length > 0) {
+      b.todomateTodos = [...toPrepend, ...b.todomateTodos];
+    }
+  }
+
+  // 2. Legacy override check
   try {
     const saved = localStorage.getItem(`jeegong_todos_override_${dateKey}`);
     if (saved) {
       const parsed = JSON.parse(saved);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        b.todomateTodos = parsed;
+        const existingTexts = new Set((b.todomateTodos || []).map(t => t.text));
+        parsed.forEach(pt => {
+          if (!existingTexts.has(pt.text)) {
+            b.todomateTodos.unshift(pt);
+            existingTexts.add(pt.text);
+            saveCustomAddedTodo(dateKey, pt);
+          }
+        });
       }
     }
   } catch (e) {}
@@ -501,8 +565,18 @@ function setupTheme() {
 }
 
 function updateThemeIcon(theme) {
+  const iconEl = document.getElementById('btn-theme-icon');
+  const labelEl = document.getElementById('btn-theme-label');
   const toggleBtn = document.getElementById('btn-theme-toggle');
-  toggleBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  if (theme === 'dark') {
+    if (iconEl) iconEl.textContent = '☀️';
+    if (labelEl) labelEl.textContent = '라이트모드';
+    if (toggleBtn) toggleBtn.title = '라이트모드로 전환';
+  } else {
+    if (iconEl) iconEl.textContent = '🌙';
+    if (labelEl) labelEl.textContent = '다크모드';
+    if (toggleBtn) toggleBtn.title = '다크모드로 전환';
+  }
 }
 
 // Navigation (Desktop Sidebar & Mobile Segmented Tabs)
@@ -803,7 +877,7 @@ function renderTodoTable() {
             <span class="cat-tag ${catClass}">${t.category || '사업or수익'}</span>
           </td>
           <td style="text-align: center;">
-            <span class="source-tag">📱 투두메이트</span>
+            <span class="source-tag">${t.id.startsWith('custom-') || t.id.startsWith('todo-') || t.source === 'dashboard' ? '💻 대시보드' : '📱 투두메이트'}</span>
           </td>
           <td style="text-align: center;">
             <button class="btn-del-todo" onclick="deleteTodomateTodo('${t.id}')" title="삭제">✕</button>
@@ -854,18 +928,24 @@ window.addTodoFromViewInput = function() {
   input.value = '';
   if (!appData) return;
   const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
-  if (!b.todomateTodos) b.todomateTodos = [];
-  b.todomateTodos.unshift({
-    id: 'todo-' + Date.now(),
+  const kst = getKSTNow();
+  const dateKey = b.date || kst.dateStr;
+  const newTodo = {
+    id: `custom-${Date.now()}`,
     text: text,
     category: '사업or수익',
     done: false,
-    excluded: false
-  });
+    excluded: false,
+    source: 'dashboard',
+    createdAt: Date.now()
+  };
+  if (!b.todomateTodos) b.todomateTodos = [];
+  b.todomateTodos.unshift(newTodo);
+  saveCustomAddedTodo(dateKey, newTodo);
   saveLocalTodosState(currentBriefingId);
   renderTodoTable();
   renderTodayView();
-  showToast(`할 일에 추가되었습니다: "${text}"`);
+  showToast(`📝 할 일 '${text}'이(가) 등록되었습니다.`);
   pushCloudState();
 };
 
@@ -1523,14 +1603,22 @@ window.handleQuickAddTodo = function() {
 
   if (appData && appData.briefings) {
     const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
-    b.todomateTodos.unshift({
+    const kst = getKSTNow();
+    const dateKey = b.date || kst.dateStr;
+    const newTodo = {
       id: `custom-${Date.now()}`,
       text: text,
       category: '사업or수익',
-      done: false
-    });
-    saveCustomTodos(b.id);
+      done: false,
+      excluded: false,
+      source: 'dashboard',
+      createdAt: Date.now()
+    };
+    if (!b.todomateTodos) b.todomateTodos = [];
+    b.todomateTodos.unshift(newTodo);
+    saveCustomAddedTodo(dateKey, newTodo);
     saveLocalTodosState(b.id);
+    renderTodoTable();
     renderTodayView();
     pushCloudState();
     inputEl.value = '';
@@ -1543,12 +1631,15 @@ window.handleQuickAddTodo = function() {
 window.deleteTodomateTodo = function(id) {
   if (!appData || !appData.briefings) return;
   const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
+  const kst = getKSTNow();
+  const dateKey = b.date || kst.dateStr;
+  removeCustomAddedTodo(dateKey, id);
   const idx = (b.todomateTodos || []).findIndex(t => t.id === id);
   if (idx !== -1) {
     const deletedName = b.todomateTodos[idx].text;
     b.todomateTodos.splice(idx, 1);
-    saveCustomTodos(b.id);
     saveLocalTodosState(b.id);
+    renderTodoTable();
     renderTodayView();
     pushCloudState();
     showToast(`🗑️ 할 일 '${deletedName}'을(를) 삭제했습니다.`);
@@ -1562,7 +1653,13 @@ window.toggleTodomateTodo = function(id) {
   const t = b.todomateTodos.find(item => item.id === id);
   if (t) {
     t.done = !t.done;
+    const kst = getKSTNow();
+    const dateKey = b.date || kst.dateStr;
+    if (t.id.startsWith('custom-') || t.id.startsWith('todo-') || t.source === 'dashboard') {
+      saveCustomAddedTodo(dateKey, t);
+    }
     saveLocalTodosState(currentBriefingId);
+    renderTodoTable();
     renderTodayView();
     pushCloudState();
   }
@@ -2668,7 +2765,7 @@ function setupRealtimeSync() {
             return;
           }
           const remoteData = await parseNtfyPayload(payload);
-          if (remoteData && remoteData.updatedAt) {
+          if (remoteData && (remoteData.updatedAt || remoteData.timestamp)) {
             applyRemoteSync(remoteData);
           }
         }
@@ -2716,7 +2813,7 @@ async function pullCloudState() {
       try {
         const payload = JSON.parse(lines[i]);
         const remoteData = await parseNtfyPayload(payload);
-        if (remoteData && remoteData.updatedAt) {
+        if (remoteData && (remoteData.updatedAt || remoteData.timestamp)) {
           applyRemoteSync(remoteData);
           break;
         }
@@ -2729,7 +2826,7 @@ async function pullCloudState() {
 
 function applyRemoteSync(remoteData) {
   if (!remoteData || !appData || !appData.briefings) return;
-  const remoteTs = remoteData.updatedAt || 0;
+  const remoteTs = remoteData.updatedAt || remoteData.timestamp || 0;
   if (remoteTs <= lastLocalUpdateTimestamp) return;
 
   isSyncing = true;
@@ -2762,6 +2859,11 @@ function applyRemoteSync(remoteData) {
     || appData.briefings[0];
 
   if (b) {
+    const dateKey = b.date || kst.dateStr;
+    if (Array.isArray(remoteData.customTodos)) {
+      remoteData.customTodos.forEach(ct => saveCustomAddedTodo(dateKey, ct));
+    }
+
     if (Array.isArray(remoteData.todomateTodos) && remoteData.todomateTodos.length > 0) {
       // Merge remote authoritative todos with data.json todos so newly added tasks are never lost
       const existingTodos = b.todomateTodos || [];
@@ -2914,7 +3016,11 @@ async function pushCloudState() {
       compactHandled[k] = handledRegistry[k];
     });
 
+    const dateKey = b.date || kst.dateStr;
+
     const payload = {
+      action: 'sync_state',
+      timestamp: nowTs,
       updatedAt: nowTs,
       workDate: kst.dateStr,
       workState: workState,
@@ -2922,6 +3028,7 @@ async function pushCloudState() {
       briefingDate: b.date,
       doneTodos: doneTodos,
       todomateTodos: b.todomateTodos || [],
+      customTodos: getCustomAddedTodos(dateKey),
       donePriorities: donePriorities,
       excludedPriorities: excludedPriorities,
       emailStatuses: emailStatuses,
