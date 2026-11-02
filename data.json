@@ -50,7 +50,7 @@
       "dayOfWeek": "월요일",
       "createdAt": "2026-11-02 08:30:00",
       "headline": "짱빵실 아넬라 공구 오픈 및 신규 주간 실무 개시",
-      "summary": "금일 짱빵실 아넬라 과일퓨레 공구가 시작되며, 투두메이트 미완료 할 일 9건이 확인되었습니다.",
+      "summary": "금일 짱빵실 아넬라 과일퓨레 공구가 시작되며, 투두메이트 미완료 할 일 10건이 확인되었습니다.",
       "calendar": {
         "count": 1,
         "items": [
@@ -193,6 +193,13 @@
         {
           "id": "todo-20261102-6",
           "text": "아넬라 샘플 출고 요청",
+          "category": "사업or수익",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "todo-20261102-7-imweb",
+          "text": "아임웹 지원하기",
           "category": "사업or수익",
           "done": false,
           "excluded": false

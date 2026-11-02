@@ -1875,18 +1875,14 @@ window.refreshDashboardData = async function(showNotice = true) {
         fetch(`${SYNC_ENDPOINT}`, {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
             'Title': '[Jeegong Refresh Request]',
             'Tags': 'refresh,todomate'
           },
-          body: JSON.stringify({
-            action: 'refresh_todomate',
-            timestamp: Date.now()
-          })
+          body: 'action:refresh_todomate'
         }).catch(e => console.warn('Refresh signal error:', e));
 
         if (todoRefreshBtn) todoRefreshBtn.classList.add('spinning');
-        showToast('🔄 최신 메일·문의 조회 완료! 투두메이트 실시간 동기화 요청 중...');
+        showToast('🔄 최신 데이터 불러오는 중...');
 
         if (window._todomateSyncTimer) clearTimeout(window._todomateSyncTimer);
         window._todomateSyncTimer = setTimeout(() => {
@@ -2660,6 +2656,17 @@ function setupRealtimeSync() {
       try {
         const payload = JSON.parse(event.data);
         if (payload.event === 'message') {
+          if (typeof payload.message === 'string' && payload.message.startsWith('update:')) {
+            console.log('Received dashboard update signal:', payload.message);
+            await window.refreshDashboardData(false);
+            if (payload.message.includes('todomate') || payload.message.includes('sync')) {
+              window._isAwaitingTodomateSync = false;
+              const tBtn = document.getElementById('btn-refresh-todomate');
+              if (tBtn) tBtn.classList.remove('spinning');
+              showToast('✅ 최신 할 일 동기화가 완료되었습니다!');
+            }
+            return;
+          }
           const remoteData = await parseNtfyPayload(payload);
           if (remoteData && remoteData.updatedAt) {
             applyRemoteSync(remoteData);
