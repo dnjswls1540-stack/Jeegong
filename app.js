@@ -2763,11 +2763,34 @@ function applyRemoteSync(remoteData) {
 
   if (b) {
     if (Array.isArray(remoteData.todomateTodos) && remoteData.todomateTodos.length > 0) {
-      // Authoritative sync: preserve explicit done status from Todomate / cloud
-      b.todomateTodos = remoteData.todomateTodos.map(rt => ({
-        ...rt,
-        done: !!rt.done
-      }));
+      // Merge remote authoritative todos with data.json todos so newly added tasks are never lost
+      const existingTodos = b.todomateTodos || [];
+      const remoteMap = new Map();
+      remoteData.todomateTodos.forEach(rt => remoteMap.set(rt.text || rt.id, rt));
+
+      const merged = [];
+      const seenTexts = new Set();
+
+      existingTodos.forEach(et => {
+        const textKey = et.text || et.id;
+        seenTexts.add(textKey);
+        if (remoteMap.has(textKey)) {
+          const rm = remoteMap.get(textKey);
+          merged.push({ ...et, done: !!rm.done, excluded: !!rm.excluded });
+        } else {
+          merged.push(et);
+        }
+      });
+
+      remoteData.todomateTodos.forEach(rt => {
+        const textKey = rt.text || rt.id;
+        if (!seenTexts.has(textKey)) {
+          merged.push({ ...rt, done: !!rt.done, excluded: !!rt.excluded });
+          seenTexts.add(textKey);
+        }
+      });
+
+      b.todomateTodos = merged;
       if (window._isAwaitingTodomateSync) {
         window._isAwaitingTodomateSync = false;
         if (window._todomateSyncTimer) clearTimeout(window._todomateSyncTimer);
