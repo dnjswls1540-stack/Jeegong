@@ -3,7 +3,7 @@
     "name": "지공 출근 에이전트",
     "version": "1.2.0",
     "status": "ready",
-    "lastRun": "2026-11-03 21:35",
+    "lastRun": "2026-11-04 06:55",
     "tools": [
       {
         "id": "calendar",
@@ -44,6 +44,123 @@
     ]
   },
   "briefings": [
+    {
+      "id": "b-20261104",
+      "date": "2026-11-04",
+      "summary": "리틀리 로드맵 무료 주문 5건 유입, 데이원 겨울부츠 및 짱빵실 아넬라 공구 진행, 디어커스·아넬라 신규 제안 및 로드맵 리뉴얼 집중일입니다.",
+      "priorities": [
+        {
+          "id": "p-20261104-1",
+          "text": "진행 공구 주문건 확인 (데이원 울렌 겨울부츠, 짱빵실 아넬라 퓨레 마감)",
+          "reason": "실시간 발주 및 CS 리스크 방지",
+          "done": false
+        },
+        {
+          "id": "p-20261104-2",
+          "text": "인플루언서 신규 제안 (디어커스 25명, 아넬라 15명)",
+          "reason": "11월 중순 공구 슬롯 선점",
+          "done": false
+        },
+        {
+          "id": "p-20261104-3",
+          "text": "로드맵 리뉴얼 기획 및 잠재고객 자동화 점검",
+          "reason": "리틀리 신규 5건 유입에 따른 후속 전환 파이프라인 정비",
+          "done": false
+        }
+      ],
+      "todomateTodos": [
+        {
+          "id": "todo-20261104-1",
+          "text": "정형일 주문건 확인",
+          "category": "사업or수익",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "todo-20261104-2",
+          "text": "디어커스 제안 25명",
+          "category": "사업or수익",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "todo-20261104-3",
+          "text": "아넬라 제안 15명",
+          "category": "사업or수익",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "todo-20261104-4",
+          "text": "스페니, 힘찬 공제회크 요청",
+          "category": "사업or수익",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "todo-20261104-5",
+          "text": "스레드 자동화 글부",
+          "category": "사업or수익",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "todo-20261104-6",
+          "text": "데이터 주문건 확인",
+          "category": "사업or수익",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "todo-20261104-7",
+          "text": "잠재 고객 레드 자동화 수정",
+          "category": "사업or수익",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "todo-20261104-8",
+          "text": "로드맵 리뉴얼 기획",
+          "category": "사업or수익",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "todo-20261104-9",
+          "text": "듀오링고 일본어 2개",
+          "category": "자기계발",
+          "done": false,
+          "excluded": false
+        }
+      ],
+      "emails": [
+        {
+          "id": "m-agent-anela-20261103",
+          "priority": "보통",
+          "service": "네이버 메일",
+          "account": "dnjsrns123@naver.com",
+          "from": "BUSINESS AG (business@ag-ent.net)",
+          "subject": "Re: [공구 제안] 100% 생과일 아넬라 퓨레, 공구 협업 제안드립니다.│올쓰컴퍼니",
+          "date": "2026-11-03 16:45",
+          "status": "pending",
+          "summary": "AG-ENT 김다현 AE 아넬라 퓨레 공구 제안 회신. 크리에이터 풀(쿠키커플, 일벙부부 등) 및 MG+RS 협업 패키지 제안.",
+          "draft": "안녕하세요 김다현 담당자님, 올쓰컴퍼니 지원진입니다.\n\n보내주신 AG-ENT 크리에이터 리스트 및 협업 제안서 잘 확인했습니다.\n현재 아넬라 퓨레는 고정 MG 없이 순수 판매 수수료(RS) 기반 공구로 우선 진행 중입니다.\n\n추후 브랜드사 측과 브랜디드 콘텐츠 및 MG 예산 협의가 가능해질 때 다시 연락드리겠습니다.\n친절한 회신 감사드립니다.\n\n지원진 드림"
+        },
+        {
+          "id": "m-yourpharmacy-20261103",
+          "priority": "보통",
+          "service": "네이버 메일",
+          "account": "dnjsrns123@naver.com",
+          "from": "유어파머시코리아 박용진 (ethan_park@yourpharmacy.co.kr)",
+          "subject": "곰보배추시럽 코코프렌즈 공동구매 제안서 보내드립니다",
+          "date": "2026-11-03 09:15",
+          "status": "pending",
+          "summary": "네이버 랭킹 1위 어린이 곰보배추시럽 코코프렌즈 B2B 공구 제안 (수수료 20~35%, 무료 샘플 및 상세페이지 지원).",
+          "draft": "안녕하세요 박용진 담당자님, 올쓰컴퍼니 지원진입니다.\n\n보내주신 곰보배추시럽 '코코프렌즈' 공동구매 제안서 잘 검토하였습니다.\n저희 키즈/맘 인플루언서 풀 및 공구 일정과 잘 부합하여 협업을 긍정적으로 검토 중입니다.\n\n본격적인 매칭에 앞서 인플루언서 사전 검토용 무료 샘플(1~2세트) 지원이 가능한지 확인 부탁드립니다.\n회신 주시면 11월 공구 일정 조율 이어가겠습니다.\n\n감사합니다.\n올쓰컴퍼니 지원진 드림 (010-7527-6684)"
+        }
+      ],
+      "inquiries": []
+    },
     {
       "id": "b-20261103",
       "date": "2026-11-03",
