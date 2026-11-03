@@ -3,7 +3,7 @@
     "name": "지공 출근 에이전트",
     "version": "1.2.0",
     "status": "ready",
-    "lastRun": "2026-11-03 13:05:00",
+    "lastRun": "2026-11-03 15:40",
     "tools": [
       {
         "id": "calendar",
@@ -117,7 +117,7 @@
           "id": "todo-20261103-2",
           "text": "꼬니네 샘플 요청",
           "category": "사업or수익",
-          "done": false,
+          "done": true,
           "excluded": false
         },
         {
@@ -138,21 +138,21 @@
           "id": "todo-20261103-5",
           "text": "케이스키니 제안서 작성",
           "category": "사업or수익",
-          "done": false,
+          "done": true,
           "excluded": false
         },
         {
           "id": "todo-20261103-6",
           "text": "안영태 홈페이지 연락",
           "category": "사업or수익",
-          "done": false,
+          "done": true,
           "excluded": false
         },
         {
           "id": "todo-20261103-7",
           "text": "상세페이지 1컷 수정",
           "category": "사업or수익",
-          "done": false,
+          "done": true,
           "excluded": false
         },
         {
