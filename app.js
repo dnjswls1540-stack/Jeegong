@@ -2864,26 +2864,31 @@ function applyRemoteSync(remoteData) {
   const kst = getKSTNow();
 
   // 1. Work state sync with daily midnight reset
-  const activeDate = (appData && appData.briefings && appData.briefings[0] && appData.briefings[0].date) || kst.dateStr;
-  if (remoteData.workDate && remoteData.workDate !== activeDate && remoteData.workDate !== kst.dateStr) {
+  const todayStr = kst.dateStr;
+  if (remoteData.workDate && remoteData.workDate !== todayStr) {
     workState = 'ready';
     try {
-      localStorage.setItem('jeegong_work_date', activeDate);
+      localStorage.setItem('jeegong_work_date', todayStr);
       localStorage.setItem('jeegong_work_state', 'ready');
+      localStorage.removeItem('jeegong_attendance_time');
     } catch (e) {}
-  } else if (remoteData.workState) {
+  } else if (remoteData.workDate === todayStr && remoteData.workState) {
     workState = remoteData.workState;
     try {
-      localStorage.setItem('jeegong_work_date', activeDate);
+      localStorage.setItem('jeegong_work_date', todayStr);
       localStorage.setItem('jeegong_work_state', workState);
     } catch (e) {}
   }
   updateWorkButtonUI();
 
   // 2. Sync briefing statuses (todos, priorities, emails, inquiries)
+  if (remoteData.briefingDate && remoteData.briefingDate !== todayStr && !remoteData.briefingId) {
+    return;
+  }
+
   const b = (remoteData.briefingId ? appData.briefings.find(item => item.id === remoteData.briefingId) : null)
     || (remoteData.briefingDate ? appData.briefings.find(item => item.date === remoteData.briefingDate) : null)
-    || appData.briefings.find(item => item.id === currentBriefingId)
+    || appData.briefings.find(item => item.date === todayStr)
     || appData.briefings[0];
 
   if (b) {
