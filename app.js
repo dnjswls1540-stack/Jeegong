@@ -1217,8 +1217,8 @@ function renderEmailList(b, containerId, badgeId, bannerCountId) {
           </div>
           <textarea class="draft-textarea" id="draft-text-${containerId}-${mail.id}" oninput="onDraftInput('${mail.id}', this.value)">${mail.draft || ''}</textarea>
           <div class="draft-actions">
-            <button class="btn-secondary" onclick="closeProcessDraft('${containerId}-${mail.id}')" style="padding: 5px 12px; font-size: 12px;">닫기</button>
-            <button class="btn-primary" onclick="approveAndSendEmail('${mail.id}')" style="padding: 6px 14px; font-size: 12px;">
+            <button class="btn-secondary" onclick="closeProcessDraft('${containerId}-${mail.id}')" style="padding: 6px 14px; font-size: 12px;">닫기</button>
+            <button class="btn-approve-send" onclick="approveAndSendEmail('${mail.id}')" style="padding: 7px 16px; font-size: 12.5px;">
               <span>승인 및 메일 발송</span>
               <span>✈️</span>
             </button>
@@ -1349,7 +1349,7 @@ function renderInquiries(b, containerId, badgeId, bannerCountId) {
         <div class="email-subject">${inq.subject}</div>
         <div class="inquiry-content-box">
           <div class="inquiry-content-label">💬 고객 문의 내용 전문</div>
-          <div class="inquiry-content-text">${inq.content}</div>
+          <div class="inquiry-content-text">${inq.content || inq.summary || '문의 내용이 등록되어 있습니다.'}</div>
         </div>
 
         <div class="email-actions-bar">
@@ -1387,8 +1387,8 @@ function renderInquiries(b, containerId, badgeId, bannerCountId) {
           </div>
           <textarea class="draft-textarea" id="inquiry-draft-text-${containerId}-${inq.id}" oninput="onInquiryDraftInput('${inq.id}', this.value)">${inq.draft || ''}</textarea>
           <div class="draft-actions">
-            <button class="btn-secondary" onclick="closeInquiryProcessDraft('${containerId}-${inq.id}')" style="padding: 5px 12px; font-size: 12px;">닫기</button>
-            <button class="btn-primary" onclick="approveAndSendInquiry('${inq.id}', '${containerId}-${inq.id}')" style="padding: 6px 14px; font-size: 12px;">
+            <button class="btn-secondary" onclick="closeInquiryProcessDraft('${containerId}-${inq.id}')" style="padding: 6px 14px; font-size: 12px;">닫기</button>
+            <button class="btn-approve-send" onclick="approveAndSendInquiry('${inq.id}', '${containerId}-${inq.id}')" style="padding: 7px 16px; font-size: 12.5px;">
               <span>승인 및 답변 발송</span>
               <span>✈️</span>
             </button>
