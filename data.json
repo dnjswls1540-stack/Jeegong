@@ -3,7 +3,7 @@
     "name": "지공 출근 에이전트",
     "version": "1.2.0",
     "status": "ready",
-    "lastRun": "2026-10-26 06:56:00",
+    "lastRun": "2026-11-03 08:30:00",
     "tools": [
       {
         "id": "calendar",
@@ -44,6 +44,228 @@
     ]
   },
   "briefings": [
+    {
+      "id": "b-20261103",
+      "date": "2026-11-03",
+      "dayOfWeek": "화요일",
+      "createdAt": "2026-11-03 08:30:00",
+      "headline": "데이원 울렌 겨울부츠 공구 시작 및 투두메이트 9건 실무 동기화",
+      "summary": "오늘 신규 공구(데이원 겨울부츠)가 시작되며, 투두메이트 9건 및 공구 제안 반송 건 조치가 필요합니다.",
+      "calendar": {
+        "count": 2,
+        "items": [
+          "[공구] 데이원 울렌 겨울부츠 진행 (종일)",
+          "[공구] 짱빵실 아넬라 과일퓨레 진행 (종일)"
+        ],
+        "note": "오늘부터 11/9까지 데이원 울렌 겨울부츠 공구 진행 (짱빵실 아넬라 공구 동시 진행)"
+      },
+      "attendance": {
+        "status": "pending",
+        "checkedAt": null
+      },
+      "calendarEvents": [
+        {
+          "id": "cal-20261102-1",
+          "summary": "[공구] 짱빵실 아넬라 과일퓨레 진행",
+          "startDate": "2026-11-02",
+          "endDate": "2026-11-06",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#10b981",
+          "category": "공동구매"
+        },
+        {
+          "id": "cal-20261103-1",
+          "summary": "[공구] 데이원 울렌 겨울부츠 진행",
+          "startDate": "2026-11-03",
+          "endDate": "2026-11-10",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#8b5cf6",
+          "category": "공동구매"
+        },
+        {
+          "id": "cal-20261107-1",
+          "summary": "세빈이 결혼식",
+          "startDate": "2026-11-07",
+          "endDate": "2026-11-07",
+          "time": "오후 1:00",
+          "tag": "개인",
+          "color": "#f59e0b",
+          "category": "개인일정"
+        },
+        {
+          "id": "cal-20261108-1",
+          "summary": "[공구] 손뽀니 아넬라 과일퓨레 진행",
+          "startDate": "2026-11-08",
+          "endDate": "2026-11-12",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#10b981",
+          "category": "공동구매"
+        }
+      ],
+      "todomateTodos": [
+        {
+          "id": "todo-20261103-1",
+          "text": "장빵실 주문건 확인",
+          "category": "사업or수익",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "todo-20261103-2",
+          "text": "꼬니네 샘플 요청",
+          "category": "사업or수익",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "todo-20261103-3",
+          "text": "디어커스 제안 25명",
+          "category": "사업or수익",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "todo-20261103-4",
+          "text": "아넬라 제안 15명",
+          "category": "사업or수익",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "todo-20261103-5",
+          "text": "케이스키니 제안서 작성",
+          "category": "사업or수익",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "todo-20261103-6",
+          "text": "안영태 홈페이지 연락",
+          "category": "사업or수익",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "todo-20261103-7",
+          "text": "상세페이지 1컷 수정",
+          "category": "사업or수익",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "todo-20261103-8",
+          "text": "데이원 주문건 확인",
+          "category": "사업or수익",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "todo-20261103-9",
+          "text": "듀오링고 일본어 2개",
+          "category": "자기계발",
+          "done": false,
+          "excluded": false
+        }
+      ],
+      "agentPriorities": [
+        {
+          "id": "ap-bounce-higharena",
+          "priority": "1순위",
+          "category": "공동구매",
+          "title": "[반송 조치] higharena 인플루언서 제안서 대체 발송",
+          "desc": "디어커스 공구 제안 메일이 수신함 용량 초과로 반송되었습니다. 인스타 DM으로 대체 발송이 필요합니다.",
+          "action": "DM 발송",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap-dayone-check",
+          "priority": "2순위",
+          "category": "공동구매",
+          "title": "데이원 울렌 겨울부츠 공구 첫날 주문 점검",
+          "desc": "11/3~11/9 공구 개시. 인플루언서 링크 정상 작동 및 주문 유입을 점검합니다.",
+          "action": "주문 점검",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap-semote-deposit",
+          "priority": "3순위",
+          "category": "자기계발",
+          "title": "세모테 헥사코 리포트 5,900원 입금",
+          "desc": "카카오뱅크 3333-28-2308197 (예금주 이은희) 입금 시 8개 섹션 상세 분석북 생성.",
+          "action": "입금 확인",
+          "done": false,
+          "excluded": false
+        }
+      ],
+      "emails": [
+        {
+          "id": "m-bounce-higharena-20261102",
+          "priority": "긴급",
+          "service": "네이버 메일",
+          "account": "dnjsrns123@naver.com",
+          "from": "네이버메일 (navermail_noreply@navercorp.com)",
+          "subject": "[네이버 메일] higharena@naver.com으로 메일 발송이 실패되었습니다.",
+          "date": "2026-11-02 10:35",
+          "status": "pending",
+          "summary": "디어커스 대나무 화장지 공구 제안 메일이 수신자 메일함 용량 초과(Mailbox full)로 반송되었습니다. 인스타그램 DM 등으로 대체 제안이 필요합니다.",
+          "draft": "안녕하세요, 올쓰컴퍼니입니다! 메일함 용량이 가득 차 협업 제안서가 반송되어 DM으로 연락드렸습니다. 디어커스 뱀부 대나무 화장지 공구 제안 내용 검토 부탁드립니다 :)"
+        },
+        {
+          "id": "m-semote-hexaco-20261103",
+          "priority": "보통",
+          "service": "네이버 메일",
+          "account": "dnjsrns123@naver.com",
+          "from": "세모테 (utxokr@gmail.com)",
+          "subject": "[세모테] 지원진님의 헥사코 리포트 신청이 접수되었습니다 (입금 안내)",
+          "date": "2026-11-03 01:24",
+          "status": "pending",
+          "summary": "헥사코 6요인 맞춤 상세 리포트 신청 접수. 카카오뱅크 3333-28-2308197 (예금주 이은희) 5,900원 입금 대기 중.",
+          "draft": ""
+        },
+        {
+          "id": "m-sixshop-kelvin-20261030",
+          "priority": "높음",
+          "service": "지메일 (온세스)",
+          "account": "onsessdesign@gmail.com",
+          "from": "식스샵 (help@sixshop.com)",
+          "subject": "[식스샵] 고객문의가 등록되었습니다.(켈빈조명)",
+          "date": "2026-10-30 18:25",
+          "status": "pending",
+          "summary": "켈빈조명 송두혁 대표님 식스샵 웹 리디자인 문의(기존 100~200만 원 견적 협의 대기).",
+          "draft": ""
+        }
+      ],
+      "inquiries": [
+        {
+          "id": "inq-sixshop-kelvin-20261030",
+          "channel": "온세스 (식스샵)",
+          "from": "켈빈조명 송두혁 대표",
+          "subject": "웹사이트 리디자인 외주 견적 및 일정 문의",
+          "time": "10/30 18:25",
+          "status": "pending",
+          "draft": ""
+        }
+      ],
+      "driveFiles": [
+        {
+          "name": "뮤즈언니 아넬라 과일퓨레 진행 정산서_261110.xlsx",
+          "modified": "11/02 22:01",
+          "owner": "지원진"
+        },
+        {
+          "name": "공동구매 수익·마진 자동계산기.xlsx",
+          "modified": "11/02 22:01",
+          "owner": "지원진"
+        }
+      ],
+      "history": [],
+      "recentChats": []
+    },
     {
       "id": "b-20261102",
       "date": "2026-11-02",

@@ -415,10 +415,43 @@ function restoreLocalTodosState(briefingId) {
   } catch (e) {}
 }
 
-// Midnight Daily Reset (자정 지나면 퇴근 안 눌러도 출근 버튼 자동 초기화 & 날짜 매일 업데이트)
+// Ensure today's briefing object exists and is selected (자정 이후 및 날짜 변경 시 어제 값 노출 완전 방지)
+function ensureTodayBriefing(targetDate) {
+  const kst = getKSTNow();
+  const dateStr = targetDate || kst.dateStr;
+  if (!appData) return null;
+  if (!appData.briefings) appData.briefings = [];
+
+  let todayB = appData.briefings.find(b => b.date === dateStr);
+  if (!todayB) {
+    const cleanId = `b-${dateStr.replace(/-/g, '')}`;
+    const prevB = appData.briefings[0] || {};
+    todayB = {
+      id: cleanId,
+      date: dateStr,
+      dayOfWeek: `${kst.dayOfWeek}요일`,
+      createdAt: `${dateStr} 00:00:00`,
+      headline: `${kst.month}월 ${kst.day}일 ${kst.dayOfWeek}요일 신규 업무 개시`,
+      summary: `금일 일정 및 투두메이트 할 일을 동기화 중입니다.`,
+      attendance: { status: 'pending', checkedAt: null },
+      calendar: { count: 0, items: [] },
+      calendarEvents: prevB.calendarEvents || [],
+      todomateTodos: [],
+      agentPriorities: [],
+      emails: [],
+      inquiries: []
+    };
+    appData.briefings.unshift(todayB);
+  }
+  currentBriefingId = todayB.id;
+  window.currentBriefingId = currentBriefingId;
+  return todayB;
+}
+
+// Midnight Daily Reset (자정 00시 도래 시 출퇴근 및 데이터 완전 초기화 -> 다음 날값 자동 로드)
 function checkMidnightReset() {
   const kst = getKSTNow();
-  const activeDate = (appData && appData.briefings && appData.briefings[0] && appData.briefings[0].date) || kst.dateStr;
+  const todayStr = kst.dateStr;
 
   // 1. Always keep current date badge updated
   const dateBadge = document.getElementById('current-date-text');
@@ -428,23 +461,21 @@ function checkMidnightReset() {
 
   // 2. Check if day has changed (Midnight passed)
   const savedWorkDate = localStorage.getItem('jeegong_work_date');
-  if (savedWorkDate && savedWorkDate !== activeDate && savedWorkDate !== kst.dateStr) {
-    // New day has arrived! Reset work state to ready (출근 완료)
+  if (!savedWorkDate || savedWorkDate !== todayStr) {
+    // New day has arrived! Reset work state to ready (출근 전)
     workState = 'ready';
     try {
-      localStorage.setItem('jeegong_work_date', activeDate);
+      localStorage.setItem('jeegong_work_date', todayStr);
       localStorage.setItem('jeegong_work_state', 'ready');
+      localStorage.removeItem('jeegong_attendance_time');
     } catch (e) {}
     updateWorkButtonUI();
 
-    // Automatically select today's briefing if available
-    if (appData && appData.briefings) {
-      const todayB = appData.briefings.find(b => b.date === activeDate);
-      if (todayB && currentBriefingId !== todayB.id) {
-        currentBriefingId = todayB.id;
-        renderTodayView();
-      }
-    }
+    // Ensure today's briefing is selected and active
+    ensureTodayBriefing(todayStr);
+    renderTodayView();
+    renderWeeklyCalendar();
+    renderTodoTable();
     pushCloudState();
   }
 }
@@ -452,6 +483,7 @@ function checkMidnightReset() {
 // Initialize Application
 async function initApp() {
   const kst = getKSTNow();
+  const todayStr = kst.dateStr;
 
   try {
     const res = await fetch('data.json?v=' + Date.now());
@@ -460,31 +492,26 @@ async function initApp() {
     console.error('Failed to load data.json', e);
   }
 
-  // 1. Dynamically select today's briefing if available
-  const activeDate = (appData && appData.briefings && appData.briefings[0] && appData.briefings[0].date) || kst.dateStr;
-  if (appData && appData.briefings && appData.briefings.length > 0) {
-    const todayB = appData.briefings.find(b => b.date === activeDate) || appData.briefings.find(b => b.date === kst.dateStr);
-    currentBriefingId = todayB ? todayB.id : appData.briefings[0].id;
-    window.currentBriefingId = currentBriefingId;
-    window.appData = appData;
-  }
+  // 1. Ensure today's briefing is selected (어제 날짜 브리핑 노출 원천 차단)
+  ensureTodayBriefing(todayStr);
 
-  // 2. Daily reset check on startup
-  try {
-    const savedTs = localStorage.getItem('jeegong_last_sync_ts');
-    if (savedTs) lastLocalUpdateTimestamp = Number(savedTs) || 0;
-  } catch (e) {}
-
+  // 2. Daily reset check on startup: 날짜가 바뀌었으면 무조건 출근 준비 상태로 리셋
   const savedWorkDate = localStorage.getItem('jeegong_work_date');
-  if (savedWorkDate && savedWorkDate !== activeDate && savedWorkDate !== kst.dateStr) {
+  if (!savedWorkDate || savedWorkDate !== todayStr) {
     workState = 'ready';
     try {
-      localStorage.setItem('jeegong_work_date', activeDate);
+      localStorage.setItem('jeegong_work_date', todayStr);
       localStorage.setItem('jeegong_work_state', 'ready');
+      localStorage.removeItem('jeegong_attendance_time');
     } catch (e) {}
   } else {
     workState = localStorage.getItem('jeegong_work_state') || 'ready';
   }
+
+  try {
+    const savedTs = localStorage.getItem('jeegong_last_sync_ts');
+    if (savedTs) lastLocalUpdateTimestamp = Number(savedTs) || 0;
+  } catch (e) {}
 
   // 3. Load chat sessions from localStorage
   try {
@@ -689,16 +716,20 @@ function setupNavigation() {
 window.currentCalWeekOffset = 0;
 
 function getWeekDateRange(offset = 0) {
-  // Base reference week: 2026-11-02 (Monday) to 2026-11-08 (Sunday)
-  const baseMonday = new Date(2026, 10, 2);
-  baseMonday.setDate(baseMonday.getDate() + (offset * 7));
+  const kst = getKSTNow();
+  // Dynamically calculate Monday of the week from current KST date
+  const currD = new Date(kst.d);
+  const dayOfWeek = currD.getDay(); // 0 is Sun, 1 is Mon...
+  const diffToMonday = (dayOfWeek === 0 ? -6 : 1 - dayOfWeek);
+  const monday = new Date(currD);
+  monday.setDate(currD.getDate() + diffToMonday + (offset * 7));
   
   const days = [];
   const dayNames = ['월', '화', '수', '목', '금', '토', '일'];
   
   for (let i = 0; i < 7; i++) {
-    const d = new Date(baseMonday);
-    d.setDate(baseMonday.getDate() + i);
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
@@ -708,7 +739,7 @@ function getWeekDateRange(offset = 0) {
       month: d.getMonth() + 1,
       dayNum: d.getDate(),
       dayName: dayNames[i],
-      isToday: dateStr === '2026-11-01' || (offset === 0 && dateStr === '2026-11-02')
+      isToday: (offset === 0 && dateStr === kst.dateStr)
     });
   }
   return days;
@@ -1946,13 +1977,7 @@ window.refreshDashboardData = async function(showNotice = true) {
     syncHandledFromHistory();
 
     // 3. Ensure today's briefing is selected
-    const activeDate = (appData && appData.briefings && appData.briefings[0] && appData.briefings[0].date) || kst.dateStr;
-    if (appData && appData.briefings && appData.briefings.length > 0) {
-      const todayB = appData.briefings.find(b => b.date === activeDate) || appData.briefings.find(b => b.date === kst.dateStr);
-      if (todayB) {
-        currentBriefingId = todayB.id;
-      }
-    }
+    ensureTodayBriefing(kst.dateStr);
 
     // 4. Restore user's completed todos and priorities from local cache first
     restoreLocalTodosState(currentBriefingId);
