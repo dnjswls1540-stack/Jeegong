@@ -3,7 +3,7 @@
     "name": "지공 출근 에이전트",
     "version": "1.2.0",
     "status": "ready",
-    "lastRun": "2026-11-03 08:30:00",
+    "lastRun": "2026-11-03 13:05:00",
     "tools": [
       {
         "id": "calendar",
@@ -131,7 +131,7 @@
           "id": "todo-20261103-4",
           "text": "아넬라 제안 15명",
           "category": "사업or수익",
-          "done": false,
+          "done": true,
           "excluded": false
         },
         {
