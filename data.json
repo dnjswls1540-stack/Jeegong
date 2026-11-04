@@ -71,7 +71,7 @@
       "todomateTodos": [
         {
           "id": "todo-20261104-1",
-          "text": "정형일 주문건 확인",
+          "text": "짱빵실 주문건 확인",
           "category": "사업or수익",
           "done": false,
           "excluded": false
@@ -92,28 +92,28 @@
         },
         {
           "id": "todo-20261104-4",
-          "text": "스페니, 힘찬 공제회크 요청",
+          "text": "손뽀니, 챔맘 결제링크 요청",
           "category": "사업or수익",
           "done": false,
           "excluded": false
         },
         {
           "id": "todo-20261104-5",
-          "text": "스레드 자동화 글부",
+          "text": "스레드 자동화 공부",
           "category": "사업or수익",
           "done": false,
           "excluded": false
         },
         {
           "id": "todo-20261104-6",
-          "text": "데이터 주문건 확인",
+          "text": "데이원 주문건 확인",
           "category": "사업or수익",
           "done": false,
           "excluded": false
         },
         {
           "id": "todo-20261104-7",
-          "text": "잠재 고객 레드 자동화 수정",
+          "text": "잠재 고객 리드 자동화 수정",
           "category": "사업or수익",
           "done": false,
           "excluded": false
@@ -128,7 +128,21 @@
         {
           "id": "todo-20261104-9",
           "text": "듀오링고 일본어 2개",
-          "category": "자기계발",
+          "category": "자기개발",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "todo-20261104-10",
+          "text": "운동",
+          "category": "해야 할 일",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "todo-20261104-11",
+          "text": "전자책 공부",
+          "category": "해야 할 일",
           "done": false,
           "excluded": false
         }
@@ -147,7 +161,67 @@
           "draft": "안녕하세요 박용진 담당자님, 올쓰컴퍼니 지원진입니다.\n\n보내주신 곰보배추시럽 '코코프렌즈' 공동구매 제안서 잘 검토하였습니다.\n저희 키즈/맘 인플루언서 풀 및 공구 일정과 잘 부합하여 협업을 긍정적으로 검토 중입니다.\n\n본격적인 매칭에 앞서 인플루언서 사전 검토용 무료 샘플(1~2세트) 지원이 가능한지 확인 부탁드립니다.\n회신 주시면 11월 공구 일정 조율 이어가겠습니다.\n\n감사합니다.\n올쓰컴퍼니 지원진 드림 (010-7527-6684)"
         }
       ],
-      "inquiries": []
+      "inquiries": [],
+      "calendar": {
+        "count": 2,
+        "items": [
+          "[공구] 데이원 울렌 겨울부츠 진행 (종일)",
+          "[공구] 짱빵실 아넬라 과일퓨레 진행 (종일)"
+        ],
+        "note": "오늘 데이원 울렌 겨울부츠 및 짱빵실 아넬라 과일퓨레 공구 동시 진행 중"
+      },
+      "calendarEvents": [
+        {
+          "id": "cal-20261102-1",
+          "summary": "[공구] 짱빵실 아넬라 과일퓨레 진행",
+          "startDate": "2026-11-02",
+          "endDate": "2026-11-05",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#10b981",
+          "category": "공동구매"
+        },
+        {
+          "id": "cal-20261103-1",
+          "summary": "[공구] 데이원 울렌 겨울부츠 진행",
+          "startDate": "2026-11-03",
+          "endDate": "2026-11-09",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#8b5cf6",
+          "category": "공동구매"
+        },
+        {
+          "id": "cal-20261106-1",
+          "summary": "사당 모임",
+          "startDate": "2026-11-06",
+          "endDate": "2026-11-06",
+          "time": "오후 7:00",
+          "tag": "개인",
+          "color": "#f59e0b",
+          "category": "개인일정"
+        },
+        {
+          "id": "cal-20261107-1",
+          "summary": "세빈이 결혼식",
+          "startDate": "2026-11-07",
+          "endDate": "2026-11-07",
+          "time": "오후 1:00",
+          "tag": "개인",
+          "color": "#f59e0b",
+          "category": "개인일정"
+        },
+        {
+          "id": "cal-20261108-1",
+          "summary": "[공구] 손뽀니 아넬라 과일퓨레 진행",
+          "startDate": "2026-11-08",
+          "endDate": "2026-11-11",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#10b981",
+          "category": "공동구매"
+        }
+      ]
     },
     {
       "id": "b-20261103",
