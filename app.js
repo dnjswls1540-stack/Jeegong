@@ -322,7 +322,7 @@ function restoreCustomTodos(briefingId) {
   const kst = getKSTNow();
   const dateKey = b.date || kst.dateStr;
 
-  // 1. Dedicated custom added todos restore
+  // 1. Dedicated custom added todos restore (대시보드에서 직접 추가한 항목만 복원)
   const customList = getCustomAddedTodos(dateKey);
   if (Array.isArray(customList) && customList.length > 0) {
     if (!b.todomateTodos) b.todomateTodos = [];
@@ -331,34 +331,18 @@ function restoreCustomTodos(briefingId) {
 
     const toPrepend = [];
     customList.forEach(ct => {
-      if (!existingIds.has(ct.id) && !existingTexts.has(ct.text)) {
-        toPrepend.push(ct);
-        existingIds.add(ct.id);
-        existingTexts.add(ct.text);
+      if (ct.id && (ct.id.startsWith('custom-') || ct.source === 'dashboard')) {
+        if (!existingIds.has(ct.id) && !existingTexts.has(ct.text)) {
+          toPrepend.push(ct);
+          existingIds.add(ct.id);
+          existingTexts.add(ct.text);
+        }
       }
     });
     if (toPrepend.length > 0) {
       b.todomateTodos = [...toPrepend, ...b.todomateTodos];
     }
   }
-
-  // 2. Legacy override check
-  try {
-    const saved = localStorage.getItem(`jeegong_todos_override_${dateKey}`);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        const existingTexts = new Set((b.todomateTodos || []).map(t => t.text));
-        parsed.forEach(pt => {
-          if (!existingTexts.has(pt.text)) {
-            b.todomateTodos.unshift(pt);
-            existingTexts.add(pt.text);
-            saveCustomAddedTodo(dateKey, pt);
-          }
-        });
-      }
-    }
-  } catch (e) {}
 }
 
 function saveLocalTodosState(briefingId) {
