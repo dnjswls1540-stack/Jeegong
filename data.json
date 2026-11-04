@@ -3,7 +3,7 @@
     "name": "지공 출근 에이전트",
     "version": "1.2.0",
     "status": "ready",
-    "lastRun": "2026-11-04 06:55",
+    "lastRun": "2026-11-04 17:05:00",
     "tools": [
       {
         "id": "calendar",
@@ -87,7 +87,7 @@
           "id": "todo-20261104-3",
           "text": "아넬라 제안 15명",
           "category": "사업or수익",
-          "done": false,
+          "done": true,
           "excluded": false
         },
         {
@@ -129,7 +129,7 @@
           "id": "todo-20261104-9",
           "text": "듀오링고 일본어 2개",
           "category": "자기개발",
-          "done": false,
+          "done": true,
           "excluded": false
         },
         {
