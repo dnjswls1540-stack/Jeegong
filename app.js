@@ -477,7 +477,7 @@ async function initApp() {
   }
 
   // 1. Ensure today's briefing is selected (어제 날짜 브리핑 노출 원천 차단)
-  ensureTodayBriefing(todayStr);
+  const todayB = ensureTodayBriefing(todayStr);
 
   // 2. Daily reset check on startup: 날짜가 바뀌었으면 무조건 출근 준비 상태로 리셋
   const savedWorkDate = localStorage.getItem('jeegong_work_date');
