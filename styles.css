@@ -2434,7 +2434,37 @@ body.light-theme .inquiry-content-text {
   font-weight: 600;
 }
 
-/* 모바일 홈 배너 여백 찌그러짐 반응형 수리 */
+/* 카드 제외 버튼 및 헤더 우측 영역 */
+.btn-gonggu-exclude {
+  padding: 3px 8px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+.btn-gonggu-exclude:hover {
+  color: var(--accent-red);
+  border-color: var(--accent-red);
+  background: var(--accent-red-light);
+}
+.gonggu-card-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tab-count-pill {
+  font-size: 10.5px;
+  opacity: 0.8;
+  margin-left: 4px;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1px 6px;
+  border-radius: 9999px;
+}
+
+/* 모바일 가독성 및 UI 스케일 전면 개편 */
 @media (max-width: 640px) {
   .today-gonggu-highlight-banner {
     flex-direction: column !important;
@@ -2450,5 +2480,41 @@ body.light-theme .inquiry-content-text {
     padding-top: 10px !important;
     border-top: 1px solid rgba(59, 130, 246, 0.15) !important;
   }
+  .panel-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+  }
+  .panel-title {
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+  }
+  .btn-sm-tool {
+    padding: 6px 12px !important;
+    font-size: 11px !important;
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-subtle) !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+  }
+  .gonggu-card {
+    padding: 12px 12px !important;
+  }
+  .gonggu-card-header {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+  .gonggu-card-header-right {
+    width: 100% !important;
+    justify-content: space-between !important;
+  }
+  .gonggu-dm-textarea {
+    font-size: 12px !important;
+    padding: 10px !important;
+    line-height: 1.5 !important;
+  }
 }
+
 

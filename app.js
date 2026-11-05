@@ -489,7 +489,15 @@ async function initApp() {
       localStorage.removeItem('jeegong_attendance_time');
     } catch (e) {}
   } else {
-    workState = localStorage.getItem('jeegong_work_state') || 'ready';
+    const localWs = localStorage.getItem('jeegong_work_state');
+    if (localWs === 'checked_in' || localWs === 'finished') {
+      workState = localWs;
+    } else if (todayB && todayB.attendance && todayB.attendance.status === 'checked_in') {
+      workState = 'checked_in';
+      try { localStorage.setItem('jeegong_work_state', 'checked_in'); } catch (e) {}
+    } else {
+      workState = localWs || 'ready';
+    }
   }
 
   try {
@@ -2926,6 +2934,23 @@ function applyRemoteSync(remoteData) {
         t.done = remoteData.doneTodos.includes(t.id) || remoteData.doneTodos.includes(t.text);
       });
     }
+        if (Array.isArray(remoteData.gongguSent)) {
+      remoteData.gongguSent.forEach(id => {
+        localStorage.setItem('jeegong_gonggu_sent_' + id, 'true');
+      });
+      if (typeof renderGongguCampaign === 'function') {
+        renderGongguCampaign();
+      }
+    }
+    if (Array.isArray(remoteData.gongguExcluded)) {
+      remoteData.gongguExcluded.forEach(id => {
+        localStorage.setItem('jeegong_gonggu_excluded_' + id, 'true');
+      });
+      if (typeof renderGongguCampaign === 'function') {
+        renderGongguCampaign();
+      }
+    }
+
     if (Array.isArray(remoteData.donePriorities)) {
       (b.agentPriorities || []).forEach(ap => {
         ap.done = remoteData.donePriorities.includes(ap.id);
@@ -3016,28 +3041,20 @@ async function pushCloudState() {
 
     const doneTodos = (b.todomateTodos || []).filter(t => t.done).map(t => t.text || t.id);
     const donePriorities = (b.agentPriorities || []).filter(ap => ap.done).map(ap => ap.id);
-    const excludedPriorities = (b.agentPriorities || []).filter(ap => ap.excluded).map(ap => ap.id);
 
-    const emailStatuses = {};
-    (b.emails || []).forEach(e => {
-      if (e.status && e.status !== 'pending') emailStatuses[e.id] = e.status;
+    // Collect all sent and excluded influencer IDs across gonggu campaigns
+    const gongguSent = [];
+    const gongguExcluded = [];
+    (appData.gongguCampaigns || []).forEach(c => {
+      (c.influencers || []).forEach(inf => {
+        if (localStorage.getItem('jeegong_gonggu_sent_' + inf.id) === 'true') {
+          gongguSent.push(inf.id);
+        }
+        if (localStorage.getItem('jeegong_gonggu_excluded_' + inf.id) === 'true') {
+          gongguExcluded.push(inf.id);
+        }
+      });
     });
-
-    const inquiryStatuses = {};
-    (b.inquiries || []).forEach(i => {
-      if (i.status && i.status !== 'pending') inquiryStatuses[i.id] = i.status;
-    });
-
-    const todayChats = (chatSessions[kst.dateStr] || []).slice(-5);
-
-    // Keep handledRegistry compact to prevent payload from exceeding ntfy inline limit
-    const compactHandled = {};
-    const handledKeys = Object.keys(handledRegistry);
-    handledKeys.slice(-15).forEach(k => {
-      compactHandled[k] = handledRegistry[k];
-    });
-
-    const dateKey = b.date || kst.dateStr;
 
     const payload = {
       action: 'sync_state',
@@ -3049,8 +3066,8 @@ async function pushCloudState() {
       briefingDate: b.date,
       doneTodos: doneTodos,
       donePriorities: donePriorities,
-      emailStatuses: emailStatuses,
-      inquiryStatuses: inquiryStatuses
+      gongguSent: gongguSent,
+      gongguExcluded: gongguExcluded
     };
 
     await fetch(`${SYNC_ENDPOINT}`, {
@@ -3101,14 +3118,17 @@ function renderGongguCampaign() {
   if (!activeCampaign) activeCampaign = campaigns[0];
   activeGongguCampaignId = activeCampaign.id;
 
-  // 1. Render Campaign Tabs (다중 상품/타깃 탭)
+  // 1. Render Campaign Tabs (사용자 발굴 요청 상품만 표시)
   if (tabsContainer) {
-    tabsContainer.innerHTML = campaigns.map(c => `
-      <button class="btn-campaign-tab ${c.id === activeGongguCampaignId ? 'active' : ''}" data-cid="${c.id}">
-        <span>${escapeHtml(c.shortTitle || c.title)}</span>
-        <span style="font-size: 10px; opacity: 0.8; margin-left: 4px;">(${(c.influencers || []).length}명)</span>
-      </button>
-    `).join('');
+    tabsContainer.innerHTML = campaigns.map(c => {
+      const activeCount = (c.influencers || []).filter(inf => localStorage.getItem('jeegong_gonggu_excluded_' + inf.id) !== 'true').length;
+      return `
+        <button class="btn-campaign-tab ${c.id === activeGongguCampaignId ? 'active' : ''}" data-cid="${c.id}">
+          <span>${escapeHtml(c.shortTitle || c.title)}</span>
+          <span class="tab-count-pill">${activeCount}명</span>
+        </button>
+      `;
+    }).join('');
 
     tabsContainer.querySelectorAll('.btn-campaign-tab').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -3118,9 +3138,12 @@ function renderGongguCampaign() {
     });
   }
 
-  // 2. Update Active Campaign Info
+  // 2. Update Active Campaign Header (중복 이모지 원천 제거)
   if (activeTitleEl) {
-    activeTitleEl.innerHTML = `<span>🎯</span><span>${escapeHtml(activeCampaign.title)}</span>`;
+    // Strip leading emoji from title if already present in markup
+    let cleanTitle = activeCampaign.title.replace(/^[🎯🍎👢🤝]\s*/, '');
+    let icon = activeCampaign.id.includes('anella') ? '🍎' : '🎯';
+    activeTitleEl.innerHTML = `<span class="campaign-icon">${icon}</span><span class="campaign-title-text">${escapeHtml(cleanTitle)}</span>`;
   }
   if (activeBadgeEl) {
     activeBadgeEl.textContent = activeCampaign.criteria || '실사 검증 완료';
@@ -3132,7 +3155,17 @@ function renderGongguCampaign() {
     `;
   }
 
-  const influencers = activeCampaign.influencers || [];
+  // Filter out excluded influencers
+  const allInfluencers = activeCampaign.influencers || [];
+  const influencers = allInfluencers.filter(inf => localStorage.getItem('jeegong_gonggu_excluded_' + inf.id) !== 'true');
+
+  // Authoritative server state fallback sync (PC <-> Mobile sync guarantee)
+  allInfluencers.forEach(inf => {
+    if (inf.sent && localStorage.getItem('jeegong_gonggu_sent_' + inf.id) === null) {
+      localStorage.setItem('jeegong_gonggu_sent_' + inf.id, 'true');
+    }
+  });
+
   if (totalCounterEl) totalCounterEl.textContent = influencers.length;
 
   function updateSentCounter() {
@@ -3170,19 +3203,19 @@ function renderGongguCampaign() {
       return text.includes(q);
     });
 
-    // 2. Status Filter (전체 / 발송 대기 / 완료)
+    // 2. Status Filter
     if (currentGongguFilter === 'pending') {
       list = list.filter(inf => localStorage.getItem('jeegong_gonggu_sent_' + inf.id) !== 'true');
     } else if (currentGongguFilter === 'done') {
       list = list.filter(inf => localStorage.getItem('jeegong_gonggu_sent_' + inf.id) === 'true');
     }
 
-    // 3. Auto-sort: 미발송 카드가 상단에 오고, 완료된 카드는 제일 하단으로 자동 이동!
+    // 3. Auto-sort: 미발송 상단, 완료 하단
     list.sort((a, b) => {
       const aSent = localStorage.getItem('jeegong_gonggu_sent_' + a.id) === 'true' ? 1 : 0;
       const bSent = localStorage.getItem('jeegong_gonggu_sent_' + b.id) === 'true' ? 1 : 0;
-      if (aSent !== bSent) return aSent - bSent; // 0 (미발송) first, 1 (완료) last
-      return a.num - b.num; // original sequence
+      if (aSent !== bSent) return aSent - bSent;
+      return a.num - b.num;
     });
 
     if (list.length === 0) {
@@ -3206,8 +3239,9 @@ function renderGongguCampaign() {
               <span class="gonggu-meta-pill">🏷️ ${escapeHtml(inf.cat || '살림·리빙')}</span>
               ${noteBadge}
             </div>
-            <div style="font-size: 11px; color: var(--text-tertiary);">
-              행 ${inf.row} · R열 연동 ${isSent ? '<span style="color: var(--accent-green); font-weight: 600; margin-left: 4px;">[완료됨]</span>' : ''}
+            <div class="gonggu-card-header-right">
+              <span class="gonggu-row-meta">행 ${inf.row} · R열 ${isSent ? '<strong style="color: var(--accent-green); margin-left: 4px;">[완료됨]</strong>' : ''}</span>
+              <button class="btn-gonggu-exclude" data-id="${inf.id}" title="제안 목록에서 제외">✕ 제외</button>
             </div>
           </div>
 
@@ -3269,7 +3303,7 @@ function renderGongguCampaign() {
       });
     });
 
-    // 3. Toggle Sent (발송 -> 완료 토글 및 리스트 정렬 갱신)
+    // 3. Toggle Sent
     container.querySelectorAll('.btn-gonggu-toggle-sent').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-id');
@@ -3280,9 +3314,24 @@ function renderGongguCampaign() {
         if (typeof showToast === 'function') {
           showToast(newSent ? `✅ @${id} 완료 처리되어 하단으로 이동했습니다.` : `@${id} 발송 대기 상태로 변경되었습니다.`);
         }
+        pushCloudState();
         updateSentCounter();
-        // Re-render list so sorted order or filter is immediately applied!
         renderList(searchInput ? searchInput.value : '');
+      });
+    });
+
+    // 4. Exclude Button (✕ 제외)
+    container.querySelectorAll('.btn-gonggu-exclude').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        if (confirm(`@${id} 계정을 제안 리스트에서 제외하시겠습니까?`)) {
+          localStorage.setItem('jeegong_gonggu_excluded_' + id, 'true');
+          pushCloudState();
+          if (typeof showToast === 'function') {
+            showToast(`🗑️ @${id} 계정이 목록에서 제외되었습니다.`);
+          }
+          renderGongguCampaign();
+        }
       });
     });
 
