@@ -2187,3 +2187,190 @@ body.light-theme .inquiry-content-text {
     z-index: 1002;
   }
 }
+
+/* ========================================================
+   올쓰컴퍼니 공동구매 탭 및 인플루언서 제안 에디터 스타일
+   ======================================================== */
+.today-gonggu-highlight-banner {
+  cursor: pointer;
+  margin-bottom: 16px;
+  padding: 12px 18px;
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.22);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.15s ease;
+}
+.today-gonggu-highlight-banner:hover {
+  background: rgba(59, 130, 246, 0.13);
+  border-color: rgba(59, 130, 246, 0.35);
+  transform: translateY(-1px);
+}
+.gonggu-campaign-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.gonggu-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  padding: 14px 16px;
+  transition: all 0.15s ease;
+}
+.gonggu-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+.gonggu-card.sent-done {
+  opacity: 0.7;
+  background: var(--bg-card-subtle);
+  border-color: var(--accent-green-light);
+}
+.gonggu-card-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.gonggu-influencer-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.gonggu-num-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--bg-card-subtle);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+}
+.gonggu-handle {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+.gonggu-handle:hover {
+  color: var(--accent-blue);
+  text-decoration: underline;
+}
+.gonggu-meta-pill {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: var(--bg-card-subtle);
+  color: var(--text-secondary);
+}
+.gonggu-dm-editor-wrapper {
+  margin-top: 8px;
+}
+.gonggu-dm-editor-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+  margin-bottom: 5px;
+}
+.gonggu-dm-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.6;
+  padding: 10px 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  background: var(--bg-card-subtle);
+  color: var(--text-primary);
+  resize: vertical;
+  min-height: 120px;
+  transition: border-color 0.15s ease;
+}
+.gonggu-dm-textarea:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  background: var(--bg-card);
+}
+.gonggu-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+.btn-gonggu-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+  background: var(--accent-blue);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+.btn-gonggu-copy:hover {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+.btn-gonggu-copy.copied {
+  background: var(--accent-green) !important;
+}
+.btn-gonggu-open-ig {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  font-size: 11.5px;
+  font-weight: 500;
+  background: var(--bg-card-subtle);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+.btn-gonggu-open-ig:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-strong);
+}
+.btn-gonggu-toggle-sent {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  font-size: 11.5px;
+  font-weight: 500;
+  background: var(--bg-card-subtle);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+.btn-gonggu-toggle-sent:hover {
+  background: var(--bg-card-hover);
+}
+.btn-gonggu-toggle-sent.is-sent {
+  background: var(--accent-green-light);
+  color: var(--accent-green-text);
+  border-color: var(--accent-green);
+  font-weight: 600;
+}

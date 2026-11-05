@@ -533,6 +533,7 @@ async function initApp() {
   renderTodayView();
   renderArchiveView();
   renderHistoryView();
+  renderGongguCampaign();
 
   // Setup Real-time SSE Sync & Midnight Auto Reset
   setupRealtimeSync();
@@ -607,7 +608,7 @@ function setupNavigation() {
     'todo-view': '할 일',
     'inquiry-view': '실시간 문의',
     'work-status-view': '업무 현황',
-    'gonggu-view': '공동구매 영업',
+    'gonggu-view': '올쓰컴퍼니 공동구매',
     'sales-view': '정산·매출'
   };
 
@@ -1974,6 +1975,7 @@ window.refreshDashboardData = async function(showNotice = true) {
 
     // 7. Re-render all views
     renderTodayView();
+    renderGongguCampaign();
     if (typeof renderChatConversationList === 'function') renderChatConversationList();
     if (typeof renderChatMessages === 'function') renderChatMessages();
 
@@ -3061,5 +3063,165 @@ async function pushCloudState() {
     });
   } catch (err) {
     console.warn('pushCloudState error:', err);
+  }
+}
+
+// ========================================================
+// 올쓰컴퍼니 공동구매 탭 (디어커스 30명 맞춤 DM 발송 센터)
+// ========================================================
+function renderGongguCampaign() {
+  const container = document.getElementById('gonggu-campaign-list');
+  const counterEl = document.getElementById('gonggu-sent-counter');
+  const badgeEl = document.getElementById('side-gonggu-badge');
+  const searchInput = document.getElementById('gonggu-search-input');
+
+  if (!container || !appData || !appData.gongguCampaign) return;
+
+  const campaign = appData.gongguCampaign;
+  const influencers = campaign.influencers || [];
+
+  function updateSentCounter() {
+    let sentCount = 0;
+    influencers.forEach(inf => {
+      if (localStorage.getItem('jeegong_gonggu_sent_' + inf.id) === 'true') {
+        sentCount++;
+      }
+    });
+    if (counterEl) counterEl.textContent = sentCount;
+    if (badgeEl) {
+      const remaining = influencers.length - sentCount;
+      badgeEl.textContent = remaining > 0 ? remaining : '완료';
+      badgeEl.style.background = remaining > 0 ? 'var(--accent-blue)' : 'var(--accent-green)';
+    }
+  }
+
+  function renderList(query) {
+    const q = (query || '').toLowerCase().trim();
+    const filtered = influencers.filter(inf => {
+      if (!q) return true;
+      const text = (inf.id + ' ' + (inf.cat || '') + ' ' + (inf.follow || '') + ' ' + (inf.note || '')).toLowerCase();
+      return text.includes(q);
+    });
+
+    if (filtered.length === 0) {
+      container.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--text-tertiary); font-size: 13px;">일치하는 인플루언서가 없습니다.</div>';
+      return;
+    }
+
+    container.innerHTML = filtered.map(inf => {
+      const isSent = localStorage.getItem('jeegong_gonggu_sent_' + inf.id) === 'true';
+      const customDm = localStorage.getItem('jeegong_gonggu_custom_dm_' + inf.id) || inf.dmText || '';
+      const noteBadge = inf.note ? `<span class="section-badge" style="background: var(--accent-red-light); color: var(--accent-red-text); font-size: 10px;">${escapeHtml(inf.note)}</span>` : '';
+
+      return `
+        <div class="gonggu-card ${isSent ? 'sent-done' : ''}" id="gonggu-card-${inf.id}">
+          <div class="gonggu-card-header">
+            <div class="gonggu-influencer-info">
+              <span class="gonggu-num-badge">No.${inf.num}</span>
+              <a href="${escapeHtml(inf.url)}" target="_blank" class="gonggu-handle">@${escapeHtml(inf.id)}</a>
+              <span class="gonggu-meta-pill">👥 ${escapeHtml(inf.follow)}</span>
+              <span class="gonggu-meta-pill">🏷️ ${escapeHtml(inf.cat || '살림·리빙')}</span>
+              ${noteBadge}
+            </div>
+            <div style="font-size: 11px; color: var(--text-tertiary);">
+              행 ${inf.row} · R열 연동
+            </div>
+          </div>
+
+          <div class="gonggu-dm-editor-wrapper">
+            <div class="gonggu-dm-editor-label">
+              <span>📝 맞춤 DM 발송문 (실시간 수정 가능)</span>
+              <span style="font-size: 10px; color: var(--text-tertiary);">수정 시 자동 보존됩니다</span>
+            </div>
+            <textarea class="gonggu-dm-textarea" data-id="${inf.id}" placeholder="맞춤 DM 문안...">${escapeHtml(customDm)}</textarea>
+          </div>
+
+          <div class="gonggu-card-actions">
+            <a href="${escapeHtml(inf.url)}" target="_blank" class="btn-gonggu-open-ig">
+              <span>🔗 인스타 열기</span>
+            </a>
+            <button class="btn-gonggu-toggle-sent ${isSent ? 'is-sent' : ''}" data-id="${inf.id}">
+              ${isSent ? '✓ 발송 완료됨' : '미발송'}
+            </button>
+            <button class="btn-gonggu-copy" data-id="${inf.id}">
+              <span>📋 원클릭 복사</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    // Attach event listeners
+    // 1. Textarea Auto-save
+    container.querySelectorAll('.gonggu-dm-textarea').forEach(ta => {
+      ta.addEventListener('input', (e) => {
+        const id = e.target.getAttribute('data-id');
+        localStorage.setItem('jeegong_gonggu_custom_dm_' + id, e.target.value);
+      });
+    });
+
+    // 2. One-click Copy
+    container.querySelectorAll('.btn-gonggu-copy').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.getAttribute('data-id');
+        const ta = container.querySelector(`.gonggu-dm-textarea[data-id="${id}"]`);
+        if (!ta) return;
+        const textToCopy = ta.value;
+
+        try {
+          await navigator.clipboard.writeText(textToCopy);
+        } catch (err) {
+          ta.select();
+          document.execCommand('copy');
+        }
+        btn.classList.add('copied');
+        btn.innerHTML = '<span>✓ 복사완료!</span>';
+        if (typeof showToast === 'function') {
+          showToast(`📋 @${id} 맞춤 DM이 클립보드에 복사되었습니다!`);
+        }
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.innerHTML = '<span>📋 원클릭 복사</span>';
+        }, 1500);
+      });
+    });
+
+    // 3. Toggle Sent
+    container.querySelectorAll('.btn-gonggu-toggle-sent').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        const card = document.getElementById('gonggu-card-' + id);
+        const wasSent = localStorage.getItem('jeegong_gonggu_sent_' + id) === 'true';
+        const newSent = !wasSent;
+
+        localStorage.setItem('jeegong_gonggu_sent_' + id, newSent ? 'true' : 'false');
+        if (newSent) {
+          btn.classList.add('is-sent');
+          btn.textContent = '✓ 발송 완료됨';
+          if (card) card.classList.add('sent-done');
+          if (typeof showToast === 'function') {
+            showToast(`✅ @${id} 발송 완료 처리되었습니다.`);
+          }
+        } else {
+          btn.classList.remove('is-sent');
+          btn.textContent = '미발송';
+          if (card) card.classList.remove('sent-done');
+        }
+        updateSentCounter();
+      });
+    });
+
+    updateSentCounter();
+  }
+
+  // Initial render
+  renderList('');
+
+  // Search filter listener
+  if (searchInput && !searchInput.dataset.bound) {
+    searchInput.dataset.bound = 'true';
+    searchInput.addEventListener('input', (e) => {
+      renderList(e.target.value);
+    });
   }
 }

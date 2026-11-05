@@ -60,7 +60,8 @@
         </li>
         <li class="nav-item" data-view="gonggu-view">
           <span class="nav-icon">🤝</span>
-          <span class="nav-label">공동구매 영업</span>
+          <span class="nav-label">올쓰컴퍼니 공동구매</span>
+          <span class="nav-badge" id="side-gonggu-badge" style="background: var(--accent-blue); color: #fff;">30</span>
         </li>
         <li class="nav-item" data-view="sales-view">
           <span class="nav-icon">💰</span>
@@ -222,6 +223,18 @@
                 <span class="metric-cat">스마트스토어</span>
               </div>
             </div>
+          </div>
+
+          <!-- [중요] 오늘 공동구매 실무 핵심 하이라이트 배너 -->
+          <div class="today-gonggu-highlight-banner" onclick="document.querySelector('[data-view=\'gonggu-view\']').click();">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 16px;">🤝</span>
+              <span style="font-size: 13px; font-weight: 600; color: var(--text-primary);">
+                [올쓰컴퍼니 공동구매] 디어커스 화장지 신규 발굴 30명 제안 대기
+              </span>
+              <span class="cat-tag cat-biz" style="font-size: 10.5px;">발송 대기 30건</span>
+            </div>
+            <span style="font-size: 12px; color: var(--accent-blue); font-weight: 600;">제안 관리 센터 열기 →</span>
           </div>
 
           <!-- 2. 구글 캘린더 주간 뷰 (단일 와이드 패널) -->
@@ -493,12 +506,47 @@
           </div>
         </section>
 
-        <!-- VIEW 7: 공동구매 영업 뷰 -->
+        <!-- VIEW 7: 올쓰컴퍼니 공동구매 뷰 -->
         <section class="view-section" id="gonggu-view">
           <div class="view-summary-banner">
-            <div>🤝 <strong>11월 공동구매 런칭 파이프라인</strong> · 인플루언서 협업 & 일정 관리</div>
-            <div style="font-size: 11px; color: var(--text-tertiary); white-space: nowrap;">올쓰컴퍼니 주관</div>
+            <div>🤝 <strong>올쓰컴퍼니 공동구매</strong> · 인플루언서 제안 관리 및 파이프라인</div>
+            <div style="font-size: 11px; color: var(--text-tertiary); white-space: nowrap;">인플루언서 발굴 및 맞춤 제안문 원클릭 발송기</div>
           </div>
+
+          <!-- 1. 활성 제안 캠페인 (디어커스 뱀부500 대나무 화장지) -->
+          <div class="panel-card" style="margin-bottom: 20px;">
+            <div class="panel-header" style="flex-wrap: wrap; gap: 8px;">
+              <div class="panel-title">
+                <span>🎯</span>
+                <span>디어커스 뱀부500 대나무 화장지 (30명 맞춤 제안)</span>
+              </div>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <span class="section-badge" style="background: var(--accent-blue-light); color: var(--accent-blue-text);">댓글 100개+ 실사 검증</span>
+                <a href="https://docs.google.com/spreadsheets/d/14m88HAa0UiXZHC6TG0uBqmvbCzPno6yh/edit" target="_blank" class="btn-sm-tool" style="text-decoration: none;">📊 마스터 시트 열기 ↗</a>
+              </div>
+            </div>
+
+            <!-- 캠페인 서머리 바 & 검색 필터 -->
+            <div style="padding: 12px 16px; background: var(--bg-card-subtle); border-radius: 8px; margin-bottom: 14px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; border: 1px solid var(--border-subtle);">
+              <div style="font-size: 12px; color: var(--text-secondary); line-height: 1.5;">
+                • <strong>타깃</strong>: 리빙, 살림, 청소, 주방, 요리 (팔로워 3만+, 댓글 100+, 최근 1달 활동, 중복 0건)<br>
+                • <strong>안내</strong>: 제안문은 바로 수정할 수 있으며, <strong>[📋 원클릭 복사]</strong> 버튼을 누르면 수정된 최신 내용이 즉시 복사됩니다.
+              </div>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <input type="text" id="gonggu-search-input" placeholder="계정 검색 (@라임블리 등)..." style="padding: 6px 12px; font-size: 12px; border: 1px solid var(--border-subtle); border-radius: 6px; background: var(--bg-card); color: var(--text-primary); width: 180px;">
+                <div style="font-size: 11.5px; font-weight: 600; color: var(--text-secondary); padding: 4px 10px; background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-subtle);">
+                  발송 완료: <span id="gonggu-sent-counter" style="color: var(--accent-blue); font-weight: 700;">0</span> / 30
+                </div>
+              </div>
+            </div>
+
+            <!-- 30명 리스트 동적 렌더링 컨테이너 -->
+            <div id="gonggu-campaign-list" class="gonggu-campaign-container">
+              <!-- JS에서 동적 렌더링 -->
+            </div>
+          </div>
+
+          <!-- 2. 공동구매 진행 및 협의 일정표 -->
           <div class="panel-card">
             <div class="panel-header">
               <div class="panel-title">
