@@ -838,8 +838,8 @@ function renderTodoTable() {
   if (!appData || !appData.briefings) return;
   
   const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
-  const todos = b.todomateTodos || [];
-  const priorities = b.agentPriorities || [];
+  const todos = b.todomateTodos || b.todos || [];
+  const priorities = b.agentPriorities || b.priorities || [];
   
   const pendingTodos = todos.filter(t => !t.done && !t.excluded);
   const doneTodos = todos.filter(t => t.done && !t.excluded);
