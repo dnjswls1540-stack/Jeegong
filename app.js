@@ -1342,13 +1342,17 @@ function renderInquiries(b, containerId, badgeId, bannerCountId) {
     const chClass = inq.channel === '식스샵' ? 'channel-sixshop' : inq.channel === '크몽' ? 'channel-kmong' : inq.channel === '아임웹' ? 'channel-imweb' : inq.channel === '네이버 메일' ? 'channel-naver' : 'channel-gmail';
     const badgeChClass = inq.channel === '식스샵' ? 'badge-channel-sixshop' : inq.channel === '크몽' ? 'badge-channel-kmong' : inq.channel === '아임웹' ? 'badge-channel-imweb' : inq.channel === '네이버 메일' ? 'badge-channel-naver' : 'badge-channel-gmail';
 
+    const sender = inq.from || inq.customer || inq.sender || '고객';
+    const subject = inq.subject || inq.question || inq.title || '고객 문의';
+    const content = inq.content || inq.question || inq.summary || inq.context || '문의 내용이 등록되어 있습니다.';
+
     container.innerHTML += `
       <div class="inquiry-item ${chClass} ${isExcluded ? 'excluded' : ''} ${isDone || isSent ? 'done' : ''}" id="inquiry-item-${containerId}-${inq.id}">
         <div class="email-top">
           <div class="email-badges-row">
             <div class="email-badges-left">
               <span class="badge-tag ${badgeChClass}">${inq.channel} 문의</span>
-              <span class="email-sender" title="${inq.from}">${inq.from}</span>
+              <span class="email-sender" title="${sender}">${sender}</span>
               <span class="email-time" style="font-size: 11.5px; color: var(--text-tertiary);">${inq.time}</span>
             </div>
             <div class="email-badges-right">
@@ -1359,10 +1363,10 @@ function renderInquiries(b, containerId, badgeId, bannerCountId) {
           </div>
         </div>
 
-        <div class="email-subject">${inq.subject}</div>
+        <div class="email-subject">${subject}</div>
         <div class="inquiry-content-box">
           <div class="inquiry-content-label">💬 고객 문의 내용 전문</div>
-          <div class="inquiry-content-text">${inq.content || inq.summary || '문의 내용이 등록되어 있습니다.'}</div>
+          <div class="inquiry-content-text">${content}</div>
         </div>
 
         <div class="email-actions-bar">
@@ -1396,7 +1400,7 @@ function renderInquiries(b, containerId, badgeId, bannerCountId) {
         <div class="inline-draft-box ${window.activeDraftBoxIds && window.activeDraftBoxIds.has(`inquiry-draft-box-${containerId}-${inq.id}`) ? 'active' : ''}" id="inquiry-draft-box-${containerId}-${inq.id}">
           <div class="draft-header">
             <span>✍️ 구름이 고객 응대 초안 (수정 후 승인 시 답변 발송)</span>
-            <span style="font-size: 11.5px; color: var(--text-tertiary);">수신: ${inq.from}</span>
+            <span style="font-size: 11.5px; color: var(--text-tertiary);">수신: ${sender}</span>
           </div>
           <textarea class="draft-textarea" id="inquiry-draft-text-${containerId}-${inq.id}" oninput="onInquiryDraftInput('${inq.id}', this.value)">${inq.draft || ''}</textarea>
           <div class="draft-actions">
@@ -2981,6 +2985,25 @@ function applyRemoteSync(remoteData) {
       });
     }
 
+    // 7. 메일 & 고객 문의 처리 상태(handled_registry) 양방향 클라우드 동기화
+    const incomingRegistry = remoteData.handled_registry || remoteData.handledRegistry;
+    if (incomingRegistry && typeof incomingRegistry === 'object') {
+      let regChanged = false;
+      Object.keys(incomingRegistry).forEach(k => {
+        if (!handledRegistry[k] || JSON.stringify(handledRegistry[k]) !== JSON.stringify(incomingRegistry[k])) {
+          handledRegistry[k] = incomingRegistry[k];
+          regChanged = true;
+        }
+      });
+      if (regChanged) {
+        saveHandledRegistry();
+        renderEmailList(b, 'email-list-container', 'email-badge', null);
+        renderEmailList(b, 'email-view-container', 'email-view-badge', 'email-view-banner-count');
+        renderInquiries(b, 'inquiry-list-container', 'inquiry-badge', null);
+        renderInquiries(b, 'inquiry-exclusive-list-container', 'inquiry-view-badge', 'inquiry-view-banner-count');
+      }
+    }
+
     if (typeof renderGongguCampaign === 'function') {
       renderGongguCampaign();
     }
@@ -3031,6 +3054,7 @@ async function pushCloudState() {
       done_priorities: Array.from(new Set(donePriorities)),
       gonggu_sent: Array.from(new Set(gongguSent)),
       gonggu_excluded: Array.from(new Set(gongguExcluded)),
+      handled_registry: handledRegistry || {},
       custom_todos: getCustomAddedTodos(kst.dateStr) || []
     };
 
