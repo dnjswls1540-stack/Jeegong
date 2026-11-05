@@ -633,6 +633,10 @@ function setupNavigation() {
       crumbCurrent.textContent = titles[viewId] || '홈';
     }
 
+    if (viewId === 'gonggu-view' && typeof renderGongguCampaign === 'function') {
+      renderGongguCampaign();
+    }
+
     if (topTitle) topTitle.textContent = '지공 출근 에이전트';
 
     // Close mobile drawer on navigation
@@ -3069,6 +3073,16 @@ async function pushCloudState() {
 // ========================================================
 // 올쓰컴퍼니 공동구매 탭 (디어커스 30명 맞춤 DM 발송 센터)
 // ========================================================
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function renderGongguCampaign() {
   const container = document.getElementById('gonggu-campaign-list');
   const counterEl = document.getElementById('gonggu-sent-counter');
