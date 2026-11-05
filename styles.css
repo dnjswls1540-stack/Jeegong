@@ -2374,3 +2374,81 @@ body.light-theme .inquiry-content-text {
   border-color: var(--accent-green);
   font-weight: 600;
 }
+
+/* 캠페인 다중 전환 탭 및 빠른 필터 스타일 */
+.gonggu-campaign-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--border-subtle);
+  scrollbar-width: none;
+}
+.gonggu-campaign-tabs::-webkit-scrollbar {
+  display: none;
+}
+.btn-campaign-tab {
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 8px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.12s ease;
+}
+.btn-campaign-tab:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+}
+.btn-campaign-tab.active {
+  background: var(--accent-blue);
+  color: #ffffff;
+  border-color: var(--accent-blue);
+  box-shadow: 0 1px 4px rgba(59, 130, 246, 0.25);
+}
+.gonggu-filter-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+.btn-gonggu-filter {
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 6px;
+  background: var(--bg-card-subtle);
+  color: var(--text-tertiary);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+.btn-gonggu-filter.active {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border-color: var(--border-strong);
+  font-weight: 600;
+}
+
+/* 모바일 홈 배너 여백 찌그러짐 반응형 수리 */
+@media (max-width: 640px) {
+  .today-gonggu-highlight-banner {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    padding: 14px 16px !important;
+  }
+  .today-gonggu-highlight-banner .banner-action-area {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    padding-top: 10px !important;
+    border-top: 1px solid rgba(59, 130, 246, 0.15) !important;
+  }
+}
+
