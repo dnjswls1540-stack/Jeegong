@@ -7,8 +7,11 @@ let workState = 'ready'; // 'ready' (출근 완료) -> 'checked_in' (업무 종�
 let lastLocalUpdateTimestamp = 0;
 let isSyncing = false;
 
-// Cloud Sync Configuration (Real-time Cross-device Sync)
-// Cloud Sync Configuration (ntfy.sh Real-time SSE & Instant Sync - Zero Limit)
+// Cloud Sync Configuration (Enterprise-grade Supabase Cloud DB & Instant ntfy Stream)
+const SUPABASE_URL = 'https://ipxbmrvadxrvuveujaaq.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlweGJtcnZhZHhydnV2ZXVqYWFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzOTc5MTQsImV4cCI6MjEwNzk3MzkxNH0.lbgUKo8ZVvYrSu7qaVzeWbUNrM-CJHfhtbEFgvTJIpg';
+const SUPABASE_STATE_ENDPOINT = `${SUPABASE_URL}/rest/v1/jeegong_state?id=eq.live`;
+
 const SYNC_TOPIC = 'jeegong_sync_dnjswls1540_2026';
 const SYNC_ENDPOINT = 'https://ntfy.sh/' + SYNC_TOPIC;
 let syncEventSource = null;
@@ -371,6 +374,14 @@ function restoreLocalTodosState(briefingId) {
   if (!b) return;
   const kst = getKSTNow();
   const dateKey = b.date || kst.dateStr;
+
+  // Filter out permanently deleted todos first
+  try {
+    const delList = JSON.parse(localStorage.getItem(`jeegong_deleted_todos_${dateKey}`) || '[]');
+    if (Array.isArray(delList) && delList.length > 0 && Array.isArray(b.todomateTodos)) {
+      b.todomateTodos = b.todomateTodos.filter(t => !delList.includes(t.id) && !delList.includes(t.text));
+    }
+  } catch (e) {}
 
   restoreCustomTodos(briefingId);
 
@@ -1658,7 +1669,7 @@ window.handleQuickAddTodo = function() {
   }
 };
 
-// Delete Todomate Todo (0.1초 원클릭 삭제)
+// Delete Todomate Todo (0.1초 원클릭 영구 삭제 - 절대 부활 방지)
 window.deleteTodomateTodo = function(id) {
   if (!appData || !appData.briefings) return;
   const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
@@ -1667,13 +1678,24 @@ window.deleteTodomateTodo = function(id) {
   removeCustomAddedTodo(dateKey, id);
   const idx = (b.todomateTodos || []).findIndex(t => t.id === id);
   if (idx !== -1) {
-    const deletedName = b.todomateTodos[idx].text;
+    const deletedItem = b.todomateTodos[idx];
+    const deletedName = deletedItem.text;
+    const deletedId = deletedItem.id;
     b.todomateTodos.splice(idx, 1);
+
+    // 영구 삭제 목록(deleted_todos)에 기록 (새로고침/재로드 시 영구 부활 차단)
+    try {
+      let delList = JSON.parse(localStorage.getItem(`jeegong_deleted_todos_${dateKey}`) || '[]');
+      if (deletedId && !delList.includes(deletedId)) delList.push(deletedId);
+      if (deletedName && !delList.includes(deletedName)) delList.push(deletedName);
+      localStorage.setItem(`jeegong_deleted_todos_${dateKey}`, JSON.stringify(delList));
+    } catch (e) {}
+
     saveLocalTodosState(b.id);
     renderTodoTable();
     renderTodayView();
     pushCloudState();
-    showToast(`🗑️ 할 일 '${deletedName}'을(를) 삭제했습니다.`);
+    showToast(`🗑️ 할 일 '${deletedName}'을(를) 삭제했습니다. (영구 삭제 완료)`);
   }
 };
 
@@ -2825,51 +2847,74 @@ async function pullCloudState() {
   if (hasActiveDraft || isTyping) {
     return;
   }
+
+  // 1. Supabase Cloud DB에서 직접 최신 상태 로드 (0% 유실 진실의 원천)
   try {
-    const res = await fetch(`${SYNC_ENDPOINT}/json?poll=1`);
-    if (!res.ok) return;
-    const text = await res.text();
+    const res = await fetch(`${SUPABASE_STATE_ENDPOINT}&select=*`, {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+      },
+      cache: 'no-store'
+    });
+    if (res.ok) {
+      const rows = await res.json();
+      if (Array.isArray(rows) && rows.length > 0) {
+        applyRemoteSync(rows[0]);
+        return;
+      }
+    }
+  } catch (err) {
+    console.warn('Supabase pull error, falling back to ntfy:', err);
+  }
+
+  // 2. ntfy 폴백
+  try {
+    const res2 = await fetch(`${SYNC_ENDPOINT}/json?poll=1`);
+    if (!res2.ok) return;
+    const text = await res2.text();
     const lines = text.trim().split('\n').filter(Boolean);
     if (lines.length === 0) return;
 
-    // Scan backwards from newest line to find the latest valid state snapshot
     for (let i = lines.length - 1; i >= 0; i--) {
       try {
         const payload = JSON.parse(lines[i]);
         const remoteData = await parseNtfyPayload(payload);
-        if (remoteData && (remoteData.updatedAt || remoteData.timestamp)) {
+        if (remoteData && (remoteData.updated_at || remoteData.updatedAt || remoteData.timestamp)) {
           applyRemoteSync(remoteData);
           break;
         }
       } catch (e) {}
     }
   } catch (err) {
-    console.warn('pullCloudState error:', err);
+    console.warn('ntfy pull error:', err);
   }
 }
 
 function applyRemoteSync(remoteData) {
   if (!remoteData || !appData || !appData.briefings) return;
-  const remoteTs = remoteData.updatedAt || remoteData.timestamp || 0;
-  if (remoteTs <= lastLocalUpdateTimestamp) return;
+  const remoteTs = remoteData.updated_at || remoteData.updatedAt || remoteData.timestamp || 0;
+  if (remoteTs <= lastLocalUpdateTimestamp && !window._forceCloudSync) return;
 
   isSyncing = true;
   lastLocalUpdateTimestamp = remoteTs;
   try { localStorage.setItem('jeegong_last_sync_ts', String(remoteTs)); } catch (e) {}
 
   const kst = getKSTNow();
-
-  // 1. Work state sync with daily midnight reset
   const todayStr = kst.dateStr;
-  if (remoteData.workDate && remoteData.workDate !== todayStr) {
+
+  // 1. 출퇴근 상태 동기화
+  const incomingWorkDate = remoteData.work_date || remoteData.workDate || todayStr;
+  const incomingWorkState = remoteData.work_state || remoteData.workState;
+  if (incomingWorkDate !== todayStr) {
     workState = 'ready';
     try {
       localStorage.setItem('jeegong_work_date', todayStr);
       localStorage.setItem('jeegong_work_state', 'ready');
       localStorage.removeItem('jeegong_attendance_time');
     } catch (e) {}
-  } else if (remoteData.workDate === todayStr && remoteData.workState) {
-    workState = remoteData.workState;
+  } else if (incomingWorkState) {
+    workState = incomingWorkState;
     try {
       localStorage.setItem('jeegong_work_date', todayStr);
       localStorage.setItem('jeegong_work_state', workState);
@@ -2877,153 +2922,65 @@ function applyRemoteSync(remoteData) {
   }
   updateWorkButtonUI();
 
-  // 2. Sync briefing statuses (todos, priorities, emails, inquiries)
-  if (remoteData.briefingDate && remoteData.briefingDate !== todayStr && !remoteData.briefingId) {
-    return;
-  }
-
-  const b = (remoteData.briefingId ? appData.briefings.find(item => item.id === remoteData.briefingId) : null)
-    || (remoteData.briefingDate ? appData.briefings.find(item => item.date === remoteData.briefingDate) : null)
-    || appData.briefings.find(item => item.date === todayStr)
-    || appData.briefings[0];
-
+  const b = appData.briefings.find(item => item.date === todayStr) || appData.briefings[0];
   if (b) {
-    const dateKey = b.date || kst.dateStr;
-    if (Array.isArray(remoteData.customTodos)) {
-      remoteData.customTodos.forEach(ct => saveCustomAddedTodo(dateKey, ct));
-    }
+    const dateKey = b.date || todayStr;
 
-    if (Array.isArray(remoteData.todomateTodos) && remoteData.todomateTodos.length > 0) {
-      // Merge remote authoritative todos with data.json todos so newly added tasks are never lost
-      const existingTodos = b.todomateTodos || [];
-      const remoteMap = new Map();
-      remoteData.todomateTodos.forEach(rt => remoteMap.set(rt.text || rt.id, rt));
+    // 2. 삭제된 할 일 목록(deleted_todos) 영구 배제 적용
+    const deletedList = remoteData.deleted_todos || remoteData.deletedTodos || [];
+    if (Array.isArray(deletedList) && deletedList.length > 0) {
+      try {
+        let localDel = JSON.parse(localStorage.getItem(`jeegong_deleted_todos_${dateKey}`) || '[]');
+        deletedList.forEach(item => {
+          if (!localDel.includes(item)) localDel.push(item);
+        });
+        localStorage.setItem(`jeegong_deleted_todos_${dateKey}`, JSON.stringify(localDel));
+      } catch (e) {}
 
-      const merged = [];
-      const seenTexts = new Set();
-
-      existingTodos.forEach(et => {
-        const textKey = et.text || et.id;
-        seenTexts.add(textKey);
-        if (remoteMap.has(textKey)) {
-          const rm = remoteMap.get(textKey);
-          merged.push({ ...et, done: !!rm.done, excluded: !!rm.excluded });
-        } else {
-          merged.push(et);
-        }
-      });
-
-      remoteData.todomateTodos.forEach(rt => {
-        const textKey = rt.text || rt.id;
-        if (!seenTexts.has(textKey)) {
-          merged.push({ ...rt, done: !!rt.done, excluded: !!rt.excluded });
-          seenTexts.add(textKey);
-        }
-      });
-
-      b.todomateTodos = merged;
-      if (window._isAwaitingTodomateSync) {
-        window._isAwaitingTodomateSync = false;
-        if (window._todomateSyncTimer) clearTimeout(window._todomateSyncTimer);
-        const tBtn = document.getElementById('btn-refresh-todomate');
-        if (tBtn) tBtn.classList.remove('spinning');
-        showToast(`✅ 투두메이트 최신 할 일(${b.todomateTodos.length}건) 동기화 완료!`);
+      if (Array.isArray(b.todomateTodos)) {
+        b.todomateTodos = b.todomateTodos.filter(t => !deletedList.includes(t.id) && !deletedList.includes(t.text));
       }
-    } else if (Array.isArray(remoteData.doneTodos)) {
-      (b.todomateTodos || []).forEach(t => {
-        t.done = remoteData.doneTodos.includes(t.id) || remoteData.doneTodos.includes(t.text);
-      });
     }
-        if (Array.isArray(remoteData.gongguSent)) {
-      remoteData.gongguSent.forEach(id => {
+
+    // 3. 완료된 할 일 목록(done_todos) 동기화
+    const doneList = remoteData.done_todos || remoteData.doneTodos;
+    if (Array.isArray(doneList)) {
+      (b.todomateTodos || []).forEach(t => {
+        t.done = doneList.includes(t.id) || doneList.includes(t.text);
+      });
+      try { localStorage.setItem(`jeegong_done_todos_${dateKey}`, JSON.stringify(doneList)); } catch (e) {}
+    }
+
+    // 4. 에이전트 우선순위 완료 동기화
+    const donePri = remoteData.done_priorities || remoteData.donePriorities;
+    if (Array.isArray(donePri)) {
+      (b.agentPriorities || []).forEach(ap => {
+        ap.done = donePri.includes(ap.id);
+      });
+      try { localStorage.setItem(`jeegong_done_priorities_${dateKey}`, JSON.stringify(donePri)); } catch (e) {}
+    }
+
+    // 5. 공동구매 발송 완료 목록 동기화 (전 캠페인 통합)
+    const gongguSentList = remoteData.gonggu_sent || remoteData.gongguSent || [];
+    if (Array.isArray(gongguSentList)) {
+      gongguSentList.forEach(id => {
         localStorage.setItem('jeegong_gonggu_sent_' + id, 'true');
       });
-      if (typeof renderGongguCampaign === 'function') {
-        renderGongguCampaign();
-      }
     }
-    if (Array.isArray(remoteData.gongguExcluded)) {
-      remoteData.gongguExcluded.forEach(id => {
+
+    // 6. 공동구매 제외 목록 동기화
+    const gongguExList = remoteData.gonggu_excluded || remoteData.gongguExcluded || [];
+    if (Array.isArray(gongguExList)) {
+      gongguExList.forEach(id => {
         localStorage.setItem('jeegong_gonggu_excluded_' + id, 'true');
       });
-      if (typeof renderGongguCampaign === 'function') {
-        renderGongguCampaign();
-      }
     }
 
-    if (Array.isArray(remoteData.donePriorities)) {
-      (b.agentPriorities || []).forEach(ap => {
-        ap.done = remoteData.donePriorities.includes(ap.id);
-      });
+    if (typeof renderGongguCampaign === 'function') {
+      renderGongguCampaign();
     }
-    if (Array.isArray(remoteData.excludedPriorities)) {
-      (b.agentPriorities || []).forEach(ap => {
-        ap.excluded = remoteData.excludedPriorities.includes(ap.id);
-      });
-    }
-    // Update local storage with the authoritative remote state so local cache stays fresh
-    saveLocalTodosState(b.id);
-    // Sync handled registry first so it is available for filtering and status checks
-    if (remoteData.handledRegistry && typeof remoteData.handledRegistry === 'object') {
-      Object.assign(handledRegistry, remoteData.handledRegistry);
-      saveHandledRegistry();
-    }
-
-    if (remoteData.emailStatuses) {
-      (b.emails || []).forEach(e => {
-        if (remoteData.emailStatuses[e.id]) {
-          e.status = remoteData.emailStatuses[e.id];
-        } else {
-          const tag = getItemCoreTag(e);
-          const fp = getItemFingerprint(e, 'email');
-          const rec = (tag && handledRegistry[tag]) || (fp && handledRegistry[fp]);
-          if (rec) {
-            e.status = rec.status;
-          } else {
-            e.status = 'pending';
-          }
-        }
-      });
-    }
-    if (remoteData.inquiryStatuses) {
-      (b.inquiries || []).forEach(i => {
-        if (remoteData.inquiryStatuses[i.id]) {
-          i.status = remoteData.inquiryStatuses[i.id];
-        } else {
-          const tag = getItemCoreTag(i);
-          const fp = getItemFingerprint(i, 'inquiry');
-          const rec = (tag && handledRegistry[tag]) || (fp && handledRegistry[fp]);
-          if (rec) {
-            i.status = rec.status;
-          } else {
-            i.status = 'pending';
-          }
-        }
-      });
-    }
-    const hasActiveDraft = (window.activeDraftBoxIds && window.activeDraftBoxIds.size > 0) || document.querySelector('.inline-draft-box.active');
-    const isTyping = document.activeElement && (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT');
-    if (!hasActiveDraft && !isTyping) {
-      renderTodayView();
-    }
-  }
-
-  // 3. Sync recent chats
-  if (Array.isArray(remoteData.recentChats) && remoteData.recentChats.length > 0) {
-    if (!chatSessions[kst.dateStr]) chatSessions[kst.dateStr] = [];
-    const existingTexts = new Set(chatSessions[kst.dateStr].map(m => m.text));
-    remoteData.recentChats.forEach(m => {
-      if (!existingTexts.has(m.text)) {
-        chatSessions[kst.dateStr].push(m);
-        existingTexts.add(m.text);
-      }
-    });
-    try { localStorage.setItem('jeegong_chat_sessions', JSON.stringify(chatSessions)); } catch (e) {}
-    renderChatConversationList();
-    if (typeof currentChatView !== 'undefined' && currentChatView === 'room' && activeChatDate === kst.dateStr) {
-      chatMessages = chatSessions[kst.dateStr];
-      renderChatMessages();
-    }
+    renderTodoTable();
+    renderTodayView();
   }
 
   isSyncing = false;
@@ -3042,7 +2999,11 @@ async function pushCloudState() {
     const doneTodos = (b.todomateTodos || []).filter(t => t.done).map(t => t.text || t.id);
     const donePriorities = (b.agentPriorities || []).filter(ap => ap.done).map(ap => ap.id);
 
-    // Collect all sent and excluded influencer IDs across gonggu campaigns
+    let deletedTodos = [];
+    try {
+      deletedTodos = JSON.parse(localStorage.getItem(`jeegong_deleted_todos_${kst.dateStr}`) || '[]');
+    } catch (e) {}
+
     const gongguSent = [];
     const gongguExcluded = [];
     (appData.gongguCampaigns || []).forEach(c => {
@@ -3057,24 +3018,40 @@ async function pushCloudState() {
     });
 
     const payload = {
-      action: 'sync_state',
-      timestamp: nowTs,
-      updatedAt: nowTs,
-      workDate: kst.dateStr,
-      workState: workState,
-      briefingId: b.id,
-      briefingDate: b.date,
-      doneTodos: doneTodos,
-      donePriorities: donePriorities,
-      gongguSent: gongguSent,
-      gongguExcluded: gongguExcluded
+      updated_at: nowTs,
+      work_date: kst.dateStr,
+      work_state: workState,
+      done_todos: Array.from(new Set(doneTodos)),
+      deleted_todos: Array.from(new Set(deletedTodos)),
+      done_priorities: Array.from(new Set(donePriorities)),
+      gonggu_sent: Array.from(new Set(gongguSent)),
+      gonggu_excluded: Array.from(new Set(gongguExcluded)),
+      custom_todos: getCustomAddedTodos(kst.dateStr) || []
     };
 
-    await fetch(`${SYNC_ENDPOINT}`, {
+    // 1. Supabase Cloud DB에 즉시 영구 저장 (0% 유실 단일 진실 원천)
+    fetch(SUPABASE_STATE_ENDPOINT, {
+      method: 'PATCH',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(payload)
+    }).catch(err => console.warn('Supabase state sync error:', err));
+
+    // 2. ntfy 실시간 스트림 브로드캐스트 (실시간 0.1초 릴레이)
+    fetch(`${SYNC_ENDPOINT}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+      body: JSON.stringify({
+        action: 'sync_state',
+        timestamp: nowTs,
+        ...payload
+      })
+    }).catch(err => console.warn('ntfy push error:', err));
+
   } catch (err) {
     console.warn('pushCloudState error:', err);
   }
