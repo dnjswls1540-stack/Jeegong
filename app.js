@@ -781,10 +781,12 @@ function renderWeeklyCalendar() {
     let html = '';
     days.forEach(day => {
       const dayEvents = events.filter(ev => {
-        if (ev.startDate && ev.endDate) {
-          return day.dateStr >= ev.startDate && day.dateStr <= ev.endDate;
+        const start = ev.startDate || ev.date;
+        const end = ev.endDate || start;
+        if (start && end) {
+          return day.dateStr >= start && day.dateStr <= end;
         }
-        return ev.startDate === day.dateStr;
+        return start === day.dateStr || (day.isToday && !start);
       });
       
       let eventsHtml = '';
@@ -794,10 +796,11 @@ function renderWeeklyCalendar() {
         else if (ev.tag === '개인') badgeClass = 'badge-personal';
         else if (ev.tag === '업무' || ev.tag === '외주') badgeClass = 'badge-biz';
 
+        const titleText = ev.summary || ev.title || '일정';
         eventsHtml += `
-          <div class="cal-event-card" style="border-left-color: ${ev.color || '#3b82f6'};" title="${ev.summary} (${ev.time || '종일'})">
+          <div class="cal-event-card" style="border-left-color: ${ev.color || '#3b82f6'};" title="${titleText} (${ev.time || '종일'})">
             <div class="cal-event-time">${ev.time || '종일'}</div>
-            <div class="cal-event-title">${ev.summary}</div>
+            <div class="cal-event-title">${titleText}</div>
             <span class="cal-event-badge ${badgeClass}">${ev.tag || '공구'}</span>
           </div>
         `;
@@ -913,7 +916,7 @@ function renderTodoTable() {
             <input type="checkbox" class="todo-check-input" ${t.done ? 'checked' : ''} onchange="toggleTodomateTodo('${t.id}')">
           </td>
           <td>
-            <span class="todo-text-main ${t.done ? 'done' : ''}" id="todo-text-${t.id}">${t.text}</span>
+            <span class="todo-text-main ${t.done ? 'done' : ''}" id="todo-text-${t.id}">${t.text || t.title || '할 일 내용'}</span>
           </td>
           <td style="text-align: center;">
             <span class="cat-tag ${catClass}">${t.category || '사업or수익'}</span>

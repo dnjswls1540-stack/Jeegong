@@ -102,74 +102,111 @@
           "id": "tm-20261106-1",
           "title": "디어커스 제안 25명",
           "category": "사업or수익",
-          "done": false
+          "done": false,
+          "text": "디어커스 제안 25명",
+          "excluded": false
         },
         {
           "id": "tm-20261106-2",
           "title": "장빵실 주문건 확인",
           "category": "사업or수익",
-          "done": false
+          "done": false,
+          "text": "장빵실 주문건 확인",
+          "excluded": false
         },
         {
           "id": "tm-20261106-3",
           "title": "장빵실 정산서 작성",
           "category": "사업or수익",
-          "done": false
+          "done": false,
+          "text": "장빵실 정산서 작성",
+          "excluded": false
         },
         {
           "id": "tm-20261106-4",
           "title": "데이원 주문건 확인",
           "category": "사업or수익",
-          "done": false
+          "done": false,
+          "text": "데이원 주문건 확인",
+          "excluded": false
         },
         {
           "id": "tm-20261106-5",
           "title": "아넬라 제안 30명",
           "category": "사업or수익",
-          "done": false
+          "done": false,
+          "text": "아넬라 제안 30명",
+          "excluded": false
         },
         {
           "id": "tm-20261106-6",
           "title": "손뽀니 결제링크 전달",
           "category": "사업or수익",
-          "done": true
+          "done": true,
+          "text": "손뽀니 결제링크 전달",
+          "excluded": false
         },
         {
           "id": "tm-20261106-7",
           "title": "아임웹 섹션 수정",
           "category": "사업or수익",
-          "done": false
+          "done": false,
+          "text": "아임웹 섹션 수정",
+          "excluded": false
         },
         {
           "id": "tm-20261106-8",
           "title": "아넬라 수익 계산",
           "category": "사업or수익",
-          "done": false
+          "done": false,
+          "text": "아넬라 수익 계산",
+          "excluded": false
         },
         {
           "id": "tm-20261106-9",
           "title": "운동",
           "category": "자기개발",
-          "done": false
+          "done": false,
+          "text": "운동",
+          "excluded": false
         },
         {
           "id": "tm-20261106-10",
           "title": "전자책 공부",
           "category": "자기개발",
-          "done": false
+          "done": false,
+          "text": "전자책 공부",
+          "excluded": false
         }
       ],
-      "calendar": "19:00 - 20:00 사당 모임 · [공구] 데이원 울렌 겨울부츠 진행",
+      "calendar": {
+        "count": 2,
+        "items": [
+          "19:00 사당 모임",
+          "[공구] 데이원 울렌 겨울부츠 진행 (종일)"
+        ],
+        "note": "19:00 사당 모임 및 데이원 울렌 겨울부츠 공구 진행 중"
+      },
       "calendarEvents": [
         {
+          "id": "cal-20261106-1",
+          "summary": "[공구] 데이원 울렌 겨울부츠 진행",
+          "startDate": "2026-11-03",
+          "endDate": "2026-11-09",
           "time": "종일",
-          "title": "[공구] 데이원 울렌 겨울부츠 진행",
-          "account": "dnjswls1540@gmail.com"
+          "tag": "공구",
+          "color": "#10b981",
+          "category": "공동구매"
         },
         {
+          "id": "cal-20261106-2",
+          "summary": "사당 모임",
+          "startDate": "2026-11-06",
+          "endDate": "2026-11-06",
           "time": "19:00 - 20:00",
-          "title": "사당 모임",
-          "account": "dnjswls1540@gmail.com"
+          "tag": "개인",
+          "color": "#f59e0b",
+          "category": "개인일정"
         }
       ],
       "emails": [],
