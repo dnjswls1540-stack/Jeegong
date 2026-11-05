@@ -2969,6 +2969,19 @@ function applyRemoteSync(remoteData) {
       try { localStorage.setItem(`jeegong_done_priorities_${dateKey}`, JSON.stringify(donePri)); } catch (e) {}
     }
 
+    // 4-B. 에이전트 우선순위 삭제(excluded_priorities) 동기화
+    const exPriList = remoteData.excluded_priorities || remoteData.excludedPriorities || [];
+    if (Array.isArray(exPriList)) {
+      try {
+        localStorage.setItem(`jeegong_excluded_priorities_${dateKey}`, JSON.stringify(exPriList));
+      } catch (e) {}
+      if (Array.isArray(b.agentPriorities)) {
+        b.agentPriorities.forEach(ap => {
+          ap.excluded = exPriList.includes(ap.id);
+        });
+      }
+    }
+
     // 5. 공동구매 발송 완료 목록 동기화 (전 캠페인 통합)
     const gongguSentList = remoteData.gonggu_sent || remoteData.gongguSent || [];
     if (Array.isArray(gongguSentList)) {
@@ -3026,6 +3039,7 @@ async function pushCloudState() {
 
     const doneTodos = (b.todomateTodos || []).filter(t => t.done).map(t => t.text || t.id);
     const donePriorities = (b.agentPriorities || []).filter(ap => ap.done).map(ap => ap.id);
+    const excludedPriorities = (b.agentPriorities || []).filter(ap => ap.excluded).map(ap => ap.id);
 
     let deletedTodos = [];
     try {
@@ -3052,6 +3066,7 @@ async function pushCloudState() {
       done_todos: Array.from(new Set(doneTodos)),
       deleted_todos: Array.from(new Set(deletedTodos)),
       done_priorities: Array.from(new Set(donePriorities)),
+      excluded_priorities: Array.from(new Set(excludedPriorities)),
       gonggu_sent: Array.from(new Set(gongguSent)),
       gonggu_excluded: Array.from(new Set(gongguExcluded)),
       handled_registry: handledRegistry || {},
