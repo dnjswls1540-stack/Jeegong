@@ -76,7 +76,7 @@
           "id": "p-lce-kakao",
           "title": "[카카오톡/페이노트] LCE 님 VOD 강의 문의 응대",
           "reason": "16:15 카카오톡 지공의 페이노트 채널 실시간 VOD 문의. 구매 직전 단계 즉시 응대 필요",
-          "done": false,
+          "done": true,
           "excluded": false,
           "source": "kakao_paynote"
         },
@@ -183,7 +183,7 @@
           "channel": "카카오톡 비즈니스 (지공의 페이노트)",
           "customer": "LCE 님",
           "time": "16:15",
-          "status": "pending",
+          "status": "done",
           "question": "vod가 강의 인건가요?",
           "context": "11/1 VOD/전자책 차이 및 1:1 컨설팅 문의에 이은 VOD 강의 형식 확인",
           "draft": "네, 맞습니다! VOD는 전자책의 실무 전 과정을 실제 화면 영상으로 담은 온라인 녹화 강의입니다. 전자책 내용에 더해 실무 화면 시연, 회사소개서 및 세팅 프롬프트 양식, 그리고 AI 활용법까지 함께 학습하실 수 있는 패키지입니다 :)"
