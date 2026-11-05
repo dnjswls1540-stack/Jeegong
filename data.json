@@ -3,7 +3,7 @@
     "name": "지공 출근 에이전트",
     "version": "1.2.0",
     "status": "ready",
-    "lastRun": "2026-11-05 09:20",
+    "lastRun": "2026-11-06 08:30",
     "tools": [
       {
         "id": "calendar",
@@ -44,6 +44,142 @@
     ]
   },
   "briefings": [
+    {
+      "id": "b-20261106",
+      "date": "2026-11-06",
+      "dayOfWeek": "금요일",
+      "createdAt": "2026-11-06 08:30:00",
+      "headline": "사당 모임(19:00) 및 장빵실 정산·공구 제안 등 투두 9건 실무",
+      "summary": "오늘 저녁 19:00 사당 모임과 함께 장빵실 주문 확인 및 정산서 작성, 데이원 주문 확인, 디어커스 및 아넬라 공구 제안, 아넬라 수익 계산 등 투두메이트 9건 실무일입니다.",
+      "priorities": [
+        {
+          "id": "p-20261106-1",
+          "text": "장빵실 주문건 확인 및 정산서 작성",
+          "reason": "공구 종료 후 정산 마감 및 주문 검증",
+          "done": false
+        },
+        {
+          "id": "p-20261106-2",
+          "text": "디어커스(25명) 및 아넬라(30명) 공구 제안",
+          "reason": "11월 중하순 공구 슬롯 선점 및 매출 확대",
+          "done": false
+        },
+        {
+          "id": "p-20261106-3",
+          "text": "아넬라 수익 계산 및 아임웹 섹션 수정",
+          "reason": "수익 정산 확정 및 웹사이트 보완",
+          "done": false
+        }
+      ],
+      "agentPriorities": [
+        {
+          "id": "ap-20261106-1",
+          "priority": "긴급",
+          "title": "장빵실 주문건 확인 및 정산서 작성",
+          "detail": "공구 마감 후 정산서 작성 및 주문건 검증",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap-20261106-2",
+          "priority": "높음",
+          "title": "인플루언서 제안 (디어커스 25명 / 아넬라 30명)",
+          "detail": "대시보드 공구 큐(디어커스 21명, 아넬라 62명 준비 완료) 활용 발송",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap-20261106-3",
+          "priority": "보통",
+          "title": "아넬라 수익 계산 및 아임웹 섹션 수정",
+          "detail": "공구 정산 수익 확정 및 웹사이트 레이아웃 보완",
+          "done": false,
+          "excluded": false
+        }
+      ],
+      "todomateTodos": [
+        {
+          "id": "tm-20261106-1",
+          "title": "디어커스 제안 25명",
+          "category": "사업or수익",
+          "done": false
+        },
+        {
+          "id": "tm-20261106-2",
+          "title": "장빵실 주문건 확인",
+          "category": "사업or수익",
+          "done": false
+        },
+        {
+          "id": "tm-20261106-3",
+          "title": "장빵실 정산서 작성",
+          "category": "사업or수익",
+          "done": false
+        },
+        {
+          "id": "tm-20261106-4",
+          "title": "데이원 주문건 확인",
+          "category": "사업or수익",
+          "done": false
+        },
+        {
+          "id": "tm-20261106-5",
+          "title": "아넬라 제안 30명",
+          "category": "사업or수익",
+          "done": false
+        },
+        {
+          "id": "tm-20261106-6",
+          "title": "손뽀니 결제링크 전달",
+          "category": "사업or수익",
+          "done": true
+        },
+        {
+          "id": "tm-20261106-7",
+          "title": "아임웹 섹션 수정",
+          "category": "사업or수익",
+          "done": false
+        },
+        {
+          "id": "tm-20261106-8",
+          "title": "아넬라 수익 계산",
+          "category": "사업or수익",
+          "done": false
+        },
+        {
+          "id": "tm-20261106-9",
+          "title": "운동",
+          "category": "자기개발",
+          "done": false
+        },
+        {
+          "id": "tm-20261106-10",
+          "title": "전자책 공부",
+          "category": "자기개발",
+          "done": false
+        }
+      ],
+      "calendar": "19:00 - 20:00 사당 모임 · [공구] 데이원 울렌 겨울부츠 진행",
+      "calendarEvents": [
+        {
+          "time": "종일",
+          "title": "[공구] 데이원 울렌 겨울부츠 진행",
+          "account": "dnjswls1540@gmail.com"
+        },
+        {
+          "time": "19:00 - 20:00",
+          "title": "사당 모임",
+          "account": "dnjswls1540@gmail.com"
+        }
+      ],
+      "emails": [],
+      "inquiries": [],
+      "attendance": {
+        "status": "none",
+        "checkIn": null,
+        "checkOut": null
+      }
+    },
     {
       "id": "b-20261105",
       "date": "2026-11-05",
