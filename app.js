@@ -1035,6 +1035,11 @@ function renderTodayView() {
   const driveCountEl = document.getElementById('stat-drive-count');
   if (driveCountEl && b.driveFiles) driveCountEl.textContent = `${b.driveFiles.length}건`;
 
+  // Update Gonggu Side Badge & Home Highlight Banner with total pending
+  if (typeof updateGongguGlobalBadges === 'function') {
+    updateGongguGlobalBadges();
+  }
+
   // Guide
   const guideEl = document.getElementById('guide-banner-text');
   if (guideEl) guideEl.textContent = b.guide;
@@ -3058,7 +3063,7 @@ async function pushCloudState() {
 }
 
 // ========================================================
-// 올쓰컴퍼니 공동구매 탭 (디어커스 30명 맞춤 DM 발송 센터)
+// 올쓰컴퍼니 공동구매 탭 (인플루언서 제안 관리 및 발송기)
 // ========================================================
 function escapeHtml(str) {
   if (!str) return '';
@@ -3070,6 +3075,32 @@ function escapeHtml(str) {
     .replace(/'/g, '&#39;');
 }
 
+function updateGongguGlobalBadges() {
+  if (!appData) return;
+  const campaigns = appData.gongguCampaigns || (appData.gongguCampaign ? [appData.gongguCampaign] : []);
+  let totalPending = 0;
+  campaigns.forEach(c => {
+    (c.influencers || []).forEach(inf => {
+      const isSent = localStorage.getItem('jeegong_gonggu_sent_' + inf.id) === 'true';
+      const isEx = localStorage.getItem('jeegong_gonggu_excluded_' + inf.id) === 'true';
+      if (!isSent && !isEx) {
+        totalPending++;
+      }
+    });
+  });
+
+  const sideBadge = document.getElementById('side-gonggu-badge');
+  if (sideBadge) {
+    sideBadge.textContent = totalPending > 0 ? totalPending : '0';
+    sideBadge.style.background = totalPending > 0 ? 'var(--accent-blue)' : 'var(--accent-green)';
+    sideBadge.style.display = totalPending > 0 ? 'inline-flex' : 'none';
+  }
+  const bannerBadge = document.getElementById('banner-gonggu-pending-count');
+  if (bannerBadge) {
+    bannerBadge.textContent = totalPending;
+  }
+}
+
 let activeGongguCampaignId = 'dearcus-bamboo-tissue';
 let currentGongguFilter = 'all';
 
@@ -3077,8 +3108,6 @@ function renderGongguCampaign() {
   const container = document.getElementById('gonggu-campaign-list');
   const counterEl = document.getElementById('gonggu-sent-counter');
   const totalCounterEl = document.getElementById('gonggu-total-counter');
-  const badgeEl = document.getElementById('side-gonggu-badge');
-  const bannerBadgeEl = document.getElementById('banner-gonggu-pending-count');
   const searchInput = document.getElementById('gonggu-search-input');
   const tabsContainer = document.getElementById('gonggu-campaign-tabs');
   const activeTitleEl = document.getElementById('gonggu-active-title');
@@ -3095,14 +3124,18 @@ function renderGongguCampaign() {
   if (!activeCampaign) activeCampaign = campaigns[0];
   activeGongguCampaignId = activeCampaign.id;
 
-  // 1. Render Campaign Tabs (사용자 발굴 요청 상품만 표시)
+  // 1. Render Campaign Tabs (각 캠페인별 순수 발송 대기 인원 표시)
   if (tabsContainer) {
     tabsContainer.innerHTML = campaigns.map(c => {
-      const activeCount = (c.influencers || []).filter(inf => localStorage.getItem('jeegong_gonggu_excluded_' + inf.id) !== 'true').length;
+      const activeCount = (c.influencers || []).filter(inf => {
+        const isSent = localStorage.getItem('jeegong_gonggu_sent_' + inf.id) === 'true';
+        const isEx = localStorage.getItem('jeegong_gonggu_excluded_' + inf.id) === 'true';
+        return !isSent && !isEx;
+      }).length;
       return `
         <button class="btn-campaign-tab ${c.id === activeGongguCampaignId ? 'active' : ''}" data-cid="${c.id}">
           <span>${escapeHtml(c.shortTitle || c.title)}</span>
-          <span class="tab-count-pill">${activeCount}명</span>
+          <span class="tab-count-pill">${activeCount}명 대기</span>
         </button>
       `;
     }).join('');
@@ -3117,7 +3150,6 @@ function renderGongguCampaign() {
 
   // 2. Update Active Campaign Header (중복 이모지 원천 제거)
   if (activeTitleEl) {
-    // Strip leading emoji from title if already present in markup
     let cleanTitle = activeCampaign.title.replace(/^[🎯🍎👢🤝]\s*/, '');
     let icon = activeCampaign.id.includes('anella') ? '🍎' : '🎯';
     activeTitleEl.innerHTML = `<span class="campaign-icon">${icon}</span><span class="campaign-title-text">${escapeHtml(cleanTitle)}</span>`;
@@ -3128,86 +3160,47 @@ function renderGongguCampaign() {
   if (activeMetaEl) {
     activeMetaEl.innerHTML = `
       • <strong>타깃</strong>: ${escapeHtml(activeCampaign.target || '공동구매 타깃')} (${escapeHtml(activeCampaign.criteria || '')})<br>
-      • <strong>안내</strong>: 제안문은 바로 수정할 수 있으며, <strong>[📋 원클릭 복사]</strong> 버튼을 누르면 수정된 최신 내용이 즉시 복사됩니다.
+      • <strong>안내</strong>: 제안문은 바로 수정할 수 있으며, <strong>[📋 원클릭 복사]</strong> 후 <strong>[발송 완료]</strong>를 누르면 리스트에서 깔끔하게 제외됩니다.
     `;
   }
 
-  // Filter out excluded influencers
+  // Filter out excluded or already sent influencers (완료건 대시보드 리스트에서 완전 제외)
   const allInfluencers = activeCampaign.influencers || [];
-  const influencers = allInfluencers.filter(inf => localStorage.getItem('jeegong_gonggu_excluded_' + inf.id) !== 'true');
-
-  // Authoritative server state fallback sync (PC <-> Mobile sync guarantee)
-  allInfluencers.forEach(inf => {
-    if (inf.sent && localStorage.getItem('jeegong_gonggu_sent_' + inf.id) === null) {
-      localStorage.setItem('jeegong_gonggu_sent_' + inf.id, 'true');
-    }
+  const influencers = allInfluencers.filter(inf => {
+    const isSent = localStorage.getItem('jeegong_gonggu_sent_' + inf.id) === 'true';
+    const isEx = localStorage.getItem('jeegong_gonggu_excluded_' + inf.id) === 'true';
+    return !isSent && !isEx;
   });
 
   if (totalCounterEl) totalCounterEl.textContent = influencers.length;
+  if (counterEl) counterEl.textContent = influencers.length;
 
-  function updateSentCounter() {
-    let sentCount = 0;
-    influencers.forEach(inf => {
-      if (localStorage.getItem('jeegong_gonggu_sent_' + inf.id) === 'true') {
-        sentCount++;
-      }
-    });
-    const pendingCount = influencers.length - sentCount;
-    if (counterEl) counterEl.textContent = sentCount;
-    if (badgeEl) {
-      badgeEl.textContent = pendingCount > 0 ? pendingCount : '완료';
-      badgeEl.style.background = pendingCount > 0 ? 'var(--accent-blue)' : 'var(--accent-green)';
-    }
-    if (bannerBadgeEl) {
-      bannerBadgeEl.textContent = pendingCount;
-    }
-
-    const countAll = document.getElementById('filter-count-all');
-    const countPending = document.getElementById('filter-count-pending');
-    const countDone = document.getElementById('filter-count-done');
-    if (countAll) countAll.textContent = influencers.length;
-    if (countPending) countPending.textContent = pendingCount;
-    if (countDone) countDone.textContent = sentCount;
-  }
+  updateGongguGlobalBadges();
 
   function renderList(query) {
     const q = (query || '').toLowerCase().trim();
 
-    // 1. Search Filter
+    // Search Filter
     let list = influencers.filter(inf => {
       if (!q) return true;
       const text = (inf.id + ' ' + (inf.cat || '') + ' ' + (inf.follow || '') + ' ' + (inf.note || '')).toLowerCase();
       return text.includes(q);
     });
 
-    // 2. Status Filter
-    if (currentGongguFilter === 'pending') {
-      list = list.filter(inf => localStorage.getItem('jeegong_gonggu_sent_' + inf.id) !== 'true');
-    } else if (currentGongguFilter === 'done') {
-      list = list.filter(inf => localStorage.getItem('jeegong_gonggu_sent_' + inf.id) === 'true');
-    }
-
-    // 3. Auto-sort: 미발송 상단, 완료 하단
-    list.sort((a, b) => {
-      const aSent = localStorage.getItem('jeegong_gonggu_sent_' + a.id) === 'true' ? 1 : 0;
-      const bSent = localStorage.getItem('jeegong_gonggu_sent_' + b.id) === 'true' ? 1 : 0;
-      if (aSent !== bSent) return aSent - bSent;
-      return a.num - b.num;
-    });
+    list.sort((a, b) => a.num - b.num);
 
     if (list.length === 0) {
-      container.innerHTML = '<div style="padding: 32px; text-align: center; color: var(--text-tertiary); font-size: 13px;">해당 조건에 일치하는 인플루언서가 없습니다.</div>';
-      updateSentCounter();
+      container.innerHTML = '<div style="padding: 48px 24px; text-align: center; color: var(--text-tertiary); font-size: 14px; font-weight: 500;">🎉 모든 인플루언서 제안 발송이 완료되었습니다!</div>';
+      updateGongguGlobalBadges();
       return;
     }
 
     container.innerHTML = list.map(inf => {
-      const isSent = localStorage.getItem('jeegong_gonggu_sent_' + inf.id) === 'true';
       const customDm = localStorage.getItem('jeegong_gonggu_custom_dm_' + inf.id) || inf.dmText || '';
       const noteBadge = inf.note ? `<span class="section-badge" style="background: var(--accent-red-light); color: var(--accent-red-text); font-size: 10px;">${escapeHtml(inf.note)}</span>` : '';
 
       return `
-        <div class="gonggu-card ${isSent ? 'sent-done' : ''}" id="gonggu-card-${inf.id}">
+        <div class="gonggu-card" id="gonggu-card-${inf.id}">
           <div class="gonggu-card-header">
             <div class="gonggu-influencer-info">
               <span class="gonggu-num-badge">No.${inf.num}</span>
@@ -3217,7 +3210,7 @@ function renderGongguCampaign() {
               ${noteBadge}
             </div>
             <div class="gonggu-card-header-right">
-              <span class="gonggu-row-meta">행 ${inf.row} · R열 ${isSent ? '<strong style="color: var(--accent-green); margin-left: 4px;">[완료됨]</strong>' : ''}</span>
+              <span class="gonggu-row-meta">행 ${inf.row} · R열</span>
               <button class="btn-gonggu-exclude" data-id="${inf.id}" title="제안 목록에서 제외">✕ 제외</button>
             </div>
           </div>
@@ -3234,8 +3227,8 @@ function renderGongguCampaign() {
             <a href="${escapeHtml(inf.url)}" target="_blank" class="btn-gonggu-open-ig">
               <span>🔗 인스타 열기</span>
             </a>
-            <button class="btn-gonggu-toggle-sent ${isSent ? 'is-sent' : ''}" data-id="${inf.id}">
-              ${isSent ? '✓ 완료' : '발송'}
+            <button class="btn-gonggu-toggle-sent" data-id="${inf.id}">
+              <span>✓ 발송 완료</span>
             </button>
             <button class="btn-gonggu-copy" data-id="${inf.id}">
               <span>📋 원클릭 복사</span>
@@ -3280,20 +3273,17 @@ function renderGongguCampaign() {
       });
     });
 
-    // 3. Toggle Sent
+    // 3. Mark Sent & Remove from List
     container.querySelectorAll('.btn-gonggu-toggle-sent').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-id');
-        const wasSent = localStorage.getItem('jeegong_gonggu_sent_' + id) === 'true';
-        const newSent = !wasSent;
-
-        localStorage.setItem('jeegong_gonggu_sent_' + id, newSent ? 'true' : 'false');
+        localStorage.setItem('jeegong_gonggu_sent_' + id, 'true');
+        localStorage.setItem('jeegong_gonggu_excluded_' + id, 'true');
         if (typeof showToast === 'function') {
-          showToast(newSent ? `✅ @${id} 완료 처리되어 하단으로 이동했습니다.` : `@${id} 발송 대기 상태로 변경되었습니다.`);
+          showToast(`✅ @${id} 발송 완료! 리스트에서 제외되었습니다.`);
         }
         pushCloudState();
-        updateSentCounter();
-        renderList(searchInput ? searchInput.value : '');
+        renderGongguCampaign();
       });
     });
 
@@ -3309,21 +3299,6 @@ function renderGongguCampaign() {
           }
           renderGongguCampaign();
         }
-      });
-    });
-
-    updateSentCounter();
-  }
-
-  // Filter Buttons Listener
-  if (filterBar && !filterBar.dataset.bound) {
-    filterBar.dataset.bound = 'true';
-    filterBar.querySelectorAll('.btn-gonggu-filter').forEach(fBtn => {
-      fBtn.addEventListener('click', () => {
-        filterBar.querySelectorAll('.btn-gonggu-filter').forEach(b => b.classList.remove('active'));
-        fBtn.classList.add('active');
-        currentGongguFilter = fBtn.getAttribute('data-filter') || 'all';
-        renderList(searchInput ? searchInput.value : '');
       });
     });
   }
