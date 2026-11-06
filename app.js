@@ -3130,6 +3130,62 @@ function saveCompletedQueue(queue) {
     localStorage.setItem('jeegong_completed_queue', JSON.stringify(queue || []));
   } catch (e) {}
 }
+
+function getExcludeReason(inf) {
+  const cid = inf.campaignId || '';
+  const id = (inf.id || '').toLowerCase();
+  
+  if (cid === 'dearcus-bamboo-tissue') {
+    return '쿠팡파트너스 어필리에이트 (단순 꿀템 소개 / 자체 공구 미진행)';
+  }
+  if (id === 'hhappy_ayola') {
+    return '카테고리 불일치 (카시트 커버·육아정보 / 영유아 이유식 무관)';
+  }
+  if (id === 'kennen.home' || id === 'rosettia_home' || id === '_yuki.home') {
+    return '카테고리 불일치 (홈스타일링·리빙 / 5개월~4세 이유식 무관)';
+  }
+  if (id === 'heeah_travel' || id === 'littlehome_insta') {
+    return '카테고리 불일치 (여행·나들이 / 퓨레 무관)';
+  }
+  if (id === 'byul.junimom' || id === 'woobro_play0_0' || id === 'hi.gems_play') {
+    return '타깃 연령 불일치 (5세 이상 놀이·교육 / 영유아 이유식 무관)';
+  }
+  if (id === 'ran_gagu') {
+    return '카테고리 불일치 (가구 / 영유아 식품 무관)';
+  }
+  if (id === 'lingua_mum' || id === 'wessdombook_jihye') {
+    return '타깃 연령·주제 불일치 (초등 영어·책육아 / 이유식 무관)';
+  }
+  if (id === 'riro_mom') {
+    return '공구 일정 중복 (11/11 아넬라 자체 공구 기예정)';
+  }
+  if (id === 'ricecake_s0up' || id === 'mipp.ju' || id === 'chinjulmk') {
+    return '정량 반응도 미달 (댓글 30+ 또는 릴스 조회수 미달)';
+  }
+  return '타깃 조건 미달 (5개월~4세 영유아 이유식 피드 불일치)';
+}
+
+function getExcludedList() {
+  if (!appData) return [];
+  const campaigns = appData.gongguCampaigns || (appData.gongguCampaign ? [appData.gongguCampaign] : []);
+  const list = [];
+  campaigns.forEach(c => {
+    (c.influencers || []).forEach(inf => {
+      const isSent = localStorage.getItem('jeegong_gonggu_sent_' + inf.id) === 'true';
+      const isEx = localStorage.getItem('jeegong_gonggu_excluded_' + inf.id) === 'true';
+      if (!isSent && isEx) {
+        const item = {
+          campaignId: c.id,
+          campaignTitle: c.shortTitle || c.title,
+          ...inf
+        };
+        item.excludeReason = getExcludeReason(item);
+        list.push(item);
+      }
+    });
+  });
+  return list;
+}
 function escapeHtml(str) {
   if (!str) return '';
   return String(str)
@@ -3185,15 +3241,17 @@ function renderGongguCampaign() {
   if (campaigns.length === 0) return;
 
   const completedQueue = getCompletedQueue();
+  const excludedList = getExcludedList();
   const isCompletedTab = activeGongguCampaignId === 'completed-tab';
+  const isExcludedTab = activeGongguCampaignId === 'excluded-tab';
 
   let activeCampaign = campaigns.find(c => c.id === activeGongguCampaignId);
-  if (!activeCampaign && !isCompletedTab) {
+  if (!activeCampaign && !isCompletedTab && !isExcludedTab) {
     activeCampaign = campaigns[0];
     activeGongguCampaignId = activeCampaign.id;
   }
 
-  // 1. Render Campaign Tabs (상품 탭들 + 항상 맨 끝 오른쪽에 완료 탭)
+  // 1. Render Campaign Tabs (상품 탭들 + 항상 맨 끝 오른쪽에 완료 탭 & 제외 탭)
   if (tabsContainer) {
     let tabsHtml = campaigns.map(c => {
       const activeCount = (c.influencers || []).filter(inf => {
@@ -3214,6 +3272,14 @@ function renderGongguCampaign() {
       <button class="btn-campaign-tab btn-completed-tab ${isCompletedTab ? 'active' : ''}" data-cid="completed-tab" style="${isCompletedTab ? 'background: var(--accent-green); border-color: var(--accent-green); color: #fff;' : 'border-color: var(--accent-green-text); color: var(--accent-green-text);'}">
         <span>✅ 발송 완료 큐</span>
         <span class="tab-count-pill" style="background: ${isCompletedTab ? 'rgba(255,255,255,0.25)' : 'var(--accent-green-light)'}; color: ${isCompletedTab ? '#fff' : 'var(--accent-green-text)'};">${completedQueue.length}건 대기</span>
+      </button>
+    `;
+
+    // 맨 끝 오른쪽 제외 탭 (오답 분석 및 훈련)
+    tabsHtml += `
+      <button class="btn-campaign-tab btn-excluded-tab ${isExcludedTab ? 'active' : ''}" data-cid="excluded-tab" style="${isExcludedTab ? 'background: #dc2626; border-color: #dc2626; color: #fff;' : 'border-color: #f87171; color: #dc2626;'}">
+        <span>🚫 제외 큐</span>
+        <span class="tab-count-pill" style="background: ${isExcludedTab ? 'rgba(255,255,255,0.25)' : '#fee2e2'}; color: ${isExcludedTab ? '#fff' : '#b91c1c'};">${excludedList.length}건 분석</span>
       </button>
     `;
 
@@ -3356,7 +3422,115 @@ function renderGongguCampaign() {
     return;
   }
 
-  // 3. CASE B: 일반 상품 탭 렌더링
+  // 3. CASE B: 제외 탭 렌더링 (오분류 원인 분석 및 AI 훈련 오답노트)
+  if (isExcludedTab) {
+    if (activeTitleEl) {
+      activeTitleEl.innerHTML = `<span class="campaign-icon">🚫</span><span class="campaign-title-text">제외 큐 (오분류 원인 분석 및 AI 훈련)</span>`;
+    }
+    if (activeBadgeEl) {
+      activeBadgeEl.textContent = `총 ${excludedList.length}건 분석 중`;
+      activeBadgeEl.style.background = '#fee2e2';
+      activeBadgeEl.style.color = '#b91c1c';
+    }
+    if (activeMetaEl) {
+      activeMetaEl.innerHTML = `
+        • <strong>훈련 목적</strong>: 지원진 님이 제외하신 계정들의 오추출 원인(쿠팡파트너스, 타깃 연령·카테고리 불일치, 반응도 미달 등)을 정밀 분석하여 향후 발굴 정확도를 100%로 끌어올리는 피클 AI의 훈련 데이터베이스입니다.<br>
+        • <strong>복구</strong>: 실수로 제외한 계정은 우측 <strong>[↩️ 복구]</strong> 버튼을 누르면 원래 상품 탭의 발송 대기 목록으로 즉시 돌아갑니다.
+      `;
+    }
+    if (totalCounterEl) totalCounterEl.textContent = excludedList.length;
+    if (counterEl) counterEl.textContent = excludedList.length;
+
+    updateGongguGlobalBadges();
+
+    if (excludedList.length === 0) {
+      container.innerHTML = `
+        <div style="padding: 56px 24px; text-align: center; color: var(--text-tertiary);">
+          <div style="font-size: 32px; margin-bottom: 12px;">✨</div>
+          <div style="font-size: 15px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px;">현재 제외된 인플루언서가 없습니다.</div>
+          <div style="font-size: 13px; color: var(--text-tertiary);">상품 탭에서 [✕ 제외]를 누르시면 제외 사유 분석과 함께 이곳에 체계적으로 모입니다!</div>
+        </div>
+      `;
+      return;
+    }
+
+    let excludedHtml = `
+      <div style="background: var(--bg-card); border: 1px solid #fecaca; border-radius: 8px; padding: 16px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <div style="font-size: 14px; font-weight: 700; color: #991b1b; margin-bottom: 4px;">
+            🚫 제외 계정 정밀 분석 큐: 총 <span style="font-weight: 800;">${excludedList.length}</span>건
+          </div>
+          <div style="font-size: 12px; color: var(--text-secondary);">
+            쿠팡파트너스, 타깃 불일치, 반응도 미달 등의 실패 패턴을 분석하여 다음 발굴의 100% 필터링 규칙으로 축적합니다.
+          </div>
+        </div>
+      </div>
+
+      <div class="todo-table-responsive" style="margin-top: 12px;">
+        <table class="todo-modern-table">
+          <thead>
+            <tr>
+              <th style="width: 45px; text-align: center;">No.</th>
+              <th style="width: 120px;">제안 상품</th>
+              <th style="width: 200px;">인스타그램 계정</th>
+              <th style="width: 80px; text-align: center;">시트 위치</th>
+              <th>오분류 및 제외 사유 분석</th>
+              <th style="width: 80px; text-align: right;">관리</th>
+            </tr>
+          </thead>
+          <tbody>
+    `;
+
+    excludedHtml += excludedList.map((item, idx) => {
+      return `
+        <tr>
+          <td style="text-align: center; color: var(--text-tertiary); font-weight: 600;">${idx + 1}</td>
+          <td><span class="section-badge" style="background: var(--bg-secondary); color: var(--text-secondary); font-size: 11px;">${escapeHtml(item.campaignTitle || '공동구매')}</span></td>
+          <td>
+            <a href="${escapeHtml(item.url || 'https://www.instagram.com/' + item.id)}" target="_blank" style="color: var(--accent-blue); font-weight: 600; text-decoration: none;">
+              @${escapeHtml(item.id)}
+            </a>
+            ${item.follow ? `<span style="font-size: 11px; color: var(--text-tertiary); margin-left: 6px;">👥 ${escapeHtml(item.follow)}</span>` : ''}
+          </td>
+          <td style="text-align: center; font-size: 11.5px; color: var(--text-secondary); font-weight: 500;">행 ${item.row || '-'}</td>
+          <td>
+            <span style="display: inline-block; background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 4px 8px; border-radius: 4px; font-size: 11.5px; font-weight: 600; line-height: 1.4;">
+              ${escapeHtml(item.excludeReason || '타깃 불일치')}
+            </span>
+          </td>
+          <td style="text-align: right;">
+            <button class="btn-restore-excluded" data-id="${item.id}" style="font-size: 11px; padding: 4px 8px; background: transparent; border: 1px solid var(--border-subtle); border-radius: 4px; color: var(--accent-blue); cursor: pointer;" title="제외 취소하고 대기 목록으로 복구">
+              ↩️ 복구
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    excludedHtml += `
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    container.innerHTML = excludedHtml;
+
+    container.querySelectorAll('.btn-restore-excluded').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        localStorage.removeItem('jeegong_gonggu_excluded_' + id);
+        pushCloudState();
+        if (typeof showToast === 'function') {
+          showToast(`↩️ @${id} 계정이 발송 대기 목록으로 복구되었습니다.`);
+        }
+        renderGongguCampaign();
+      });
+    });
+
+    return;
+  }
+
+  // 4. CASE C: 일반 상품 탭 렌더링
   if (activeTitleEl) {
     let cleanTitle = activeCampaign.title.replace(/^[🎯🍎👢🤝]\s*/, '');
     let icon = activeCampaign.id.includes('anella') ? '🍎' : '🎯';
