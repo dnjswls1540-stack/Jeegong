@@ -487,6 +487,27 @@ async function initApp() {
     console.error('Failed to load data.json', e);
   }
 
+  // 0. 클라우드 DB에서 최신 동기화 데이터를 최우선 로드하여 로컬 캐시 불일치 원천 차단
+  try {
+    const sRes = await fetch(`${SUPABASE_STATE_ENDPOINT}&select=*`, {
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+      },
+      cache: 'no-store'
+    });
+    if (sRes.ok) {
+      const sRows = await sRes.json();
+      if (Array.isArray(sRows) && sRows.length > 0) {
+        window._forceCloudSync = true;
+        applyRemoteSync(sRows[0]);
+        window._forceCloudSync = false;
+      }
+    }
+  } catch (e) {
+    console.warn('Initial cloud state fetch error:', e);
+  }
+
   // 1. Ensure today's briefing is selected (어제 날짜 브리핑 노출 원천 차단)
   const todayB = ensureTodayBriefing(todayStr);
 
@@ -3684,7 +3705,6 @@ function renderGongguCampaign() {
         const targetInf = influencers.find(item => item.id === id);
 
         localStorage.setItem('jeegong_gonggu_sent_' + id, 'true');
-        localStorage.setItem('jeegong_gonggu_excluded_' + id, 'true');
 
         // Add to completedQueue
         let q = getCompletedQueue();
