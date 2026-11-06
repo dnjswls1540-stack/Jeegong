@@ -3259,9 +3259,11 @@ function renderGongguCampaign() {
         const isEx = localStorage.getItem('jeegong_gonggu_excluded_' + inf.id) === 'true';
         return !isSent && !isEx;
       }).length;
+      let icon = c.icon || (c.id.includes('anella') ? '🍎' : '🎯');
+      let tabTitle = (c.shortTitle || c.title || '').replace(/^[\s\uD800-\uDBFF\uDC00-\uDFFF🎯🍎👢🤝]+/u, '').trim();
       return `
         <button class="btn-campaign-tab ${c.id === activeGongguCampaignId ? 'active' : ''}" data-cid="${c.id}">
-          <span>${escapeHtml(c.shortTitle || c.title)}</span>
+          <span>${icon} ${escapeHtml(tabTitle)}</span>
           <span class="tab-count-pill">${activeCount}명 대기</span>
         </button>
       `;
@@ -3532,9 +3534,9 @@ function renderGongguCampaign() {
 
   // 4. CASE C: 일반 상품 탭 렌더링
   if (activeTitleEl) {
-    let cleanTitle = activeCampaign.title.replace(/^[🎯🍎👢🤝]\s*/, '');
-    let icon = activeCampaign.id.includes('anella') ? '🍎' : '🎯';
-    activeTitleEl.innerHTML = `<span class="campaign-icon">${icon}</span><span class="campaign-title-text">${escapeHtml(cleanTitle)}</span>`;
+    let icon = activeCampaign.icon || (activeCampaign.id.includes('anella') ? '🍎' : '🎯');
+    let cleanTitle = (activeCampaign.title || '').replace(/^[\s\uD800-\uDBFF\uDC00-\uDFFF🎯🍎👢🤝]+/u, '').trim();
+    activeTitleEl.innerHTML = `<span class="campaign-icon">${icon}</span><span class="campaign-title-text">${escapeHtml(cleanTitle || activeCampaign.title)}</span>`;
   }
   if (activeBadgeEl) {
     activeBadgeEl.textContent = activeCampaign.criteria || '실사 검증 완료';
