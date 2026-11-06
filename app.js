@@ -2872,7 +2872,9 @@ async function pullCloudState() {
     if (res.ok) {
       const rows = await res.json();
       if (Array.isArray(rows) && rows.length > 0) {
+        window._forceCloudSync = true;
         applyRemoteSync(rows[0]);
+        window._forceCloudSync = false;
         return;
       }
     }
