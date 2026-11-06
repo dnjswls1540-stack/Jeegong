@@ -2988,6 +2988,14 @@ function applyRemoteSync(remoteData) {
     // 5. 공동구매 발송 완료 목록 동기화 (전 캠페인 통합)
     const gongguSentList = remoteData.gonggu_sent || remoteData.gongguSent || [];
     if (Array.isArray(gongguSentList)) {
+      Object.keys(localStorage).forEach(k => {
+        if (k.startsWith('jeegong_gonggu_sent_')) {
+          const id = k.replace('jeegong_gonggu_sent_', '');
+          if (!gongguSentList.includes(id)) {
+            localStorage.removeItem(k);
+          }
+        }
+      });
       gongguSentList.forEach(id => {
         localStorage.setItem('jeegong_gonggu_sent_' + id, 'true');
       });
@@ -2996,6 +3004,14 @@ function applyRemoteSync(remoteData) {
     // 6. 공동구매 제외 목록 동기화
     const gongguExList = remoteData.gonggu_excluded || remoteData.gongguExcluded || [];
     if (Array.isArray(gongguExList)) {
+      Object.keys(localStorage).forEach(k => {
+        if (k.startsWith('jeegong_gonggu_excluded_')) {
+          const id = k.replace('jeegong_gonggu_excluded_', '');
+          if (!gongguExList.includes(id)) {
+            localStorage.removeItem(k);
+          }
+        }
+      });
       gongguExList.forEach(id => {
         localStorage.setItem('jeegong_gonggu_excluded_' + id, 'true');
       });
