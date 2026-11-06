@@ -3001,6 +3001,14 @@ function applyRemoteSync(remoteData) {
       });
     }
 
+    // 6-B. 공동구매 발송 완료 큐(completed_queue) 동기화
+    const incomingQueue = remoteData.completed_queue || remoteData.completedQueue;
+    if (Array.isArray(incomingQueue)) {
+      try {
+        localStorage.setItem('jeegong_completed_queue', JSON.stringify(incomingQueue));
+      } catch (e) {}
+    }
+
     // 7. 메일 & 고객 문의 처리 상태(handled_registry) 양방향 클라우드 동기화
     const incomingRegistry = remoteData.handled_registry || remoteData.handledRegistry;
     if (incomingRegistry && typeof incomingRegistry === 'object') {
@@ -3072,6 +3080,7 @@ async function pushCloudState() {
       excluded_priorities: Array.from(new Set(excludedPriorities)),
       gonggu_sent: Array.from(new Set(gongguSent)),
       gonggu_excluded: Array.from(new Set(gongguExcluded)),
+      completed_queue: getCompletedQueue(),
       handled_registry: handledRegistry || {},
       custom_todos: getCustomAddedTodos(kst.dateStr) || []
     };
@@ -3107,6 +3116,20 @@ async function pushCloudState() {
 // ========================================================
 // 올쓰컴퍼니 공동구매 탭 (인플루언서 제안 관리 및 발송기)
 // ========================================================
+function getCompletedQueue() {
+  try {
+    const raw = localStorage.getItem('jeegong_completed_queue');
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function saveCompletedQueue(queue) {
+  try {
+    localStorage.setItem('jeegong_completed_queue', JSON.stringify(queue || []));
+  } catch (e) {}
+}
 function escapeHtml(str) {
   if (!str) return '';
   return String(str)
@@ -3155,20 +3178,24 @@ function renderGongguCampaign() {
   const activeTitleEl = document.getElementById('gonggu-active-title');
   const activeMetaEl = document.getElementById('gonggu-active-meta');
   const activeBadgeEl = document.getElementById('gonggu-active-badge');
-  const filterBar = document.getElementById('gonggu-filter-bar');
 
   if (!container || !appData) return;
 
   const campaigns = appData.gongguCampaigns || (appData.gongguCampaign ? [appData.gongguCampaign] : []);
   if (campaigns.length === 0) return;
 
-  let activeCampaign = campaigns.find(c => c.id === activeGongguCampaignId) || campaigns[0];
-  if (!activeCampaign) activeCampaign = campaigns[0];
-  activeGongguCampaignId = activeCampaign.id;
+  const completedQueue = getCompletedQueue();
+  const isCompletedTab = activeGongguCampaignId === 'completed-tab';
 
-  // 1. Render Campaign Tabs (각 캠페인별 순수 발송 대기 인원 표시)
+  let activeCampaign = campaigns.find(c => c.id === activeGongguCampaignId);
+  if (!activeCampaign && !isCompletedTab) {
+    activeCampaign = campaigns[0];
+    activeGongguCampaignId = activeCampaign.id;
+  }
+
+  // 1. Render Campaign Tabs (상품 탭들 + 항상 맨 끝 오른쪽에 완료 탭)
   if (tabsContainer) {
-    tabsContainer.innerHTML = campaigns.map(c => {
+    let tabsHtml = campaigns.map(c => {
       const activeCount = (c.influencers || []).filter(inf => {
         const isSent = localStorage.getItem('jeegong_gonggu_sent_' + inf.id) === 'true';
         const isEx = localStorage.getItem('jeegong_gonggu_excluded_' + inf.id) === 'true';
@@ -3182,6 +3209,16 @@ function renderGongguCampaign() {
       `;
     }).join('');
 
+    // 맨 끝 오른쪽 완료 탭
+    tabsHtml += `
+      <button class="btn-campaign-tab btn-completed-tab ${isCompletedTab ? 'active' : ''}" data-cid="completed-tab" style="${isCompletedTab ? 'background: var(--accent-green); border-color: var(--accent-green); color: #fff;' : 'border-color: var(--accent-green-text); color: var(--accent-green-text);'}">
+        <span>✅ 발송 완료 큐</span>
+        <span class="tab-count-pill" style="background: ${isCompletedTab ? 'rgba(255,255,255,0.25)' : 'var(--accent-green-light)'}; color: ${isCompletedTab ? '#fff' : 'var(--accent-green-text)'};">${completedQueue.length}건 대기</span>
+      </button>
+    `;
+
+    tabsContainer.innerHTML = tabsHtml;
+
     tabsContainer.querySelectorAll('.btn-campaign-tab').forEach(btn => {
       btn.addEventListener('click', () => {
         activeGongguCampaignId = btn.getAttribute('data-cid');
@@ -3190,7 +3227,136 @@ function renderGongguCampaign() {
     });
   }
 
-  // 2. Update Active Campaign Header (중복 이모지 원천 제거)
+  // 2. CASE A: 완료 탭 렌더링
+  if (isCompletedTab) {
+    if (activeTitleEl) {
+      activeTitleEl.innerHTML = `<span class="campaign-icon">✅</span><span class="campaign-title-text">발송 완료 큐 (시트 기재 대기)</span>`;
+    }
+    if (activeBadgeEl) {
+      activeBadgeEl.textContent = `총 ${completedQueue.length}건 기재 대기`;
+      activeBadgeEl.style.background = 'var(--accent-green-light)';
+      activeBadgeEl.style.color = 'var(--accent-green-text)';
+    }
+    if (activeMetaEl) {
+      activeMetaEl.innerHTML = `
+        • <strong>운영 규칙</strong>: 인플루언서 제안을 발송하고 <strong>[✓ 발송 완료]</strong>를 누르면 이 탭으로 자동 분류됩니다.<br>
+        • <strong>시트 반영</strong>: 피클 앱에서 "<strong>시트에 기재해줘</strong>"라고 말씀하시거나 아래 <strong>[구름이에게 시트 기재 및 탭 비우기 요청]</strong>을 누르면 마스터 시트에 자동 기재 후 탭이 초기화됩니다.
+      `;
+    }
+    if (totalCounterEl) totalCounterEl.textContent = completedQueue.length;
+    if (counterEl) counterEl.textContent = completedQueue.length;
+
+    updateGongguGlobalBadges();
+
+    if (completedQueue.length === 0) {
+      container.innerHTML = `
+        <div style="padding: 56px 24px; text-align: center; color: var(--text-tertiary);">
+          <div style="font-size: 32px; margin-bottom: 12px;">📭</div>
+          <div style="font-size: 15px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px;">현재 대기 중인 발송 완료건이 없습니다.</div>
+          <div style="font-size: 13px; color: var(--text-tertiary);">각 상품 탭에서 [✓ 발송 완료]를 누르면 여기에 차곡차곡 쌓입니다!</div>
+        </div>
+      `;
+      return;
+    }
+
+    let completedHtml = `
+      <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 16px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <div style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">
+            📝 마스터 시트 기재 대기: 총 <span style="color: var(--accent-green-text); font-weight: 800;">${completedQueue.length}</span>건
+          </div>
+          <div style="font-size: 12px; color: var(--text-secondary);">
+            하단 목록을 확인하신 뒤 앱에서 요청하시거나 우측 버튼을 누르시면 시트 반영 후 탭이 초기화됩니다.
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button id="btn-request-sheet-sync" class="btn-subtle" style="background: var(--accent-green); color: #fff; font-weight: 600; padding: 8px 14px; border-radius: 6px; border: none; cursor: pointer;">
+            📋 시트 기재 완료 후 탭 초기화
+          </button>
+        </div>
+      </div>
+
+      <div class="todo-table-responsive" style="margin-top: 12px;">
+        <table class="todo-modern-table">
+          <thead>
+            <tr>
+              <th style="width: 50px; text-align: center;">No.</th>
+              <th style="width: 140px;">상품명</th>
+              <th>인스타그램 계정</th>
+              <th style="width: 100px;">시트 위치</th>
+              <th style="width: 130px;">발송 일시</th>
+              <th style="width: 80px; text-align: right;">관리</th>
+            </tr>
+          </thead>
+          <tbody>
+    `;
+
+    completedHtml += completedQueue.map((item, idx) => {
+      const dateStr = item.sentDate || (item.sentTimestamp ? new Date(item.sentTimestamp).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : '오늘');
+      return `
+        <tr>
+          <td style="text-align: center; color: var(--text-tertiary); font-weight: 600;">${idx + 1}</td>
+          <td><span class="section-badge" style="background: var(--accent-blue-light); color: var(--accent-blue-text); font-size: 11px;">${escapeHtml(item.productTitle || '공동구매')}</span></td>
+          <td>
+            <a href="${escapeHtml(item.url || 'https://www.instagram.com/' + item.id)}" target="_blank" style="color: var(--accent-blue); font-weight: 600; text-decoration: none;">
+              @${escapeHtml(item.id)}
+            </a>
+            ${item.follow ? `<span style="font-size: 11px; color: var(--text-tertiary); margin-left: 6px;">👥 ${escapeHtml(item.follow)}</span>` : ''}
+          </td>
+          <td style="font-size: 11.5px; color: var(--text-secondary); font-weight: 500;">행 ${item.row || '-'} · R열</td>
+          <td style="font-size: 11.5px; color: var(--text-secondary);">${escapeHtml(dateStr)}</td>
+          <td style="text-align: right;">
+            <button class="btn-cancel-sent" data-id="${item.id}" style="font-size: 11px; padding: 4px 8px; background: transparent; border: 1px solid var(--border-subtle); border-radius: 4px; color: var(--accent-red-text); cursor: pointer;" title="발송 취소하고 대기 목록으로 복구">
+              취소
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    completedHtml += `
+          </tbody>
+        </table>
+      </div>
+    `;
+
+    container.innerHTML = completedHtml;
+
+    // Attach completed tab event listeners
+    const clearBtn = document.getElementById('btn-request-sheet-sync');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        if (confirm('마스터 시트에 기재 완료되었나요? 완료 탭 큐를 비웁니다.')) {
+          saveCompletedQueue([]);
+          pushCloudState();
+          if (typeof showToast === 'function') {
+            showToast('🧹 완료 탭이 깔끔하게 초기화되었습니다.');
+          }
+          renderGongguCampaign();
+        }
+      });
+    }
+
+    container.querySelectorAll('.btn-cancel-sent').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.getAttribute('data-id');
+        let q = getCompletedQueue();
+        q = q.filter(item => item.id !== id);
+        saveCompletedQueue(q);
+        localStorage.removeItem('jeegong_gonggu_sent_' + id);
+        localStorage.removeItem('jeegong_gonggu_excluded_' + id);
+        pushCloudState();
+        if (typeof showToast === 'function') {
+          showToast(`↩️ @${id} 계정이 발송 대기 목록으로 복구되었습니다.`);
+        }
+        renderGongguCampaign();
+      });
+    });
+
+    return;
+  }
+
+  // 3. CASE B: 일반 상품 탭 렌더링
   if (activeTitleEl) {
     let cleanTitle = activeCampaign.title.replace(/^[🎯🍎👢🤝]\s*/, '');
     let icon = activeCampaign.id.includes('anella') ? '🍎' : '🎯';
@@ -3198,15 +3364,17 @@ function renderGongguCampaign() {
   }
   if (activeBadgeEl) {
     activeBadgeEl.textContent = activeCampaign.criteria || '실사 검증 완료';
+    activeBadgeEl.style.background = '';
+    activeBadgeEl.style.color = '';
   }
   if (activeMetaEl) {
     activeMetaEl.innerHTML = `
       • <strong>타깃</strong>: ${escapeHtml(activeCampaign.target || '공동구매 타깃')} (${escapeHtml(activeCampaign.criteria || '')})<br>
-      • <strong>안내</strong>: 제안문은 바로 수정할 수 있으며, <strong>[📋 원클릭 복사]</strong> 후 <strong>[발송 완료]</strong>를 누르면 리스트에서 깔끔하게 제외됩니다.
+      • <strong>안내</strong>: 제안문은 바로 수정할 수 있으며, <strong>[📋 원클릭 복사]</strong> 후 <strong>[발송 완료]</strong>를 누르면 <strong>[완료 탭]</strong>으로 자동 분류됩니다.
     `;
   }
 
-  // Filter out excluded or already sent influencers (완료건 대시보드 리스트에서 완전 제외)
+  // Filter out excluded or already sent influencers
   const allInfluencers = activeCampaign.influencers || [];
   const influencers = allInfluencers.filter(inf => {
     const isSent = localStorage.getItem('jeegong_gonggu_sent_' + inf.id) === 'true';
@@ -3232,7 +3400,7 @@ function renderGongguCampaign() {
     list.sort((a, b) => a.num - b.num);
 
     if (list.length === 0) {
-      container.innerHTML = '<div style="padding: 48px 24px; text-align: center; color: var(--text-tertiary); font-size: 14px; font-weight: 500;">🎉 모든 인플루언서 제안 발송이 완료되었습니다!</div>';
+      container.innerHTML = '<div style="padding: 48px 24px; text-align: center; color: var(--text-tertiary); font-size: 14px; font-weight: 500;">🎉 모든 인플루언서 제안 발송이 완료되었습니다! [완료 탭]에서 확인하실 수 있습니다.</div>';
       updateGongguGlobalBadges();
       return;
     }
@@ -3315,14 +3483,33 @@ function renderGongguCampaign() {
       });
     });
 
-    // 3. Mark Sent & Remove from List
+    // 3. Mark Sent -> Push to Completed Queue & Remove from active list
     container.querySelectorAll('.btn-gonggu-toggle-sent').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-id');
+        const targetInf = influencers.find(item => item.id === id);
+
         localStorage.setItem('jeegong_gonggu_sent_' + id, 'true');
         localStorage.setItem('jeegong_gonggu_excluded_' + id, 'true');
+
+        // Add to completedQueue
+        let q = getCompletedQueue();
+        if (!q.some(item => item.id === id)) {
+          q.push({
+            id: id,
+            campaignId: activeCampaign.id,
+            productTitle: activeCampaign.shortTitle ? activeCampaign.shortTitle.replace(/^[🎯🍎👢🤝]\s*/, '') : activeCampaign.title,
+            row: targetInf ? targetInf.row : null,
+            follow: targetInf ? targetInf.follow : '',
+            url: targetInf ? targetInf.url : 'https://www.instagram.com/' + id,
+            sentTimestamp: Date.now(),
+            sentDate: new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })
+          });
+          saveCompletedQueue(q);
+        }
+
         if (typeof showToast === 'function') {
-          showToast(`✅ @${id} 발송 완료! 리스트에서 제외되었습니다.`);
+          showToast(`✅ @${id} 발송 완료! [완료 탭]으로 이동되었습니다.`);
         }
         pushCloudState();
         renderGongguCampaign();
