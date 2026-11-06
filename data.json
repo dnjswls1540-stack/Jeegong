@@ -101,81 +101,89 @@
         {
           "id": "tm-20261106-1",
           "title": "디어커스 제안 25명",
+          "text": "디어커스 제안 25명",
           "category": "사업or수익",
           "done": false,
-          "text": "디어커스 제안 25명",
           "excluded": false
         },
         {
           "id": "tm-20261106-2",
           "title": "장빵실 주문건 확인",
+          "text": "장빵실 주문건 확인",
           "category": "사업or수익",
           "done": false,
-          "text": "장빵실 주문건 확인",
           "excluded": false
         },
         {
           "id": "tm-20261106-3",
           "title": "장빵실 정산서 작성",
+          "text": "장빵실 정산서 작성",
           "category": "사업or수익",
           "done": false,
-          "text": "장빵실 정산서 작성",
           "excluded": false
         },
         {
           "id": "tm-20261106-4",
           "title": "데이원 주문건 확인",
+          "text": "데이원 주문건 확인",
           "category": "사업or수익",
           "done": false,
-          "text": "데이원 주문건 확인",
           "excluded": false
         },
         {
           "id": "tm-20261106-5",
           "title": "아넬라 제안 30명",
+          "text": "아넬라 제안 30명",
           "category": "사업or수익",
           "done": false,
-          "text": "아넬라 제안 30명",
           "excluded": false
         },
         {
           "id": "tm-20261106-6",
-          "title": "손뽀니 결제링크 전달",
+          "title": "손뽀니, 챔맘 결제링크 전달",
+          "text": "손뽀니, 챔맘 결제링크 전달",
           "category": "사업or수익",
           "done": true,
-          "text": "손뽀니 결제링크 전달",
           "excluded": false
         },
         {
           "id": "tm-20261106-7",
           "title": "아임웹 섹션 수정",
+          "text": "아임웹 섹션 수정",
           "category": "사업or수익",
           "done": false,
-          "text": "아임웹 섹션 수정",
           "excluded": false
         },
         {
           "id": "tm-20261106-8",
           "title": "아넬라 수익 계산",
+          "text": "아넬라 수익 계산",
           "category": "사업or수익",
           "done": false,
-          "text": "아넬라 수익 계산",
           "excluded": false
         },
         {
           "id": "tm-20261106-9",
-          "title": "운동",
-          "category": "자기개발",
+          "title": "듀오링고 일본어 2개",
+          "text": "듀오링고 일본어 2개",
+          "category": "자기계발",
           "done": false,
-          "text": "운동",
           "excluded": false
         },
         {
           "id": "tm-20261106-10",
-          "title": "전자책 공부",
-          "category": "자기개발",
+          "title": "운동",
+          "text": "운동",
+          "category": "해야 할 일",
           "done": false,
+          "excluded": false
+        },
+        {
+          "id": "tm-20261106-11",
+          "title": "전자책 공부",
           "text": "전자책 공부",
+          "category": "해야 할 일",
+          "done": false,
           "excluded": false
         }
       ],
