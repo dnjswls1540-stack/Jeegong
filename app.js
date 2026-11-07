@@ -3177,10 +3177,22 @@ function getExcludeReason(inf) {
   if (cid === 'dearcus-bamboo-tissue') {
     return '쿠팡파트너스 어필리에이트 (단순 꿀템 소개 / 자체 공구 미진행)';
   }
+  if (id === 'malanghoney_') {
+    return '브랜드 공식 계정 (말랑하니 육아용품 전문 브랜드사 공식 계정)';
+  }
+  if (id === 'ran_gagu') {
+    return '브랜드 공식 계정 (어린이 원목 가구/책장 제조판매사 란가구 공식 계정)';
+  }
+  if (id === 'yoonluv.s2') {
+    return '공구 제안 거부 계정 (프로필에 광고/협찬⭕️ 공구제안❌️ 명시)';
+  }
+  if (id === '_yuki.home') {
+    return '삭제/유령 계정 (인스타그램 페이지 삭제 또는 계정 미존재)';
+  }
   if (id === 'hhappy_ayola') {
     return '카테고리 불일치 (카시트 커버·육아정보 / 영유아 이유식 무관)';
   }
-  if (id === 'kennen.home' || id === 'rosettia_home' || id === '_yuki.home') {
+  if (id === 'kennen.home' || id === 'rosettia_home') {
     return '카테고리 불일치 (홈스타일링·리빙 / 5개월~4세 이유식 무관)';
   }
   if (id === 'heeah_travel' || id === 'littlehome_insta') {
@@ -3189,16 +3201,13 @@ function getExcludeReason(inf) {
   if (id === 'byul.junimom' || id === 'woobro_play0_0' || id === 'hi.gems_play') {
     return '타깃 연령 불일치 (5세 이상 놀이·교육 / 영유아 이유식 무관)';
   }
-  if (id === 'ran_gagu') {
-    return '카테고리 불일치 (가구 / 영유아 식품 무관)';
-  }
   if (id === 'lingua_mum' || id === 'wessdombook_jihye') {
     return '타깃 연령·주제 불일치 (초등 영어·책육아 / 이유식 무관)';
   }
   if (id === 'riro_mom') {
     return '공구 일정 중복 (11/11 아넬라 자체 공구 기예정)';
   }
-  if (id === 'ricecake_s0up' || id === 'mipp.ju' || id === 'chinjulmk') {
+  if (id === 'mipp.ju' || id === 'chinjulmk') {
     return '정량 반응도 미달 (댓글 30+ 또는 릴스 조회수 미달)';
   }
   return '타깃 조건 미달 (5개월~4세 영유아 이유식 피드 불일치)';
@@ -3211,7 +3220,7 @@ function getExcludedList() {
   campaigns.forEach(c => {
     (c.influencers || []).forEach(inf => {
       const isSent = localStorage.getItem('jeegong_gonggu_sent_' + inf.id) === 'true';
-      const isEx = localStorage.getItem('jeegong_gonggu_excluded_' + inf.id) === 'true';
+      const isEx = localStorage.getItem('jeegong_gonggu_excluded_' + inf.id) === 'true' || inf.excluded === true;
       if (!isSent && isEx) {
         const item = {
           campaignId: c.id,
@@ -3242,7 +3251,7 @@ function updateGongguGlobalBadges() {
   campaigns.forEach(c => {
     (c.influencers || []).forEach(inf => {
       const isSent = localStorage.getItem('jeegong_gonggu_sent_' + inf.id) === 'true';
-      const isEx = localStorage.getItem('jeegong_gonggu_excluded_' + inf.id) === 'true';
+      const isEx = localStorage.getItem('jeegong_gonggu_excluded_' + inf.id) === 'true' || inf.excluded === true;
       if (!isSent && !isEx) {
         totalPending++;
       }
@@ -3295,7 +3304,7 @@ function renderGongguCampaign() {
     let tabsHtml = campaigns.map(c => {
       const activeCount = (c.influencers || []).filter(inf => {
         const isSent = localStorage.getItem('jeegong_gonggu_sent_' + inf.id) === 'true';
-        const isEx = localStorage.getItem('jeegong_gonggu_excluded_' + inf.id) === 'true';
+        const isEx = localStorage.getItem('jeegong_gonggu_excluded_' + inf.id) === 'true' || inf.excluded === true;
         return !isSent && !isEx;
       }).length;
       let icon = c.icon || (c.id.includes('anella') ? '🍎' : '🎯');
@@ -3593,7 +3602,7 @@ function renderGongguCampaign() {
   const allInfluencers = activeCampaign.influencers || [];
   const influencers = allInfluencers.filter(inf => {
     const isSent = localStorage.getItem('jeegong_gonggu_sent_' + inf.id) === 'true';
-    const isEx = localStorage.getItem('jeegong_gonggu_excluded_' + inf.id) === 'true';
+    const isEx = localStorage.getItem('jeegong_gonggu_excluded_' + inf.id) === 'true' || inf.excluded === true;
     return !isSent && !isEx;
   });
 
