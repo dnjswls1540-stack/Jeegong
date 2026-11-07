@@ -847,8 +847,27 @@ function renderWeeklyCalendar() {
   }
 
   const gridHtml = buildGridHtml();
-  if (container) container.innerHTML = gridHtml;
-  if (fullContainer) fullContainer.innerHTML = gridHtml;
+  if (container) {
+    container.innerHTML = gridHtml;
+    // Mobile responsive: automatically scroll to today's column
+    setTimeout(() => {
+      const todayCol = container.querySelector('.day-column.is-today');
+      if (todayCol) {
+        const scrollTarget = todayCol.offsetLeft - (container.clientWidth / 2) + (todayCol.clientWidth / 2);
+        container.scrollTo({ left: Math.max(0, scrollTarget), behavior: 'smooth' });
+      }
+    }, 60);
+  }
+  if (fullContainer) {
+    fullContainer.innerHTML = gridHtml;
+    setTimeout(() => {
+      const todayCol = fullContainer.querySelector('.day-column.is-today');
+      if (todayCol) {
+        const scrollTarget = todayCol.offsetLeft - (fullContainer.clientWidth / 2) + (todayCol.clientWidth / 2);
+        fullContainer.scrollTo({ left: Math.max(0, scrollTarget), behavior: 'smooth' });
+      }
+    }, 60);
+  }
 
   // Render Agenda List in calendar-view
   if (agendaContainer) {
@@ -861,14 +880,17 @@ function renderWeeklyCalendar() {
         if (ev.tag === '공구') badgeClass = 'badge-orange';
         else if (ev.tag === '개인') badgeClass = 'badge-red';
 
+        const titleText = ev.summary || ev.title || '일정';
+        const dateText = (ev.startDate || ev.date || '') + (ev.endDate && ev.endDate !== (ev.startDate || ev.date) ? ' ~ ' + ev.endDate : '');
+
         agendaContainer.innerHTML += `
           <div class="action-item" style="cursor: default;">
             <div class="action-left">
               <span class="action-icon">📅</span>
               <div>
-                <div class="action-text">${ev.summary}</div>
+                <div class="action-text">${titleText}</div>
                 <div style="font-size: 11px; color: var(--text-tertiary); margin-top: 2px;">
-                  ${ev.startDate} ${ev.endDate ? '~ ' + ev.endDate : ''} · ${ev.time || '종일'} · ${ev.location || '온라인'}
+                  ${dateText} · ${ev.time || '종일'} · ${ev.location || '온라인'}
                 </div>
               </div>
             </div>
@@ -2095,7 +2117,31 @@ window.refreshDashboardData = async function(showNotice = true) {
 window.refreshTodomateOnly = async function() {
   const todoRefreshBtn = document.getElementById('btn-refresh-todomate');
   if (todoRefreshBtn) todoRefreshBtn.classList.add('spinning');
+  
+  const kst = getKSTNow();
+  const dateKey = kst.dateStr;
+  try {
+    localStorage.removeItem(`jeegong_done_todos_${dateKey}`);
+  } catch (e) {}
+
+  try {
+    await fetch(SUPABASE_STATE_ENDPOINT, {
+      method: 'PATCH',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        work_date: dateKey,
+        done_todos: []
+      })
+    });
+  } catch (e) {}
+
   await window.refreshDashboardData(true);
+  showToast('투두메이트 상태가 동기화되었습니다.');
 };
 
 function showToast(msg) {
@@ -2960,39 +3006,47 @@ function applyRemoteSync(remoteData) {
   const b = appData.briefings.find(item => item.date === todayStr) || appData.briefings[0];
   if (b) {
     const dateKey = b.date || todayStr;
+    const isNewDate = (incomingWorkDate !== todayStr);
 
-    // 2. 삭제된 할 일 목록(deleted_todos) 영구 배제 적용
-    const deletedList = remoteData.deleted_todos || remoteData.deletedTodos || [];
-    if (Array.isArray(deletedList) && deletedList.length > 0) {
+    if (isNewDate) {
+      // 날짜 변경 시 이전 날의 완료 목록을 오늘에 덮어쓰지 않음
       try {
-        let localDel = JSON.parse(localStorage.getItem(`jeegong_deleted_todos_${dateKey}`) || '[]');
-        deletedList.forEach(item => {
-          if (!localDel.includes(item)) localDel.push(item);
-        });
-        localStorage.setItem(`jeegong_deleted_todos_${dateKey}`, JSON.stringify(localDel));
+        localStorage.removeItem(`jeegong_done_todos_${dateKey}`);
       } catch (e) {}
+    } else {
+      // 2. 삭제된 할 일 목록(deleted_todos) 영구 배제 적용
+      const deletedList = remoteData.deleted_todos || remoteData.deletedTodos || [];
+      if (Array.isArray(deletedList) && deletedList.length > 0) {
+        try {
+          let localDel = JSON.parse(localStorage.getItem(`jeegong_deleted_todos_${dateKey}`) || '[]');
+          deletedList.forEach(item => {
+            if (!localDel.includes(item)) localDel.push(item);
+          });
+          localStorage.setItem(`jeegong_deleted_todos_${dateKey}`, JSON.stringify(localDel));
+        } catch (e) {}
 
-      if (Array.isArray(b.todomateTodos)) {
-        b.todomateTodos = b.todomateTodos.filter(t => !deletedList.includes(t.id) && !deletedList.includes(t.text));
+        if (Array.isArray(b.todomateTodos)) {
+          b.todomateTodos = b.todomateTodos.filter(t => !deletedList.includes(t.id) && !deletedList.includes(t.text));
+        }
       }
-    }
 
-    // 3. 완료된 할 일 목록(done_todos) 동기화
-    const doneList = remoteData.done_todos || remoteData.doneTodos;
-    if (Array.isArray(doneList)) {
-      (b.todomateTodos || []).forEach(t => {
-        t.done = doneList.includes(t.id) || doneList.includes(t.text);
-      });
-      try { localStorage.setItem(`jeegong_done_todos_${dateKey}`, JSON.stringify(doneList)); } catch (e) {}
-    }
+      // 3. 완료된 할 일 목록(done_todos) 동기화
+      const doneList = remoteData.done_todos || remoteData.doneTodos;
+      if (Array.isArray(doneList)) {
+        (b.todomateTodos || []).forEach(t => {
+          t.done = doneList.includes(t.id) || doneList.includes(t.text);
+        });
+        try { localStorage.setItem(`jeegong_done_todos_${dateKey}`, JSON.stringify(doneList)); } catch (e) {}
+      }
 
-    // 4. 에이전트 우선순위 완료 동기화
-    const donePri = remoteData.done_priorities || remoteData.donePriorities;
-    if (Array.isArray(donePri)) {
-      (b.agentPriorities || []).forEach(ap => {
-        ap.done = donePri.includes(ap.id);
-      });
-      try { localStorage.setItem(`jeegong_done_priorities_${dateKey}`, JSON.stringify(donePri)); } catch (e) {}
+      // 4. 에이전트 우선순위 완료 동기화
+      const donePri = remoteData.done_priorities || remoteData.donePriorities;
+      if (Array.isArray(donePri)) {
+        (b.agentPriorities || []).forEach(ap => {
+          ap.done = donePri.includes(ap.id);
+        });
+        try { localStorage.setItem(`jeegong_done_priorities_${dateKey}`, JSON.stringify(donePri)); } catch (e) {}
+      }
     }
 
     // 4-B. 에이전트 우선순위 삭제(excluded_priorities) 동기화
