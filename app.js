@@ -44,6 +44,7 @@ function getItemCoreTag(item) {
   if (text.includes('수학논술') || text.includes('kkim0826')) return 'core::math_essay';
   if (text.includes('여행생활') || text.includes('jwnswo1')) return 'core::travel_life';
   if (text.includes('지아이정보') || text.includes('knh135')) return 'core::gi_info';
+  if (text.includes('마빼삐') || text.includes('mapepee') || text.includes('hssohn74')) return 'core::mapepee';
   
   return '';
 }
