@@ -45,6 +45,235 @@
   },
   "briefings": [
     {
+      "id": "b-20261109",
+      "date": "2026-11-09",
+      "dayOfWeek": "월요일",
+      "createdAt": "2026-11-09 08:30:00",
+      "headline": "[공구] 챔맘 쌀과자 오픈과 손뽀니·데이원 진행 및 투두 실무",
+      "summary": "오늘 오전 10시 챔맘 로지오가닉 쌀과자 공구 오픈, 데이원 겨울부츠 자정 마감, 투두메이트 6건 실무일입니다.",
+      "priorities": [
+        {
+          "id": "p-20261109-1",
+          "text": "[공구] 챔맘 로지오가닉 쌀과자 오픈 (10:00)",
+          "reason": "오전 10시 오픈 및 주문건 확인 모니터링",
+          "done": false
+        },
+        {
+          "id": "p-20261109-2",
+          "text": "[공구] 데이원 울렌 겨울부츠 마감 준비",
+          "reason": "오늘 자정(24:00) 공구 마감 모니터링",
+          "done": false
+        },
+        {
+          "id": "p-20261109-3",
+          "text": "투두메이트 할 일 6건 수행",
+          "reason": "디어커스 25명, 이사맛집 견적, 손뽀니·챔맘 주문건, 아넬라 15명, 탈잉 결제링크 세팅",
+          "done": false
+        }
+      ],
+      "agentPriorities": [
+        {
+          "id": "ap-20261109-1",
+          "priority": "긴급",
+          "title": "[공구] 챔맘 쌀과자 오픈 모니터링",
+          "detail": "오전 10시 오픈 체크 및 챔맘 주문건 확인",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap-20261109-2",
+          "priority": "보통",
+          "title": "[공구] 데이원 울렌 겨울부츠 마감",
+          "detail": "오늘 자정(11/10 00:00) 마감 일정 모니터링",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap-20261109-3",
+          "priority": "보통",
+          "title": "공구 DM 발송 지원",
+          "detail": "대시보드 탑재된 디어커스(21명)·아넬라(40명) 맞춤 DM 발송 지원",
+          "done": false,
+          "excluded": false
+        }
+      ],
+      "todomateTodos": [
+        {
+          "id": "t-20261109-1",
+          "text": "디어커스 제안 25명",
+          "title": "디어커스 제안 25명",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261109-2",
+          "text": "이사맛집 견적 작성",
+          "title": "이사맛집 견적 작성",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261109-3",
+          "text": "손뽀니 주문건 확인",
+          "title": "손뽀니 주문건 확인",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261109-4",
+          "text": "챔맘 주문건 확인",
+          "title": "챔맘 주문건 확인",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261109-5",
+          "text": "아넬라 제안 15명",
+          "title": "아넬라 제안 15명",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261109-6",
+          "text": "탈잉 결제링크 세팅",
+          "title": "탈잉 결제링크 세팅",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        }
+      ],
+      "calendar": [
+        {
+          "time": "10:00~23:59",
+          "title": "[공구] 챔맘 로지오가닉 쌀과자 진행",
+          "location": "인스타그램",
+          "attendees": ""
+        },
+        {
+          "time": "종일",
+          "title": "[공구] 손뽀니 아넬라 과일퓨레 진행",
+          "location": "인스타그램",
+          "attendees": ""
+        },
+        {
+          "time": "종일",
+          "title": "[공구] 데이원 울렌 겨울부츠 진행",
+          "location": "인스타그램",
+          "attendees": ""
+        }
+      ],
+      "calendarEvents": [
+        {
+          "id": "cal-20261103-1",
+          "title": "[공구] 데이원 울렌 겨울부츠 진행",
+          "summary": "[공구] 데이원 울렌 겨울부츠 진행",
+          "startDate": "2026-11-03",
+          "endDate": "2026-11-10",
+          "date": "2026-11-03",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#ec4899",
+          "location": "인스타그램"
+        },
+        {
+          "id": "cal-20261108-1",
+          "title": "[공구] 손뽀니 아넬라 과일퓨레 진행",
+          "summary": "[공구] 손뽀니 아넬라 과일퓨레 진행",
+          "startDate": "2026-11-08",
+          "endDate": "2026-11-12",
+          "date": "2026-11-08",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#ec4899",
+          "location": "인스타그램"
+        },
+        {
+          "id": "cal-20261109-1",
+          "title": "[공구] 챔맘 로지오가닉 쌀과자 진행",
+          "summary": "[공구] 챔맘 로지오가닉 쌀과자 진행",
+          "startDate": "2026-11-09",
+          "endDate": "2026-11-12",
+          "date": "2026-11-09",
+          "time": "10:00~23:59",
+          "tag": "공구",
+          "color": "#ec4899",
+          "location": "인스타그램"
+        },
+        {
+          "id": "cal-20261110-1",
+          "title": "[공구] 장빵실 로지오가닉 쌀과자 진행",
+          "summary": "[공구] 장빵실 로지오가닉 쌀과자 진행",
+          "startDate": "2026-11-10",
+          "endDate": "2026-11-14",
+          "date": "2026-11-10",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#ec4899",
+          "location": "인스타그램"
+        },
+        {
+          "id": "cal-20261111-1",
+          "title": "[공구] 제이백 울렌 겨울부츠 진행",
+          "summary": "[공구] 제이백 울렌 겨울부츠 진행",
+          "startDate": "2026-11-11",
+          "endDate": "2026-11-15",
+          "date": "2026-11-11",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#ec4899",
+          "location": "인스타그램"
+        },
+        {
+          "id": "cal-20261113-1",
+          "title": "조태건",
+          "summary": "조태건",
+          "startDate": "2026-11-13",
+          "endDate": "2026-11-13",
+          "date": "2026-11-13",
+          "time": "19:00~20:00",
+          "tag": "개인",
+          "color": "#3b82f6",
+          "location": ""
+        },
+        {
+          "id": "cal-20261114-1",
+          "title": "[공구] 정뚱환뚱 울렌 겨울부츠 1차 진행",
+          "summary": "[공구] 정뚱환뚱 울렌 겨울부츠 1차 진행",
+          "startDate": "2026-11-14",
+          "endDate": "2026-11-17",
+          "date": "2026-11-14",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#ec4899",
+          "location": "인스타그램"
+        },
+        {
+          "id": "cal-20261114-2",
+          "title": "장지원",
+          "summary": "장지원",
+          "startDate": "2026-11-14",
+          "endDate": "2026-11-14",
+          "date": "2026-11-14",
+          "time": "18:00~19:00",
+          "tag": "개인",
+          "color": "#3b82f6",
+          "location": ""
+        }
+      ],
+      "emails": [],
+      "inquiries": [],
+      "attendance": {
+        "status": "대기",
+        "checkInTime": null,
+        "checkOutTime": null
+      }
+    },
+    {
       "id": "b-20261108",
       "date": "2026-11-08",
       "dayOfWeek": "일요일",
