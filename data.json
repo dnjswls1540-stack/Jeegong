@@ -45,6 +45,247 @@
   },
   "briefings": [
     {
+      "id": "b-20261110",
+      "date": "2026-11-10",
+      "dayOfWeek": "화요일",
+      "createdAt": "2026-11-10 08:30:00",
+      "headline": "[공구] 장빵실 쌀과자 신규 오픈과 손뽀니·챔맘 진행 및 투두 실무",
+      "summary": "오늘 장빵실 로지오가닉 쌀과자 공구 신규 오픈, 손뽀니·챔맘 진행, 투두메이트 8건 실무일입니다.",
+      "priorities": [
+        {
+          "id": "p-20261110-1",
+          "text": "[공구] 장빵실 로지오가닉 쌀과자 신규 오픈 (종일)",
+          "reason": "오늘부터 11/14까지 쌀과자 공구 신규 오픈 및 모니터링",
+          "done": false
+        },
+        {
+          "id": "p-20261110-2",
+          "text": "[공구] 손뽀니·챔맘 공구 주문건 모니터링",
+          "reason": "손뽀니 아넬라 퓨레 및 챔맘 쌀과자 주문건 지속 확인",
+          "done": false
+        },
+        {
+          "id": "p-20261110-3",
+          "text": "투두메이트 할 일 8건 수행",
+          "reason": "우주맘마·뮤즈언니 정산, 디어커스 25명, 장빵실·손뽀니·챔맘 주문건, 커머스 제안문, 운동",
+          "done": false
+        }
+      ],
+      "agentPriorities": [
+        {
+          "id": "ap-20261110-1",
+          "priority": "긴급",
+          "title": "[공구] 장빵실 쌀과자 오픈 모니터링",
+          "detail": "오늘 신규 오픈 및 주문건 실시간 확인",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap-20261110-2",
+          "priority": "보통",
+          "title": "공구 DM 발송 지원",
+          "detail": "대시보드 탑재된 디어커스(37명)·아넬라(40명) 맞춤 DM 발송 지원",
+          "done": false,
+          "excluded": false
+        },
+        {
+          "id": "ap-20261110-3",
+          "priority": "보통",
+          "title": "온세스 영업 초안 발송 검토",
+          "detail": "축복쿠키, 아야커피 임시보관함 초안 발송 여부 확인",
+          "done": false,
+          "excluded": false
+        }
+      ],
+      "todomateTodos": [
+        {
+          "id": "t-20261110-1",
+          "text": "우주맘마 정산",
+          "title": "우주맘마 정산",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261110-2",
+          "text": "뮤즈언니 정산",
+          "title": "뮤즈언니 정산",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261110-3",
+          "text": "디어커스 제안 25명",
+          "title": "디어커스 제안 25명",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261110-4",
+          "text": "장빵실 주문건 확인",
+          "title": "장빵실 주문건 확인",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261110-5",
+          "text": "커머스 제안문 만들기",
+          "title": "커머스 제안문 만들기",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261110-6",
+          "text": "운동",
+          "title": "운동",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261110-7",
+          "text": "손뽀니 주문건 확인",
+          "title": "손뽀니 주문건 확인",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261110-8",
+          "text": "챔맘 주문건 확인",
+          "title": "챔맘 주문건 확인",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        }
+      ],
+      "calendar": [
+        {
+          "time": "종일",
+          "title": "[공구] 장빵실 로지오가닉 쌀과자 진행",
+          "location": "인스타그램",
+          "attendees": ""
+        },
+        {
+          "time": "종일",
+          "title": "[공구] 손뽀니 아넬라 과일퓨레 진행",
+          "location": "인스타그램",
+          "attendees": ""
+        },
+        {
+          "time": "10:00~23:59",
+          "title": "[공구] 챔맘 로지오가닉 쌀과자 진행",
+          "location": "인스타그램",
+          "attendees": ""
+        }
+      ],
+      "calendarEvents": [
+        {
+          "id": "cal-20261108-1",
+          "title": "[공구] 손뽀니 아넬라 과일퓨레 진행",
+          "summary": "[공구] 손뽀니 아넬라 과일퓨레 진행",
+          "startDate": "2026-11-08",
+          "endDate": "2026-11-12",
+          "date": "2026-11-08",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#ec4899",
+          "location": "인스타그램"
+        },
+        {
+          "id": "cal-20261109-1",
+          "title": "[공구] 챔맘 로지오가닉 쌀과자 진행",
+          "summary": "[공구] 챔맘 로지오가닉 쌀과자 진행",
+          "startDate": "2026-11-09",
+          "endDate": "2026-11-12",
+          "date": "2026-11-09",
+          "time": "10:00~23:59",
+          "tag": "공구",
+          "color": "#ec4899",
+          "location": "인스타그램"
+        },
+        {
+          "id": "cal-20261110-1",
+          "title": "[공구] 장빵실 로지오가닉 쌀과자 진행",
+          "summary": "[공구] 장빵실 로지오가닉 쌀과자 진행",
+          "startDate": "2026-11-10",
+          "endDate": "2026-11-14",
+          "date": "2026-11-10",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#ec4899",
+          "location": "인스타그램"
+        },
+        {
+          "id": "cal-20261111-1",
+          "title": "[공구] 제이백 울렌 겨울부츠 진행",
+          "summary": "[공구] 제이백 울렌 겨울부츠 진행",
+          "startDate": "2026-11-11",
+          "endDate": "2026-11-15",
+          "date": "2026-11-11",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#ec4899",
+          "location": "인스타그램"
+        },
+        {
+          "id": "cal-20261113-1",
+          "title": "조태건",
+          "summary": "조태건",
+          "startDate": "2026-11-13",
+          "endDate": "2026-11-13",
+          "date": "2026-11-13",
+          "time": "19:00~20:00",
+          "tag": "개인",
+          "color": "#3b82f6",
+          "location": ""
+        },
+        {
+          "id": "cal-20261114-1",
+          "title": "[공구] 정뚱환뚱 울렌 겨울부츠 1차 진행",
+          "summary": "[공구] 정뚱환뚱 울렌 겨울부츠 1차 진행",
+          "startDate": "2026-11-14",
+          "endDate": "2026-11-17",
+          "date": "2026-11-14",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#ec4899",
+          "location": "인스타그램"
+        },
+        {
+          "id": "cal-20261114-2",
+          "title": "장지원",
+          "summary": "장지원",
+          "startDate": "2026-11-14",
+          "endDate": "2026-11-14",
+          "date": "2026-11-14",
+          "time": "18:00~19:00",
+          "tag": "개인",
+          "color": "#3b82f6",
+          "location": ""
+        }
+      ],
+      "emails": [
+        {
+          "id": "em-20261110-1",
+          "sender": "Google AdSense",
+          "subject": "allth-pick.pages.dev 사이트 검토 결과 안내 (보류)",
+          "snippet": "광고 게재 전 사이트 문제 수정 필요"
+        }
+      ],
+      "inquiries": [],
+      "attendance": {
+        "status": "대기",
+        "checkInTime": null,
+        "checkOutTime": null
+      },
+      "gongguCampaigns": {}
+    },
+    {
       "id": "b-20261109",
       "date": "2026-11-09",
       "dayOfWeek": "월요일",
