@@ -529,7 +529,7 @@ async function initApp() {
       workState = 'checked_in';
       try { localStorage.setItem('jeegong_work_state', 'checked_in'); } catch (e) {}
     } else {
-      workState = localWs || 'ready';
+      workState = (localWs === 'checked_in' || localWs === 'finished') ? localWs : 'ready';
     }
   }
 
@@ -1867,7 +1867,7 @@ function setupInteractions() {
 
   if (btnRun) {
     btnRun.addEventListener('click', async () => {
-      if (workState === 'ready') {
+      if (workState !== 'checked_in' && workState !== 'finished') {
         // 1. Run Check-in scan
         btnRun.disabled = true;
         if (banner) banner.classList.add('active');
@@ -2996,7 +2996,7 @@ function applyRemoteSync(remoteData) {
       localStorage.removeItem('jeegong_attendance_time');
     } catch (e) {}
   } else if (incomingWorkState) {
-    workState = incomingWorkState;
+    workState = (incomingWorkState === 'checked_in' || incomingWorkState === 'finished') ? incomingWorkState : 'ready';
     try {
       localStorage.setItem('jeegong_work_date', todayStr);
       localStorage.setItem('jeegong_work_state', workState);
