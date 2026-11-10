@@ -2295,7 +2295,8 @@ body.light-theme .inquiry-content-text {
   background: var(--bg-card-subtle);
   color: var(--text-primary);
   resize: vertical;
-  min-height: 120px;
+  min-height: 140px;
+  overflow-y: hidden;
   transition: border-color 0.15s ease;
 }
 .gonggu-dm-textarea:focus {
@@ -2514,6 +2515,8 @@ body.light-theme .inquiry-content-text {
     font-size: 12px !important;
     padding: 10px !important;
     line-height: 1.5 !important;
+    min-height: 140px !important;
+    overflow-y: hidden !important;
   }
 }
 

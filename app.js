@@ -3063,44 +3063,71 @@ function applyRemoteSync(remoteData) {
       }
     }
 
-    // 5. 공동구매 발송 완료 목록 동기화 (전 캠페인 통합)
+    // 5. 공동구매 발송 완료 목록 동기화 (전 캠페인 통합) - 변경 감지 가드
+    let gongguChanged = false;
+
     const gongguSentList = remoteData.gonggu_sent || remoteData.gongguSent || [];
     if (Array.isArray(gongguSentList)) {
-      Object.keys(localStorage).forEach(k => {
-        if (k.startsWith('jeegong_gonggu_sent_')) {
-          const id = k.replace('jeegong_gonggu_sent_', '');
-          if (!gongguSentList.includes(id)) {
-            localStorage.removeItem(k);
+      const currentSent = Object.keys(localStorage)
+        .filter(k => k.startsWith('jeegong_gonggu_sent_') && localStorage.getItem(k) === 'true')
+        .map(k => k.replace('jeegong_gonggu_sent_', ''));
+
+      const sentChanged = currentSent.length !== gongguSentList.length ||
+        !currentSent.every(id => gongguSentList.includes(id));
+
+      if (sentChanged) {
+        gongguChanged = true;
+        Object.keys(localStorage).forEach(k => {
+          if (k.startsWith('jeegong_gonggu_sent_')) {
+            const id = k.replace('jeegong_gonggu_sent_', '');
+            if (!gongguSentList.includes(id)) {
+              localStorage.removeItem(k);
+            }
           }
-        }
-      });
-      gongguSentList.forEach(id => {
-        localStorage.setItem('jeegong_gonggu_sent_' + id, 'true');
-      });
+        });
+        gongguSentList.forEach(id => {
+          localStorage.setItem('jeegong_gonggu_sent_' + id, 'true');
+        });
+      }
     }
 
-    // 6. 공동구매 제외 목록 동기화
+    // 6. 공동구매 제외 목록 동기화 - 변경 감지 가드
     const gongguExList = remoteData.gonggu_excluded || remoteData.gongguExcluded || [];
     if (Array.isArray(gongguExList)) {
-      Object.keys(localStorage).forEach(k => {
-        if (k.startsWith('jeegong_gonggu_excluded_')) {
-          const id = k.replace('jeegong_gonggu_excluded_', '');
-          if (!gongguExList.includes(id)) {
-            localStorage.removeItem(k);
+      const currentEx = Object.keys(localStorage)
+        .filter(k => k.startsWith('jeegong_gonggu_excluded_') && localStorage.getItem(k) === 'true')
+        .map(k => k.replace('jeegong_gonggu_excluded_', ''));
+
+      const exChanged = currentEx.length !== gongguExList.length ||
+        !currentEx.every(id => gongguExList.includes(id));
+
+      if (exChanged) {
+        gongguChanged = true;
+        Object.keys(localStorage).forEach(k => {
+          if (k.startsWith('jeegong_gonggu_excluded_')) {
+            const id = k.replace('jeegong_gonggu_excluded_', '');
+            if (!gongguExList.includes(id)) {
+              localStorage.removeItem(k);
+            }
           }
-        }
-      });
-      gongguExList.forEach(id => {
-        localStorage.setItem('jeegong_gonggu_excluded_' + id, 'true');
-      });
+        });
+        gongguExList.forEach(id => {
+          localStorage.setItem('jeegong_gonggu_excluded_' + id, 'true');
+        });
+      }
     }
 
-    // 6-B. 공동구매 발송 완료 큐(completed_queue) 동기화
+    // 6-B. 공동구매 발송 완료 큐(completed_queue) 동기화 - 변경 감지 가드
     const incomingQueue = remoteData.completed_queue || remoteData.completedQueue;
     if (Array.isArray(incomingQueue)) {
-      try {
-        localStorage.setItem('jeegong_completed_queue', JSON.stringify(incomingQueue));
-      } catch (e) {}
+      const prevQueueStr = localStorage.getItem('jeegong_completed_queue') || '[]';
+      const newQueueStr = JSON.stringify(incomingQueue);
+      if (prevQueueStr !== newQueueStr) {
+        gongguChanged = true;
+        try {
+          localStorage.setItem('jeegong_completed_queue', newQueueStr);
+        } catch (e) {}
+      }
     }
 
     // 7. 메일 & 고객 문의 처리 상태(handled_registry) 양방향 클라우드 동기화
@@ -3122,7 +3149,8 @@ function applyRemoteSync(remoteData) {
       }
     }
 
-    if (typeof renderGongguCampaign === 'function') {
+    // 공구 데이터 변경 시 또는 강제 동기화 시에만 재렌더링 (8초 주기 텍스트에어리어 스크롤 리셋 완전 방지)
+    if ((window._forceCloudSync || gongguChanged) && typeof renderGongguCampaign === 'function') {
       renderGongguCampaign();
     }
     renderTodoTable();
@@ -3853,6 +3881,15 @@ function renderGongguCampaign() {
       return;
     }
 
+    // 렌더링 전 기존 텍스트에어리어 스크롤 위치 보존
+    const prevScrollMap = {};
+    container.querySelectorAll('.gonggu-dm-textarea').forEach(ta => {
+      const id = ta.getAttribute('data-id');
+      if (id && ta.scrollTop > 0) {
+        prevScrollMap[id] = ta.scrollTop;
+      }
+    });
+
     container.innerHTML = list.map(inf => {
       const customDm = localStorage.getItem('jeegong_gonggu_custom_dm_' + inf.id) || inf.dmText || '';
       const noteBadge = inf.note ? `<span class="section-badge" style="background: var(--accent-red-light); color: var(--accent-red-text); font-size: 10px;">${escapeHtml(inf.note)}</span>` : '';
@@ -3896,12 +3933,26 @@ function renderGongguCampaign() {
       `;
     }).join('');
 
+    // Helper: 내용 길이에 맞춰 높이 자동 확장 (모바일 내부 스크롤 갇힘 및 튕김 원천 방지)
+    function autoResizeGongguTextarea(ta) {
+      if (!ta) return;
+      ta.style.height = 'auto';
+      const fitHeight = Math.max(ta.scrollHeight + 4, 140);
+      ta.style.height = fitHeight + 'px';
+    }
+
     // Attach event listeners
-    // 1. Textarea Auto-save
+    // 1. Textarea Auto-save & Auto-resize & 스크롤 위치 복원
     container.querySelectorAll('.gonggu-dm-textarea').forEach(ta => {
+      autoResizeGongguTextarea(ta);
+      const id = ta.getAttribute('data-id');
+      if (id && prevScrollMap[id]) {
+        ta.scrollTop = prevScrollMap[id];
+      }
       ta.addEventListener('input', (e) => {
         const id = e.target.getAttribute('data-id');
         localStorage.setItem('jeegong_gonggu_custom_dm_' + id, e.target.value);
+        autoResizeGongguTextarea(e.target);
       });
     });
 
