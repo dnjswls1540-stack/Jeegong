@@ -3225,24 +3225,84 @@ function saveCompletedQueue(queue) {
   } catch (e) {}
 }
 
+function getExcludeDate(item) {
+  const id = (item.id || '').toLowerCase();
+  try {
+    const stored = localStorage.getItem('jeegong_gonggu_excluded_date_' + id);
+    if (stored) return stored;
+  } catch (e) {}
+  
+  if (id === 'chae2home') return '2026-11-10';
+  const nov9 = ['gomson.salim', 'home.it_insta', 'homestory.official_', '_chocohomee_', 'sallim_after_work', 'ggulmat_salim', 'moms.table_'];
+  if (nov9.includes(id)) return '2026-11-09';
+  const nov8 = [
+    'commeci_kitchen', 'salim_station', 'coco_haus_', 'temqueen0', 'living_pluss',
+    'hehe_home_tem', 'homemaster00', 'home.in.on', 'home._.standard', 'lallina.home',
+    'shop._.dami', 'maeil_papa', 'kkomsense.home', 'home_salimm', 'haram.table'
+  ];
+  if (nov8.includes(id)) return '2026-11-08';
+  return '2026-11-07';
+}
+
 function getExcludeReason(inf) {
-  const cid = inf.campaignId || '';
   const id = (inf.id || '').toLowerCase();
   
-  if (cid === 'dearcus-bamboo-tissue') {
-    return '쿠팡파트너스 어필리에이트 (단순 꿀템 소개 / 자체 공구 미진행)';
+  // 1. 11/09 제외 7개 계정 (오답노트 정밀 분석)
+  if (id === 'home.it_insta') {
+    return '쿠팡파트너스 어필리에이트 (본문 <1027> 번호 검색 유도 / 자체 공구 미진행)';
   }
+  if (id === 'gomson.salim') {
+    return '익명 정보성 큐레이션 (연예인·방송 캡처 꿀템 / 호스트·신뢰 부재)';
+  }
+  if (id === 'homestory.official_') {
+    return '익명 정보성 큐레이션 (쇼츠 짜깁기·단순 소개 / 자체 공구 미진행)';
+  }
+  if (id === 'ggulmat_salim') {
+    return '단순 팁·정보 공유 계정 (ManyChat 자동응답 링크 / 브랜드 공구 이력 전무)';
+  }
+  if (id === '_chocohomee_') {
+    return '동일 브랜드 기진행 중복 (최근 타 벤더 디어커스 기획전 진행 계정)';
+  }
+  if (id === 'sallim_after_work') {
+    return '취급 품목·단가 불일치 (고단가 가구·선반 전문 / 생활 화장지 불일치)';
+  }
+  if (id === 'moms.table_') {
+    return '정량 댓글 지표 미달 (실측 평균 댓글 26.5개 / 80+ 기준 미달)';
+  }
+
+  // 2. 11/10 제외 계정
+  if (id === 'chae2home') {
+    return '취급 카테고리 불일치 (방풍커튼·인테리어 전문 / 생활 화장지 불일치)';
+  }
+
+  // 3. 11/08 제외 계정 (살림·요리 및 어필리에이트 오수집)
+  if (id === 'commeci_kitchen') {
+    return '취급 카테고리 불일치 (요리 레시피 전문 / 생활 소모품 불일치)';
+  }
+  if (id === 'haram.table') {
+    return '취급 카테고리 불일치 (요리·초퍼 전문 / 생활 소모품 불일치)';
+  }
+  const dearcusAffiliates = [
+    'salim_station', 'coco_haus_', 'temqueen0', 'living_pluss', 'hehe_home_tem',
+    'homemaster00', 'home.in.on', 'home._.standard', 'lallina.home', 'shop._.dami',
+    'maeil_papa', 'kkomsense.home', 'home_salimm', 'kiki__som'
+  ];
+  if (dearcusAffiliates.includes(id)) {
+    return '어필리에이트 단순 소개 (피드 꿀템 번호 안내 / 자체 공구 미진행)';
+  }
+
+  // 4. 아넬라 제외 계정들 (11/07 이전)
   if (id === 'malanghoney_') {
-    return '브랜드 공식 계정 (말랑하니 육아용품 전문 브랜드사 공식 계정)';
+    return '브랜드 공식 계정 (말랑하니 육아용품 전문 브랜드사 공식 채널)';
   }
   if (id === 'ran_gagu') {
-    return '브랜드 공식 계정 (어린이 원목 가구/책장 제조판매사 란가구 공식 계정)';
+    return '브랜드 공식 계정 (어린이 원목 가구/책장 제조판매사 란가구 공식)';
   }
   if (id === 'yoonluv.s2') {
     return '공구 제안 거부 계정 (프로필에 광고/협찬⭕️ 공구제안❌️ 명시)';
   }
   if (id === '_yuki.home') {
-    return '삭제/유령 계정 (인스타그램 페이지 삭제 또는 계정 미존재)';
+    return '삭제/유령 계정 (인스타그램 계정 미존재 또는 페이지 삭제)';
   }
   if (id === 'hhappy_ayola') {
     return '카테고리 불일치 (카시트 커버·육아정보 / 영유아 이유식 무관)';
@@ -3265,7 +3325,32 @@ function getExcludeReason(inf) {
   if (id === 'mipp.ju' || id === 'chinjulmk') {
     return '정량 반응도 미달 (댓글 30+ 또는 릴스 조회수 미달)';
   }
-  return '타깃 조건 미달 (5개월~4세 영유아 이유식 피드 불일치)';
+  if (id === 'ricecake_s0up') {
+    return '타깃 연령 불일치 (유아식/집밥 전문 / 퓨레 무관)';
+  }
+  if (id === '2yoonmom_home' || id === 'th0831' || id === 'today.brighten') {
+    return '카테고리 불일치 (홈스타일링·인테리어 전문 / 퓨레 무관)';
+  }
+  if (id === 'yuha_momma' || id === 'dowonmama') {
+    return '카테고리 불일치 (유아 패션·아동복 전문 / 퓨레 무관)';
+  }
+  if (id === 'bliss.mom_' || id === 'bebe_ons') {
+    return '타깃 연령 불일치 (초등·주니어 전문 / 영유아 퓨레 무관)';
+  }
+  if (id === '_mentormom') {
+    return '부업/수익화 멘토링 채널 (공구 불가)';
+  }
+
+  // 5. 동적 판별 규칙 (신규 제외건 자동 보정)
+  const note = (inf.note || '').toLowerCase();
+  const cat = (inf.cat || '').toLowerCase();
+  if (note.includes('댓글') && (note.includes('미달') || note.includes('부족'))) {
+    return '정량 댓글 지표 미달 (기준치 미달)';
+  }
+  if (cat.includes('가구') || cat.includes('인테리어')) {
+    return '취급 카테고리 불일치 (상품 성격 불일치)';
+  }
+  return '타깃 피드 불일치 (실사 부적합 판정)';
 }
 
 function getExcludedList() {
@@ -3283,6 +3368,7 @@ function getExcludedList() {
           ...inf
         };
         item.excludeReason = getExcludeReason(item);
+        item.excludeDate = getExcludeDate(item);
         list.push(item);
       }
     });
@@ -3327,6 +3413,7 @@ function updateGongguGlobalBadges() {
 
 let activeGongguCampaignId = 'dearcus-bamboo-tissue';
 let currentGongguFilter = 'all';
+let currentExcludedDateFilter = 'all';
 
 function renderGongguCampaign() {
   const container = document.getElementById('gonggu-campaign-list');
@@ -3533,7 +3620,7 @@ function renderGongguCampaign() {
       activeTitleEl.innerHTML = `<span class="campaign-icon">🚫</span><span class="campaign-title-text">제외 큐 (오분류 원인 분석 및 AI 훈련)</span>`;
     }
     if (activeBadgeEl) {
-      activeBadgeEl.textContent = `총 ${excludedList.length}건 분석 중`;
+      activeBadgeEl.textContent = `총 ${excludedList.length}건 분석`;
       activeBadgeEl.style.background = '#fee2e2';
       activeBadgeEl.style.color = '#b91c1c';
     }
@@ -3559,71 +3646,153 @@ function renderGongguCampaign() {
       return;
     }
 
+    // 날짜별 건수 집계 및 정렬
+    const dateCounts = {};
+    excludedList.forEach(item => {
+      const d = item.excludeDate || '2026-11-09';
+      dateCounts[d] = (dateCounts[d] || 0) + 1;
+    });
+    const uniqueDates = Object.keys(dateCounts).sort().reverse();
+
+    function formatFilterDateLabel(d) {
+      if (d === '2026-11-10') return `오늘 11/10 (${dateCounts[d]}건)`;
+      if (d === '2026-11-09') return `어제 11/09 (${dateCounts[d]}건)`;
+      const parts = d.split('-');
+      if (parts.length === 3) return `${parts[1]}/${parts[2]} (${dateCounts[d]}건)`;
+      return `${d} (${dateCounts[d]}건)`;
+    }
+
+    function formatItemDateBadge(d) {
+      if (d === '2026-11-10') return '11/10 (오늘)';
+      if (d === '2026-11-09') return '11/09 (어제)';
+      const parts = (d || '').split('-');
+      if (parts.length === 3) return `${parts[1]}/${parts[2]}`;
+      return d || '11/09';
+    }
+
+    const filteredExcludedList = currentExcludedDateFilter === 'all'
+      ? excludedList
+      : excludedList.filter(item => (item.excludeDate || '2026-11-09') === currentExcludedDateFilter);
+
     let excludedHtml = `
-      <div style="background: var(--bg-card); border: 1px solid #fecaca; border-radius: 8px; padding: 16px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+      <div style="background: var(--bg-card); border: 1px solid #fecaca; border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
         <div>
           <div style="font-size: 14px; font-weight: 700; color: #991b1b; margin-bottom: 4px;">
             🚫 제외 계정 정밀 분석 큐: 총 <span style="font-weight: 800;">${excludedList.length}</span>건
           </div>
           <div style="font-size: 12px; color: var(--text-secondary);">
-            쿠팡파트너스, 타깃 불일치, 반응도 미달 등의 실패 패턴을 분석하여 다음 발굴의 100% 필터링 규칙으로 축적합니다.
+            쿠팡파트너스, 타깃 불일치, 반응도 미달 등의 실패 패턴을 날짜별로 정밀 분석하여 다음 발굴의 100% 필터링 규칙으로 축적합니다.
           </div>
         </div>
       </div>
 
-      <div class="todo-table-responsive" style="margin-top: 12px;">
-        <table class="todo-modern-table">
-          <thead>
-            <tr>
-              <th style="width: 45px; text-align: center;">No.</th>
-              <th style="width: 120px;">제안 상품</th>
-              <th style="width: 200px;">인스타그램 계정</th>
-              <th style="width: 80px; text-align: center;">시트 위치</th>
-              <th>오분류 및 제외 사유 분석</th>
-              <th style="width: 80px; text-align: right;">관리</th>
-            </tr>
-          </thead>
-          <tbody>
-    `;
-
-    excludedHtml += excludedList.map((item, idx) => {
-      return `
-        <tr>
-          <td style="text-align: center; color: var(--text-tertiary); font-weight: 600;">${idx + 1}</td>
-          <td><span class="section-badge" style="background: var(--bg-secondary); color: var(--text-secondary); font-size: 11px;">${escapeHtml(item.campaignTitle || '공동구매')}</span></td>
-          <td>
-            <a href="${escapeHtml(item.url || 'https://www.instagram.com/' + item.id)}" target="_blank" style="color: var(--accent-blue); font-weight: 600; text-decoration: none;">
-              @${escapeHtml(item.id)}
-            </a>
-            ${item.follow ? `<span style="font-size: 11px; color: var(--text-tertiary); margin-left: 6px;">👥 ${escapeHtml(item.follow)}</span>` : ''}
-          </td>
-          <td style="text-align: center; font-size: 11.5px; color: var(--text-secondary); font-weight: 500;">행 ${item.row || '-'}</td>
-          <td>
-            <span style="display: inline-block; background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 4px 8px; border-radius: 4px; font-size: 11.5px; font-weight: 600; line-height: 1.4;">
-              ${escapeHtml(item.excludeReason || '타깃 불일치')}
-            </span>
-          </td>
-          <td style="text-align: right;">
-            <button class="btn-restore-excluded" data-id="${item.id}" style="font-size: 11px; padding: 4px 8px; background: transparent; border: 1px solid var(--border-subtle); border-radius: 4px; color: var(--accent-blue); cursor: pointer;" title="제외 취소하고 대기 목록으로 복구">
-              ↩️ 복구
-            </button>
-          </td>
-        </tr>
-      `;
-    }).join('');
-
-    excludedHtml += `
-          </tbody>
-        </table>
+      <!-- 날짜별 필터 바 -->
+      <div class="excluded-filter-bar">
+        <button class="btn-excluded-filter ${currentExcludedDateFilter === 'all' ? 'active' : ''}" data-date="all">
+          전체 보기 (${excludedList.length}건)
+        </button>
+        ${uniqueDates.map(d => `
+          <button class="btn-excluded-filter ${currentExcludedDateFilter === d ? 'active' : ''}" data-date="${d}">
+            ${formatFilterDateLabel(d)}
+          </button>
+        `).join('')}
       </div>
     `;
 
+    if (filteredExcludedList.length === 0) {
+      excludedHtml += `
+        <div style="padding: 40px 20px; text-align: center; color: var(--text-tertiary); background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-subtle); margin-top: 12px;">
+          <div style="font-size: 14px; font-weight: 600; color: var(--text-secondary);">해당 날짜에 제외된 계정이 없습니다.</div>
+        </div>
+      `;
+    } else {
+      // 1. 데스크톱 테이블 뷰 (PC 환경 - 시트 위치 제거, 제외 일자 탑재)
+      excludedHtml += `
+        <div class="todo-table-responsive excluded-desktop-view" style="margin-top: 12px;">
+          <table class="todo-modern-table">
+            <thead>
+              <tr>
+                <th style="width: 45px; text-align: center;">No.</th>
+                <th style="width: 120px;">제안 상품</th>
+                <th style="width: 200px;">인스타그램 계정</th>
+                <th style="width: 110px; text-align: center;">제외 일자</th>
+                <th>오분류 및 제외 사유 분석</th>
+                <th style="width: 75px; text-align: right;">관리</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${filteredExcludedList.map((item, idx) => `
+                <tr>
+                  <td style="text-align: center; color: var(--text-tertiary); font-weight: 600;">${idx + 1}</td>
+                  <td><span class="section-badge" style="background: var(--bg-secondary); color: var(--text-secondary); font-size: 11px;">${escapeHtml(item.campaignTitle || '공동구매')}</span></td>
+                  <td>
+                    <a href="${escapeHtml(item.url || 'https://www.instagram.com/' + item.id)}" target="_blank" style="color: var(--accent-blue); font-weight: 600; text-decoration: none;">
+                      @${escapeHtml(item.id)}
+                    </a>
+                    ${item.follow ? `<span style="font-size: 11px; color: var(--text-tertiary); margin-left: 6px;">👥 ${escapeHtml(item.follow)}</span>` : ''}
+                  </td>
+                  <td style="text-align: center; font-size: 11.5px; color: #ef4444; font-weight: 600;">📅 ${formatItemDateBadge(item.excludeDate)}</td>
+                  <td>
+                    <span style="display: inline-block; background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 4px 8px; border-radius: 4px; font-size: 11.5px; font-weight: 600; line-height: 1.4;">
+                      ${escapeHtml(item.excludeReason || '타깃 불일치')}
+                    </span>
+                  </td>
+                  <td style="text-align: right;">
+                    <button class="btn-restore-excluded" data-id="${item.id}" style="font-size: 11px; padding: 4px 8px; background: transparent; border: 1px solid var(--border-subtle); border-radius: 4px; color: var(--accent-blue); cursor: pointer;" title="제외 취소하고 대기 목록으로 복구">
+                      ↩️ 복구
+                    </button>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 2. 모바일 전용 카드 뷰 (가로 스크롤 잘림 완벽 방지, 세로 스크롤 100% 보장) -->
+        <div class="excluded-mobile-view" style="margin-top: 12px;">
+          ${filteredExcludedList.map(item => `
+            <div class="excluded-mobile-card">
+              <div class="excluded-card-header">
+                <div class="excluded-card-tags">
+                  <span class="excluded-campaign-badge">${escapeHtml(item.campaignTitle || '공동구매')}</span>
+                  <span class="excluded-date-badge">📅 ${formatItemDateBadge(item.excludeDate)}</span>
+                </div>
+                <button class="btn-restore-excluded" data-id="${item.id}" style="font-size: 11px; padding: 4px 8px; background: transparent; border: 1px solid var(--border-subtle); border-radius: 4px; color: var(--accent-blue); cursor: pointer;" title="제외 취소하고 대기 목록으로 복구">
+                  ↩️ 복구
+                </button>
+              </div>
+              <div class="excluded-card-account">
+                <a href="${escapeHtml(item.url || 'https://www.instagram.com/' + item.id)}" target="_blank" class="excluded-id-link">
+                  @${escapeHtml(item.id)}
+                </a>
+                ${item.follow ? `<span class="excluded-follow-pill">👥 ${escapeHtml(item.follow)}</span>` : ''}
+              </div>
+              <div class="excluded-card-reason">
+                ${escapeHtml(item.excludeReason || '타깃 불일치')}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
     container.innerHTML = excludedHtml;
+
+    // 날짜별 필터 이벤트 바인딩
+    container.querySelectorAll('.btn-excluded-filter').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentExcludedDateFilter = btn.getAttribute('data-date');
+        renderGongguCampaign();
+      });
+    });
 
     container.querySelectorAll('.btn-restore-excluded').forEach(btn => {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-id');
         localStorage.removeItem('jeegong_gonggu_excluded_' + id);
+        try {
+          localStorage.removeItem('jeegong_gonggu_excluded_date_' + id);
+        } catch (e) {}
         pushCloudState();
         if (typeof showToast === 'function') {
           showToast(`↩️ @${id} 계정이 발송 대기 목록으로 복구되었습니다.`);
@@ -3799,7 +3968,11 @@ function renderGongguCampaign() {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-id');
         if (confirm(`@${id} 계정을 제안 리스트에서 제외하시겠습니까?`)) {
+          const kstDate = (appData && appData.briefings && appData.briefings[0] && appData.briefings[0].date) || new Date().toISOString().slice(0, 10);
           localStorage.setItem('jeegong_gonggu_excluded_' + id, 'true');
+          try {
+            localStorage.setItem('jeegong_gonggu_excluded_date_' + id, kstDate);
+          } catch (e) {}
           pushCloudState();
           if (typeof showToast === 'function') {
             showToast(`🗑️ @${id} 계정이 목록에서 제외되었습니다.`);
