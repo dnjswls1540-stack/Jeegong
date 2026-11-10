@@ -73,6 +73,14 @@
       ],
       "agentPriorities": [
         {
+          "id": "ap-20261110-tax",
+          "title": "원천징수 신고 및 납부",
+          "reason": "11월 10일(화) 오늘 홈택스 원천세(3.3% 프리랜서/근로) 법정 신고·납부 마감일",
+          "priority": "긴급",
+          "done": false,
+          "excluded": false
+        },
+        {
           "id": "ap-20261110-1",
           "priority": "긴급",
           "title": "[공구] 장빵실 쌀과자 오픈 모니터링",
@@ -98,6 +106,16 @@
         }
       ],
       "todomateTodos": [
+        {
+          "id": "t-20261110-tax-1",
+          "text": "원천징수 신고 (11월 10일 법정 마감)",
+          "title": "원천징수 신고 (11월 10일 법정 마감)",
+          "category": "세무·사업",
+          "done": false,
+          "isDone": false,
+          "source": "dashboard",
+          "priority": "긴급"
+        },
         {
           "id": "t-20261110-1",
           "text": "우주맘마 정산",
