@@ -143,8 +143,8 @@
           "text": "운동",
           "title": "운동",
           "category": "사업or수익",
-          "done": false,
-          "isDone": false
+          "done": true,
+          "isDone": true
         },
         {
           "id": "t-20261110-7",
@@ -159,6 +159,22 @@
           "text": "챔맘 주문건 확인",
           "title": "챔맘 주문건 확인",
           "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261110-9",
+          "text": "전자책 공부",
+          "title": "전자책 공부",
+          "category": "해야 할 일",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261110-10",
+          "text": "클로드코드 공부",
+          "title": "클로드코드 공부",
+          "category": "해야 할 일",
           "done": false,
           "isDone": false
         }
