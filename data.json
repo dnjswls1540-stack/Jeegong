@@ -73,6 +73,14 @@
       ],
       "agentPriorities": [
         {
+          "id": "ap-20261110-onsess-1",
+          "priority": "높음",
+          "title": "온세스 신규 의뢰(이진호 님) 답장 초안 검토",
+          "detail": "수원 융건릉·용주사 맛집거리 지도 웹사이트(예산 50~100만) 임시보관함 초안 검토",
+          "done": false,
+          "excluded": false
+        },
+        {
           "id": "ap-20261110-tax",
           "title": "원천징수 신고 및 납부",
           "reason": "11월 10일(화) 오늘 홈택스 원천세(3.3% 프리랜서/근로) 법정 신고·납부 마감일",
@@ -305,13 +313,38 @@
       ],
       "emails": [
         {
+          "id": "em-20261110-onsess-1",
+          "sender": "식스샵 프로 (이진호 님)",
+          "subject": "[식스샵 파트너] 수원 융건릉·용주사 맛집거리 지도 웹사이트 제작 의뢰",
+          "snippet": "공모전/발표용 맛집거리 인터랙티브 지도 (예산 50~100만 원)",
+          "draftId": "r-1696872776112005326",
+          "recipient": "jinho050106@gmail.com",
+          "service": "gmail",
+          "account": "onsessdesign@gmail.com"
+        },
+        {
           "id": "em-20261110-1",
           "sender": "Google AdSense",
           "subject": "allth-pick.pages.dev 사이트 검토 결과 안내 (보류)",
           "snippet": "광고 게재 전 사이트 문제 수정 필요"
         }
       ],
-      "inquiries": [],
+      "inquiries": [
+        {
+          "id": "inq-20261110-1",
+          "channel": "식스샵 파트너",
+          "client": "이진호 (010-3776-9807)",
+          "from": "이진호 님",
+          "customer": "이진호 (jinho050106@gmail.com)",
+          "subject": "[온세스 스튜디오] 수원 융건릉·용주사 맛집거리 지도 웹사이트 제작 문의 답변드립니다 :)",
+          "inquiry": "수원 융건릉·용주사 맛집거리 지도 웹사이트 (공모전/발표용, 예산 50~100만 원)",
+          "status": "pending",
+          "time": "11/10 17:23",
+          "draftId": "r-1696872776112005326",
+          "service": "gmail",
+          "account": "onsessdesign@gmail.com"
+        }
+      ],
       "attendance": {
         "status": "대기",
         "checkInTime": null,
