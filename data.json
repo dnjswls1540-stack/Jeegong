@@ -14601,5 +14601,216 @@
         }
       ]
     }
+  ],
+  "gongguExcludedMaster": [
+    {
+      "id": "bop.pt",
+      "name": "밥피티",
+      "follow": "33.5만",
+      "url": "https://www.instagram.com/bop.pt/",
+      "campaignId": "kskinny-body-ampoule",
+      "campaignTitle": "케이스키니 바디앰플",
+      "cat": "건강/다이어트, 식품",
+      "excludeDate": "2026-11-11",
+      "excludeReason": "쿠팡파트너스 어필리에이트 (남성 요리 크리에이터 / 리틀리 링크에 쿠팡 파트너스 번호 대량 나열 / 공구 미진행)"
+    },
+    {
+      "id": "jweight_",
+      "name": "줴이트",
+      "follow": "5.6만",
+      "url": "https://www.instagram.com/jweight_/",
+      "campaignId": "kskinny-body-ampoule",
+      "campaignTitle": "케이스키니 바디앰플",
+      "cat": "건강/다이어트",
+      "excludeDate": "2026-11-11",
+      "excludeReason": "취급 카테고리 불일치 (웨이트 트레이닝 실전 헬스 피드 / 바디 슬리밍 화장품 불일치)"
+    },
+    {
+      "id": "nini___won",
+      "name": "NINIWONY",
+      "follow": "5.3만",
+      "url": "https://www.instagram.com/nini___won/",
+      "campaignId": "kskinny-body-ampoule",
+      "campaignTitle": "케이스키니 바디앰플",
+      "cat": "건강/다이어트",
+      "excludeDate": "2026-11-11",
+      "excludeReason": "공동구매 미진행 (테니스·필라테스 오운완 일상 및 단순 협찬 피드 / 자체 공구 미진행)"
+    },
+    {
+      "id": "thanks_to_71",
+      "name": "내일식단",
+      "follow": "13.1만",
+      "url": "https://www.instagram.com/thanks_to_71/",
+      "campaignId": "kskinny-body-ampoule",
+      "campaignTitle": "케이스키니 바디앰플",
+      "cat": "건강/다이어트, 식품",
+      "excludeDate": "2026-11-11",
+      "excludeReason": "자사 브랜드 대표 충돌 (자체 개발 단백질 쉐이크 '달리밥' 론칭·판매 대표 계정)"
+    },
+    {
+      "id": "_foodie_jen",
+      "name": "푸디젠",
+      "follow": "36.0만",
+      "url": "https://www.instagram.com/_foodie_jen/",
+      "campaignId": "kskinny-body-ampoule",
+      "campaignTitle": "케이스키니 바디앰플",
+      "cat": "건강/다이어트, 식품",
+      "excludeDate": "2026-11-11",
+      "excludeReason": "프로필 바이오 공구 거부 (\"공구 안합니다❌\" 프로필 명시)"
+    },
+    {
+      "id": "pm_705",
+      "name": "이혜정",
+      "follow": "4.4만",
+      "url": "https://www.instagram.com/pm_705/",
+      "campaignId": "kskinny-body-ampoule",
+      "campaignTitle": "케이스키니 바디앰플",
+      "cat": "건강/다이어트, 식품",
+      "excludeDate": "2026-11-11",
+      "excludeReason": "공동구매 미진행 (단순 유료 파트너십 협찬 피드 / 자체 공구 미진행)"
+    },
+    {
+      "id": "kkomsense.home",
+      "name": "꼼센스",
+      "follow": "5.2만",
+      "url": "https://www.instagram.com/kkomsense.home/",
+      "campaignId": "kskinny-body-ampoule",
+      "campaignTitle": "케이스키니 바디앰플",
+      "cat": "리빙, 건강/다이어트",
+      "excludeDate": "2026-11-11",
+      "excludeReason": "취급 카테고리 불일치 (청소 꿀팁·살림 루틴 중심 피드 / 바디 슬리밍 화장품 불일치)"
+    },
+    {
+      "id": "widsunshine",
+      "name": "햇살림",
+      "follow": "7.3만",
+      "url": "https://www.instagram.com/widsunshine/",
+      "campaignId": "kskinny-body-ampoule",
+      "campaignTitle": "케이스키니 바디앰플",
+      "cat": "리빙, 식품, 건강/다이어트",
+      "excludeDate": "2026-11-11",
+      "excludeReason": "취급 카테고리 불일치 (매직랩·스텐냄비 등 주방/살림 전용 공구 / 뷰티·슬리밍 불일치)"
+    },
+    {
+      "id": "itstohyun",
+      "name": "로로엄마",
+      "follow": "15.2만",
+      "url": "https://www.instagram.com/itstohyun/",
+      "campaignId": "kskinny-body-ampoule",
+      "campaignTitle": "케이스키니 바디앰플",
+      "cat": "육아, 패션",
+      "excludeDate": "2026-11-11",
+      "excludeReason": "취급 카테고리 불일치 (순수 아동 의류·키즈 육아 전문 / 슬리밍 바디 케어 불일치)"
+    },
+    {
+      "id": "byori_yaksa",
+      "name": "뵤리약사",
+      "follow": "11.2만",
+      "url": "https://www.instagram.com/byori_yaksa/",
+      "campaignId": "kskinny-body-ampoule",
+      "campaignTitle": "케이스키니 바디앰플",
+      "cat": "건강",
+      "excludeDate": "2026-11-11",
+      "excludeReason": "전문직 의료인 충돌 (약사 계정으로 기능성 화장품 공구 시 의료법·표시광고 가이드 충돌)"
+    },
+    {
+      "id": "sana_yaksa",
+      "name": "사나약사",
+      "follow": "8.4만",
+      "url": "https://www.instagram.com/sana_yaksa/",
+      "campaignId": "kskinny-body-ampoule",
+      "campaignTitle": "케이스키니 바디앰플",
+      "cat": "건강",
+      "excludeDate": "2026-11-11",
+      "excludeReason": "전문직 의료인 충돌 (약사 계정으로 기능성 화장품 공구 시 의료법·표시광고 가이드 충돌)"
+    },
+    {
+      "id": "dr.jungsodam",
+      "name": "소담 원장",
+      "follow": "9.1만",
+      "url": "https://www.instagram.com/dr.jungsodam/",
+      "campaignId": "kskinny-body-ampoule",
+      "campaignTitle": "케이스키니 바디앰플",
+      "cat": "뷰티, 건강",
+      "excludeDate": "2026-11-11",
+      "excludeReason": "전문직 의료인 충돌 (의사 계정으로 기능성 화장품 공구 시 의료법·표시광고 가이드 충돌)"
+    },
+    {
+      "id": "pinkwonder_choi",
+      "name": "최금실",
+      "follow": "14.8만",
+      "url": "https://www.instagram.com/pinkwonder_choi/",
+      "campaignId": "kskinny-body-ampoule",
+      "campaignTitle": "케이스키니 바디앰플",
+      "cat": "뷰티",
+      "excludeDate": "2026-11-11",
+      "excludeReason": "자사 브랜드 대표 충돌 (핑크원더 자체 화장품 브랜드 대표)"
+    },
+    {
+      "id": "cocoblack_joo",
+      "name": "영주",
+      "follow": "12.3만",
+      "url": "https://www.instagram.com/cocoblack_joo/",
+      "campaignId": "kskinny-body-ampoule",
+      "campaignTitle": "케이스키니 바디앰플",
+      "cat": "패션",
+      "excludeDate": "2026-11-11",
+      "excludeReason": "자사 브랜드 대표 충돌 (코코블랙 자체 의류 브랜드 대표)"
+    },
+    {
+      "id": "im_soo_homefit",
+      "name": "쑤짱",
+      "follow": "6.7만",
+      "url": "https://www.instagram.com/im_soo_homefit/",
+      "campaignId": "kskinny-body-ampoule",
+      "campaignTitle": "케이스키니 바디앰플",
+      "cat": "건강",
+      "excludeDate": "2026-11-11",
+      "excludeReason": "정량 댓글 지표 미달 (실측 평균 댓글 수 기준치 미달)"
+    },
+    {
+      "id": "thing_1022",
+      "name": "소영",
+      "follow": "5.9만",
+      "url": "https://www.instagram.com/thing_1022/",
+      "campaignId": "kskinny-body-ampoule",
+      "campaignTitle": "케이스키니 바디앰플",
+      "cat": "육아, 리빙",
+      "excludeDate": "2026-11-11",
+      "excludeReason": "정량 댓글 지표 미달 (실측 평균 댓글 수 기준치 미달)"
+    },
+    {
+      "id": "jeehye_yun",
+      "name": "지혜",
+      "follow": "7.8만",
+      "url": "https://www.instagram.com/jeehye_yun/",
+      "campaignId": "kskinny-body-ampoule",
+      "campaignTitle": "케이스키니 바디앰플",
+      "cat": "뷰티, 패션",
+      "excludeDate": "2026-11-11",
+      "excludeReason": "타깃 피드 불일치 (순수 뷰티/패션 일상 피드 / 슬리밍 앰플 불일치)"
+    },
+    {
+      "id": "querensia___",
+      "name": "케렌시아",
+      "follow": "8.2만",
+      "url": "https://www.instagram.com/querensia___/",
+      "campaignId": "kskinny-body-ampoule",
+      "campaignTitle": "케이스키니 바디앰플",
+      "cat": "리빙",
+      "excludeDate": "2026-11-11",
+      "excludeReason": "타깃 피드 불일치 (순수 홈카페/베이킹 일상 피드 / 슬리밍 앰플 불일치)"
+    },
+    {
+      "id": "aon0325",
+      "name": "하나",
+      "follow": "10.1만",
+      "url": "https://www.instagram.com/aon0325/",
+      "campaignId": "kskinny-body-ampoule",
+      "campaignTitle": "케이스키니 바디앰플",
+      "cat": "여행",
+      "excludeDate": "2026-11-11",
+      "excludeReason": "타깃 피드 불일치 (순수 여행/감성 일상 피드 / 슬리밍 앰플 불일치)"
+    }
   ]
 }

@@ -3260,13 +3260,22 @@ function getExcludeDate(item) {
     if (stored) return stored;
   } catch (e) {}
   
+  if (item && item.excludeDate) return item.excludeDate;
+
+  const nov11 = [
+    'bop.pt', 'jweight_', 'nini___won', 'thanks_to_71', '_foodie_jen', 'pm_705',
+    'kkomsense.home', 'widsunshine', 'byori_yaksa', 'sana_yaksa', 'pinkwonder_choi',
+    'thing_1022', 'im_soo_homefit', 'dr.jungsodam', 'jeehye_yun', 'cocoblack_joo',
+    'querensia___', 'aon0325', 'itstohyun'
+  ];
+  if (nov11.includes(id)) return '2026-11-11';
   if (id === 'chae2home') return '2026-11-10';
   const nov9 = ['gomson.salim', 'home.it_insta', 'homestory.official_', '_chocohomee_', 'sallim_after_work', 'ggulmat_salim', 'moms.table_'];
   if (nov9.includes(id)) return '2026-11-09';
   const nov8 = [
     'commeci_kitchen', 'salim_station', 'coco_haus_', 'temqueen0', 'living_pluss',
     'hehe_home_tem', 'homemaster00', 'home.in.on', 'home._.standard', 'lallina.home',
-    'shop._.dami', 'maeil_papa', 'kkomsense.home', 'home_salimm', 'haram.table'
+    'shop._.dami', 'maeil_papa', 'home_salimm', 'haram.table'
   ];
   if (nov8.includes(id)) return '2026-11-08';
   return '2026-11-07';
@@ -3274,7 +3283,24 @@ function getExcludeDate(item) {
 
 function getExcludeReason(inf) {
   const id = (inf.id || '').toLowerCase();
+  if (inf && inf.excludeReason) return inf.excludeReason;
   
+  // 0. 11/11 제외 계정 (케이스키니 타깃 불일치 및 오수집)
+  if (id === 'bop.pt') return '쿠팡파트너스 어필리에이트 (남성 요리 크리에이터 / 리틀리 링크에 쿠팡 파트너스 번호 대량 나열 / 공구 미진행)';
+  if (id === 'jweight_') return '취급 카테고리 불일치 (웨이트 트레이닝 실전 헬스 피드 / 바디 슬리밍 화장품 불일치)';
+  if (id === 'nini___won') return '공동구매 미진행 (테니스·필라테스 오운완 일상 및 단순 협찬 피드 / 자체 공구 미진행)';
+  if (id === 'thanks_to_71') return '자사 브랜드 대표 충돌 (자체 개발 단백질 쉐이크 \'달리밥\' 론칭·판매 대표 계정)';
+  if (id === '_foodie_jen') return '프로필 바이오 공구 거부 ("공구 안합니다❌" 프로필 명시)';
+  if (id === 'pm_705') return '공동구매 미진행 (단순 유료 파트너십 협찬 피드 / 자체 공구 미진행)';
+  if (id === 'kkomsense.home') return '취급 카테고리 불일치 (청소 꿀팁·살림 루틴 중심 피드 / 바디 슬리밍 화장품 불일치)';
+  if (id === 'widsunshine') return '취급 카테고리 불일치 (매직랩·스텐냄비 등 주방/살림 전용 공구 / 뷰티·슬리밍 불일치)';
+  if (id === 'itstohyun') return '취급 카테고리 불일치 (순수 아동 의류·키즈 육아 전문 / 슬리밍 바디 케어 불일치)';
+  if (id === 'byori_yaksa' || id === 'sana_yaksa' || id === 'dr.jungsodam') return '전문직 의료인 충돌 (약사·의사 계정으로 기능성 화장품 공구 시 의료법·표시광고 가이드 충돌)';
+  if (id === 'pinkwonder_choi') return '자사 브랜드 대표 충돌 (핑크원더 자체 화장품 브랜드 대표)';
+  if (id === 'cocoblack_joo') return '자사 브랜드 대표 충돌 (코코블랙 자체 의류 브랜드 대표)';
+  if (id === 'im_soo_homefit' || id === 'thing_1022') return '정량 댓글 지표 미달 (실측 평균 댓글 수 기준치 미달)';
+  if (id === 'jeehye_yun' || id === 'querensia___' || id === 'aon0325') return '타깃 피드 불일치 (일상·감성 큐레이션 피드 / 슬리밍 바디 앰플 성격 불일치)';
+
   // 1. 11/09 제외 7개 계정 (오답노트 정밀 분석)
   if (id === 'home.it_insta') {
     return '쿠팡파트너스 어필리에이트 (본문 <1027> 번호 검색 유도 / 자체 공구 미진행)';
@@ -3401,6 +3427,20 @@ function getExcludedList() {
       }
     });
   });
+
+  // Master excluded list (preserved across campaign rotations)
+  const seenIds = new Set(list.map(item => (item.id || '').toLowerCase()));
+  (appData.gongguExcludedMaster || []).forEach(inf => {
+    const idLower = (inf.id || '').toLowerCase();
+    if (!seenIds.has(idLower)) {
+      const item = { ...inf };
+      item.excludeReason = item.excludeReason || getExcludeReason(item);
+      item.excludeDate = item.excludeDate || getExcludeDate(item);
+      list.push(item);
+      seenIds.add(idLower);
+    }
+  });
+
   return list;
 }
 function escapeHtml(str) {
@@ -3682,20 +3722,34 @@ function renderGongguCampaign() {
     });
     const uniqueDates = Object.keys(dateCounts).sort().reverse();
 
+    function getTodayKstStr() {
+      if (appData && appData.briefings && appData.briefings[0] && appData.briefings[0].date) {
+        return appData.briefings[0].date;
+      }
+      const now = new Date();
+      const kst = new Date(now.getTime() + (9 * 60 * 60 * 1000));
+      return kst.toISOString().slice(0, 10);
+    }
+
+    const todayKstStr = getTodayKstStr();
+    const todayDateObj = new Date(todayKstStr + 'T00:00:00Z');
+    const yestDateObj = new Date(todayDateObj.getTime() - (24 * 60 * 60 * 1000));
+    const yesterdayKstStr = yestDateObj.toISOString().slice(0, 10);
+
     function formatFilterDateLabel(d) {
-      if (d === '2026-11-10') return `오늘 11/10 (${dateCounts[d]}건)`;
-      if (d === '2026-11-09') return `어제 11/09 (${dateCounts[d]}건)`;
-      const parts = d.split('-');
-      if (parts.length === 3) return `${parts[1]}/${parts[2]} (${dateCounts[d]}건)`;
-      return `${d} (${dateCounts[d]}건)`;
+      const parts = (d || '').split('-');
+      const md = parts.length === 3 ? `${parts[1]}/${parts[2]}` : d;
+      if (d === todayKstStr) return `오늘 ${md} (${dateCounts[d]}건)`;
+      if (d === yesterdayKstStr) return `어제 ${md} (${dateCounts[d]}건)`;
+      return `${md} (${dateCounts[d]}건)`;
     }
 
     function formatItemDateBadge(d) {
-      if (d === '2026-11-10') return '11/10 (오늘)';
-      if (d === '2026-11-09') return '11/09 (어제)';
       const parts = (d || '').split('-');
-      if (parts.length === 3) return `${parts[1]}/${parts[2]}`;
-      return d || '11/09';
+      const md = parts.length === 3 ? `${parts[1]}/${parts[2]}` : d;
+      if (d === todayKstStr) return `${md} (오늘)`;
+      if (d === yesterdayKstStr) return `${md} (어제)`;
+      return md || '11/09';
     }
 
     const filteredExcludedList = currentExcludedDateFilter === 'all'
