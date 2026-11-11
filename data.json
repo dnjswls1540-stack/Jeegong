@@ -45,6 +45,256 @@
   },
   "briefings": [
     {
+      "id": "b-20261112",
+      "date": "2026-11-12",
+      "dayOfWeek": "목요일",
+      "createdAt": "2026-11-12T08:30:00+09:00",
+      "headline": "11/12 목요일 출근 완료! 챔맘 쌀과자 공구 마감 및 투두 12건 정렬",
+      "summary": "오늘 23:59 챔맘 쌀과자 공구가 마감되며, 장빵실 쌀과자 및 제이백 겨울부츠 진행 중입니다. 투두메이트 12건 등록 완료.",
+      "priorities": [
+        {
+          "id": "ap-20261112-1",
+          "title": "[공구 마감] 챔맘 로지오가닉 쌀과자 오늘 밤 23:59 마감",
+          "text": "자정 공구 마감 후 최종 발주 수량 및 주문 데이터 취합 대기",
+          "priority": "높음",
+          "category": "공구 실황",
+          "done": false
+        },
+        {
+          "id": "ap-20261112-2",
+          "title": "[보안 점검] 온세스 구글 계정 비인가 로그인 차단 점검",
+          "text": "비인가 로그인 시도 차단에 따른 구글 계정 활동 확인 및 비밀번호 변경 지원",
+          "priority": "높음",
+          "category": "보안 점검",
+          "done": false
+        }
+      ],
+      "agentPriorities": [
+        {
+          "id": "ap-20261112-1",
+          "title": "[공구 마감] 챔맘 로지오가닉 쌀과자 오늘 밤 23:59 마감",
+          "text": "자정 공구 마감 후 최종 발주 수량 및 주문 데이터 취합 대기",
+          "priority": "높음",
+          "category": "공구 실황",
+          "done": false
+        },
+        {
+          "id": "ap-20261112-2",
+          "title": "[보안 점검] 온세스 구글 계정 비인가 로그인 차단 점검",
+          "text": "비인가 로그인 시도 차단에 따른 구글 계정 활동 확인 및 비밀번호 변경 지원",
+          "priority": "높음",
+          "category": "보안 점검",
+          "done": false
+        }
+      ],
+      "todomateTodos": [
+        {
+          "id": "t-20261112-1",
+          "text": "디어커스 제안 25명",
+          "title": "디어커스 제안 25명",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261112-2",
+          "text": "장빵실 주문건 확인",
+          "title": "장빵실 주문건 확인",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261112-3",
+          "text": "챔맘 주문건 확인",
+          "title": "챔맘 주문건 확인",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261112-4",
+          "text": "손뽀니 주문건 확인",
+          "title": "손뽀니 주문건 확인",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261112-5",
+          "text": "손뽀니 정산서 작성",
+          "title": "손뽀니 정산서 작성",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261112-6",
+          "text": "케이스키니 제안 20명",
+          "title": "케이스키니 제안 20명",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261112-7",
+          "text": "보보홈 샘플 요청",
+          "title": "보보홈 샘플 요청",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261112-8",
+          "text": "페이앱 연동 확인",
+          "title": "페이앱 연동 확인",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261112-9",
+          "text": "듀오링고 일본어 2개",
+          "title": "듀오링고 일본어 2개",
+          "category": "자기계발",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261112-10",
+          "text": "클로드 공부",
+          "title": "클로드 공부",
+          "category": "자기계발",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261112-11",
+          "text": "클로드 이전",
+          "title": "클로드 이전",
+          "category": "자기계발",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261112-12",
+          "text": "운동",
+          "title": "운동",
+          "category": "해야 할 일",
+          "done": false,
+          "isDone": false
+        }
+      ],
+      "calendar": [
+        "[공구] 챔맘 로지오가닉 쌀과자 진행 (23:59 마감)",
+        "[공구] 장빵실 로지오가닉 쌀과자 진행 (종일)",
+        "[공구] 제이백 울렌 겨울부츠 진행 (종일)",
+        "[공구] 손뽀니 아넬라 과일퓨레 진행 (종일)"
+      ],
+      "calendarEvents": [
+        {
+          "id": "cal-20261112-1",
+          "title": "[공구] 챔맘 로지오가닉 쌀과자 진행",
+          "summary": "[공구] 챔맘 로지오가닉 쌀과자 진행",
+          "startDate": "2026-11-09",
+          "endDate": "2026-11-12",
+          "date": "2026-11-12",
+          "time": "23:59 마감",
+          "tag": "공구",
+          "color": "#F59E0B"
+        },
+        {
+          "id": "cal-20261112-2",
+          "title": "[공구] 장빵실 로지오가닉 쌀과자 진행",
+          "summary": "[공구] 장빵실 로지오가닉 쌀과자 진행",
+          "startDate": "2026-11-10",
+          "endDate": "2026-11-14",
+          "date": "2026-11-12",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#EC4899"
+        },
+        {
+          "id": "cal-20261112-3",
+          "title": "[공구] 제이백 울렌 겨울부츠 진행",
+          "summary": "[공구] 제이백 울렌 겨울부츠 진행",
+          "startDate": "2026-11-11",
+          "endDate": "2026-11-15",
+          "date": "2026-11-12",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#3B82F6"
+        },
+        {
+          "id": "cal-20261112-4",
+          "title": "[공구] 손뽀니 아넬라 과일퓨레 진행",
+          "summary": "[공구] 손뽀니 아넬라 과일퓨레 진행",
+          "startDate": "2026-11-08",
+          "endDate": "2026-11-12",
+          "date": "2026-11-12",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#10B981"
+        },
+        {
+          "id": "cal-20261112-5",
+          "title": "조태건",
+          "summary": "조태건",
+          "startDate": "2026-11-13",
+          "endDate": "2026-11-13",
+          "date": "2026-11-13",
+          "time": "19:00",
+          "tag": "개인",
+          "color": "#8B5CF6"
+        },
+        {
+          "id": "cal-20261112-6",
+          "title": "[공구] 정뚱환뚱 울렌 겨울부츠 1차 진행",
+          "summary": "[공구] 정뚱환뚱 울렌 겨울부츠 1차 진행",
+          "startDate": "2026-11-14",
+          "endDate": "2026-11-17",
+          "date": "2026-11-14",
+          "time": "종일",
+          "tag": "공구",
+          "color": "#6366F1"
+        },
+        {
+          "id": "cal-20261112-7",
+          "title": "장지원",
+          "summary": "장지원",
+          "startDate": "2026-11-14",
+          "endDate": "2026-11-14",
+          "date": "2026-11-14",
+          "time": "18:00",
+          "tag": "개인",
+          "color": "#8B5CF6"
+        }
+      ],
+      "emails": [
+        {
+          "id": "em-20261110-sixshop",
+          "subject": "[식스샵 파트너] 바로 상담할 수 있는 웹사이트 제작 신규 프로젝트 (고객 의뢰)",
+          "from": "식스샵 프로 고객지원",
+          "date": "11/10 17:23",
+          "status": "excluded"
+        }
+      ],
+      "inquiries": [
+        {
+          "id": "inq-20261110-sixshop-lee",
+          "platform": "식스샵 파트너",
+          "client": "이진호 님 (010-3776-9807)",
+          "summary": "수원 융건릉·용주사 맛집거리 인터랙티브 지도 웹사이트 제작 (예산 50~100만 원)",
+          "status": "excluded"
+        }
+      ],
+      "attendance": {
+        "status": "대기중",
+        "checkIn": null,
+        "checkOut": null
+      }
+    },
+    {
       "id": "b-20261111",
       "date": "2026-11-11",
       "dayOfWeek": "수",
