@@ -72,14 +72,6 @@
           "priority": "보통",
           "category": "공구 실황",
           "done": false
-        },
-        {
-          "id": "ap-20261111-3",
-          "title": "[온세스 스튜디오] 식스샵 맛집지도 외주 답장 대기",
-          "text": "이진호 님 수원 융건릉 맛집지도 외주 초안(임시보관함) 사용자 확인 대기",
-          "priority": "보통",
-          "category": "웹 제작",
-          "done": false
         }
       ],
       "todomateTodos": [
@@ -247,7 +239,7 @@
           "subject": "[식스샵 파트너] 바로 상담할 수 있는 웹사이트 제작 신규 프로젝트 (고객 의뢰)",
           "from": "식스샵 프로 고객지원",
           "date": "11/10 17:23",
-          "status": "초안 보관 중"
+          "status": "excluded"
         }
       ],
       "inquiries": [
@@ -256,7 +248,7 @@
           "platform": "식스샵 파트너",
           "client": "이진호 님 (010-3776-9807)",
           "summary": "수원 융건릉·용주사 맛집거리 인터랙티브 지도 웹사이트 제작 (예산 50~100만 원)",
-          "status": "답장 초안 대기"
+          "status": "excluded"
         }
       ],
       "attendance": {
@@ -538,10 +530,11 @@
           "sender": "식스샵 프로 (이진호 님)",
           "subject": "[식스샵 파트너] 수원 융건릉·용주사 맛집거리 지도 웹사이트 제작 의뢰",
           "snippet": "공모전/발표용 맛집거리 인터랙티브 지도 (예산 50~100만 원)",
-          "draftId": "r-1696872776112005326",
+          "draftId": null,
           "recipient": "jinho050106@gmail.com",
           "service": "gmail",
-          "account": "onsessdesign@gmail.com"
+          "account": "onsessdesign@gmail.com",
+          "status": "excluded"
         },
         {
           "id": "em-20261110-1",
@@ -559,9 +552,9 @@
           "customer": "이진호 (jinho050106@gmail.com)",
           "subject": "[온세스 스튜디오] 수원 융건릉·용주사 맛집거리 지도 웹사이트 제작 문의 답변드립니다 :)",
           "inquiry": "수원 융건릉·용주사 맛집거리 지도 웹사이트 (공모전/발표용, 예산 50~100만 원)",
-          "status": "pending",
+          "status": "excluded",
           "time": "11/10 17:23",
-          "draftId": "r-1696872776112005326",
+          "draftId": null,
           "service": "gmail",
           "account": "onsessdesign@gmail.com"
         }
