@@ -108,12 +108,12 @@ function loadHandledRegistry() {
     { tag: 'core::oyka_home', type: 'inquiry', channel: '아임웹', from: 'OYKA HOME 담당자', subject: '쇼핑몰 신규 구축 견적 및 제작 기간 문의', status: 'done', date: '2026-10-21' },
     { tag: 'core::kmong_coaching', type: 'inquiry', channel: '크몽', from: '크몽 의뢰인 (김** 님)', subject: '공동구매 중개 노하우 1:1 코칭권 일정 문의', status: 'done', date: '2026-10-21' },
     // 10/22
-    { tag: 'core::panimom', type: 'email', service: '네이버 메일', from: '인플루언서 파니맘 (synbe.park@gmail.com)', subject: 'Re: [공구 제안] 100% 생과일 아넬라 퓨레, 공구 협업 제안드립니다.│올쓰컴퍼니', status: 'done', date: '2026-10-22' },
+    { tag: 'core::panimom', type: 'email', service: '네이버 메일', from: '인플루언서 파니맘 (이메일 비공개)', subject: 'Re: [공구 제안] 100% 생과일 아넬라 퓨레, 공구 협업 제안드립니다.│올쓰컴퍼니', status: 'done', date: '2026-10-22' },
     { tag: 'core::panimom', type: 'inquiry', channel: '네이버 메일', from: '인플루언서 파니맘', subject: '아넬라 과일퓨레 공구 일정 검토 회신', status: 'done', date: '2026-10-22' },
     { tag: 'core::lee_junseok', type: 'email', service: '지메일 (온세스)', from: '식스샵 프로 고객지원 (help-pro@sixshop.com)', subject: '[식스샵 파트너] 바로 상담할 수 있는 웹사이트 제작 신규 프로젝트 (이준석 대표)', status: 'done', date: '2026-10-22' },
-    { tag: 'core::lee_junseok', type: 'inquiry', channel: '식스샵', from: '이준석 대표 (010-5754-6610)', subject: '홈페이지 리모델링 및 AI 견적 연동 신규 의뢰 (예산 100~200만 원)', status: 'done', date: '2026-10-22' },
+    { tag: 'core::lee_junseok', type: 'inquiry', channel: '식스샵', from: '이준석 대표 (연락처 비공개)', subject: '홈페이지 리모델링 및 AI 견적 연동 신규 의뢰 (예산 100~200만 원)', status: 'done', date: '2026-10-22' },
     { tag: 'core::paynote_eunhee', type: 'email', service: '네이버 메일', from: '지공의 페이노트 (no-reply@paynote.co.kr)', subject: '[결제완료] 전자책 결제 완료 안내 (이은희 님, 129,000원)', status: 'done', date: '2026-10-22' },
-    { tag: 'core::round_tiger', type: 'email', service: '네이버 메일', from: '라운드커머스 마케팅팀 (roundcommerce@gmail.com)', subject: '타이거모닝 진저샷 공동구매 운영 파트너십 제안', status: 'done', date: '2026-10-22' }
+    { tag: 'core::round_tiger', type: 'email', service: '네이버 메일', from: '라운드커머스 마케팅팀 (이메일 비공개)', subject: '타이거모닝 진저샷 공동구매 운영 파트너십 제안', status: 'done', date: '2026-10-22' }
   ];
 
   seedItems.forEach(seed => {
