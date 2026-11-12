@@ -94,6 +94,8 @@ Jeegong/
 
 ## 5. 지공 대시보드 개발 및 배포 가이드
 
+- **CLAUDE.md 동기화 (2026-11-12 확정)**: CLAUDE.md는 두 폴더(`지공 에이전트`, `Jeegong`)에 같은 내용으로 두며, 고칠 때는 두 파일을 함께 고친다.
+- **반영 담당 단일화 (2026-11-12 확정)**: `data.json` 수정·검증·커밋·푸시·ntfy는 "지공 대시보드 관리·배포" 세션만 수행한다. 다른 세션은 `documents/`에 `YYYY-MM-DD-설명` 초안 파일을 만들고 대상·필드·파일 경로를 적어 대시보드 세션에 요청한다.
 - **단일 상태 원천**: Supabase Cloud DB (`jeegong_state`)
   - `work_date`: "YYYY-MM-DD"
   - `work_state`: "ready" | "working" | "finished"
