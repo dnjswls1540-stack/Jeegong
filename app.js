@@ -3567,7 +3567,6 @@ function renderGongguCampaign() {
               <th style="width: 50px; text-align: center;">No.</th>
               <th style="width: 140px;">상품명</th>
               <th>인스타그램 계정</th>
-              <th style="width: 100px;">시트 위치</th>
               <th style="width: 130px;">발송 일시</th>
               <th style="width: 80px; text-align: right;">관리</th>
             </tr>
@@ -3587,7 +3586,6 @@ function renderGongguCampaign() {
             </a>
             ${item.follow ? `<span style="font-size: 11px; color: var(--text-tertiary); margin-left: 6px;">👥 ${escapeHtml(item.follow)}</span>` : ''}
           </td>
-          <td style="font-size: 11.5px; color: var(--text-secondary); font-weight: 500;">행 ${item.row || '-'}</td>
           <td style="font-size: 11.5px; color: var(--text-secondary);">${escapeHtml(dateStr)}</td>
           <td style="text-align: right;">
             <button class="btn-cancel-sent" data-id="${item.id}" style="font-size: 11px; padding: 4px 8px; background: transparent; border: 1px solid var(--border-subtle); border-radius: 4px; color: var(--accent-red-text); cursor: pointer;" title="발송 취소하고 대기 목록으로 복구">
@@ -3917,7 +3915,6 @@ function renderGongguCampaign() {
               ${noteBadge}
             </div>
             <div class="gonggu-card-header-right">
-              <span class="gonggu-row-meta">행 ${inf.row}</span>
               <button class="btn-gonggu-exclude" data-id="${inf.id}" title="제안 목록에서 제외">✕ 제외</button>
             </div>
           </div>
