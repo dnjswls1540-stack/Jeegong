@@ -1272,15 +1272,17 @@ function renderEmailList(b, containerId, badgeId, bannerCountId) {
         <!-- Inline Draft Editor Box -->
         <div class="inline-draft-box ${window.activeDraftBoxIds && window.activeDraftBoxIds.has(`draft-box-${containerId}-${mail.id}`) ? 'active' : ''}" id="draft-box-${containerId}-${mail.id}">
           <div class="draft-header">
-            <span>✍️ 구름이 답장 초안 (수정 후 승인 시 발송)</span>
+            <span>✍️ 구름이 답장 초안 (복사하거나 메일함에서 열어 직접 발송)</span>
             <span style="font-size: 11.5px; color: var(--text-tertiary);">수신: ${mail.from}</span>
           </div>
           <textarea class="draft-textarea" id="draft-text-${containerId}-${mail.id}" oninput="onDraftInput('${mail.id}', this.value)">${mail.draft || ''}</textarea>
           <div class="draft-actions">
             <button class="btn-secondary" onclick="closeProcessDraft('${containerId}-${mail.id}')" style="padding: 6px 14px; font-size: 12px;">닫기</button>
+            <button class="btn-secondary" onclick="copyDraftText('draft-text-${containerId}-${mail.id}')" style="padding: 6px 14px; font-size: 12px;">📋 초안 복사</button>
+            ${(mail.draftUrl || mail.mailUrl) ? `<a class="btn-secondary" href="${mail.draftUrl || mail.mailUrl}" target="_blank" rel="noopener" style="padding: 6px 14px; font-size: 12px; text-decoration: none;">${mail.draftUrl ? '✉️ 초안 열기' : '✉️ 원문 열기'}</a>` : ''}
             <button class="btn-approve-send" onclick="approveAndSendEmail('${mail.id}')" style="padding: 7px 16px; font-size: 12.5px;">
-              <span>승인 및 메일 발송</span>
-              <span>✈️</span>
+              <span>직접 발송 완료</span>
+              <span>✓</span>
             </button>
           </div>
         </div>
@@ -1446,15 +1448,17 @@ function renderInquiries(b, containerId, badgeId, bannerCountId) {
         <!-- Inline Draft Box -->
         <div class="inline-draft-box ${window.activeDraftBoxIds && window.activeDraftBoxIds.has(`inquiry-draft-box-${containerId}-${inq.id}`) ? 'active' : ''}" id="inquiry-draft-box-${containerId}-${inq.id}">
           <div class="draft-header">
-            <span>✍️ 구름이 고객 응대 초안 (수정 후 승인 시 답변 발송)</span>
+            <span>✍️ 구름이 고객 응대 초안 (복사하거나 메일함에서 열어 직접 발송)</span>
             <span style="font-size: 11.5px; color: var(--text-tertiary);">수신: ${sender}</span>
           </div>
           <textarea class="draft-textarea" id="inquiry-draft-text-${containerId}-${inq.id}" oninput="onInquiryDraftInput('${inq.id}', this.value)">${inq.draft || ''}</textarea>
           <div class="draft-actions">
             <button class="btn-secondary" onclick="closeInquiryProcessDraft('${containerId}-${inq.id}')" style="padding: 6px 14px; font-size: 12px;">닫기</button>
+            <button class="btn-secondary" onclick="copyDraftText('inquiry-draft-text-${containerId}-${inq.id}')" style="padding: 6px 14px; font-size: 12px;">📋 초안 복사</button>
+            ${(inq.draftUrl || inq.mailUrl) ? `<a class="btn-secondary" href="${inq.draftUrl || inq.mailUrl}" target="_blank" rel="noopener" style="padding: 6px 14px; font-size: 12px; text-decoration: none;">${inq.draftUrl ? '✉️ 초안 열기' : '✉️ 원문 열기'}</a>` : ''}
             <button class="btn-approve-send" onclick="approveAndSendInquiry('${inq.id}', '${containerId}-${inq.id}')" style="padding: 7px 16px; font-size: 12.5px;">
-              <span>승인 및 답변 발송</span>
-              <span>✈️</span>
+              <span>직접 발송 완료</span>
+              <span>✓</span>
             </button>
           </div>
         </div>
@@ -1521,38 +1525,9 @@ window.approveAndSendInquiry = async function(id, domId) {
   closeInquiryProcessDraft(domId);
   renderTodayView();
 
-  const account = inq.account || (inq.channel && inq.channel.includes('네이버') ? 'dnjsrns123@naver.com' : 'onsessdesign@gmail.com');
-  const isNaver = account.includes('naver') || (inq.channel && inq.channel.includes('네이버'));
-  const service = isNaver ? 'naver' : 'gmail';
-
-  try {
-    const sendPayload = {
-      action: 'send_email',
-      timestamp: Date.now(),
-      emailId: inq.id,
-      service: service,
-      account: account,
-      recipient: inq.email || inq.from,
-      subject: inq.subject,
-      body: inq.draft,
-      draftId: inq.draftId || '',
-      draftFile: inq.draftFile || (isNaver ? 'drafts/RE: [공구 제안] 100% 생과일 아넬라 퓨레, 공구 협업 제안드립니다.│올쓰컴퍼니-3.eml' : '')
-    };
-    await fetch(`${SYNC_ENDPOINT}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Title': `[Jeegong Send Request] ${inq.id}`,
-        'Tags': 'email,outbox'
-      },
-      body: JSON.stringify(sendPayload)
-    });
-  } catch (err) {
-    console.warn('send request publish error:', err);
-  }
-
+  // 메일은 대시보드에서 직접 보내지 않는다. 원진님이 메일함에서 직접 발송한 뒤 '발송 완료'로 표시만 한다.
   pushCloudState();
-  showToast(`[답변 발송 요청 완료] ${service === 'naver' ? '네이버 메일' : 'Gmail'}을 통해 발송 큐가 전송되었습니다! 🚀 (보낸메일함에 반영)`);
+  showToast('✓ 직접 발송 완료로 표시했습니다.');
 };
 
 window.toggleExcludeEmail = function(id) {
@@ -1639,7 +1614,20 @@ window.closeInquiryProcessDraft = function(domId) {
   activeDraftBoxIds.delete(`inquiry-draft-box-${domId}`);
 };
 
-// Approve and Send Email (실제 발송 큐 연동 - Gmail / 네이버 메일 자동 분기)
+// 답장 초안 복사 (발송은 원진님이 메일함에서 직접)
+window.copyDraftText = async function(textareaId) {
+  const el = document.getElementById(textareaId);
+  const text = el ? el.value : '';
+  if (!text) { showToast('복사할 초안이 없습니다.'); return; }
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (e) {
+    el.select(); document.execCommand('copy');
+  }
+  showToast('📋 초안을 복사했습니다. 메일함에서 붙여넣고 첨부 후 직접 발송해 주세요.');
+};
+
+// 직접 발송 완료 표시 (대시보드는 메일을 보내지 않음)
 window.approveAndSendEmail = async function(id) {
   if (!appData) return;
   const b = appData.briefings.find(item => item.id === currentBriefingId);
@@ -1656,38 +1644,8 @@ window.approveAndSendEmail = async function(id) {
   closeProcessDraft(id);
   renderTodayView();
 
-  const account = mail.account || (mail.service && mail.service.includes('네이버') ? 'dnjsrns123@naver.com' : 'onsessdesign@gmail.com');
-  const isNaver = account.includes('naver') || (mail.service && mail.service.includes('네이버'));
-  const service = isNaver ? 'naver' : 'gmail';
-
-  showToast(`[승인 완료] ${mail.from.split('(')[0].trim()} 님께 답장 발송 큐가 접수되었습니다! 🚀 (${service === 'naver' ? '네이버 메일' : 'Gmail'} 자동 발송 연동)`);
-
-  // Publish Send Request to ntfy Queue for Background Agent Execution
-  try {
-    const sendPayload = {
-      action: 'send_email',
-      timestamp: Date.now(),
-      emailId: mail.id,
-      service: service,
-      account: account,
-      recipient: mail.from,
-      subject: mail.subject,
-      body: mail.draft,
-      draftId: mail.draftId || '',
-      draftFile: mail.draftFile || (isNaver ? 'drafts/RE: [공구 제안] 100% 생과일 아넬라 퓨레, 공구 협업 제안드립니다.│올쓰컴퍼니-3.eml' : '')
-    };
-    await fetch(`${SYNC_ENDPOINT}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Title': `[Jeegong Send Request] ${mail.id}`,
-        'Tags': 'email,outbox'
-      },
-      body: JSON.stringify(sendPayload)
-    });
-  } catch (err) {
-    console.warn('send request publish error:', err);
-  }
+  // 메일은 대시보드에서 직접 보내지 않는다. 원진님이 메일함에서 직접 발송한 뒤 '발송 완료'로 표시만 한다.
+  showToast('✓ 직접 발송 완료로 표시했습니다.');
 
   pushCloudState();
 };
