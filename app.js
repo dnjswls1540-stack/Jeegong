@@ -3284,7 +3284,8 @@ function getExcludeDate(item) {
     'shop._.dami', 'maeil_papa', 'home_salimm', 'haram.table'
   ];
   if (nov8.includes(id)) return '2026-11-08';
-  return '2026-11-07';
+  // 날짜 기록이 없으면 지어내지 않고 '날짜 미확인'으로 둔다
+  return 'unknown';
 }
 
 function getExcludeReason(inf) {
@@ -3721,15 +3722,15 @@ function renderGongguCampaign() {
     // 날짜별 건수 집계 및 정렬
     const dateCounts = {};
     excludedList.forEach(item => {
-      const d = item.excludeDate || '2026-11-09';
+      const d = item.excludeDate || 'unknown';
       dateCounts[d] = (dateCounts[d] || 0) + 1;
     });
-    const uniqueDates = Object.keys(dateCounts).sort().reverse();
+    const uniqueDates = Object.keys(dateCounts).filter(d => d !== 'unknown').sort().reverse();
+    if (dateCounts['unknown']) uniqueDates.push('unknown');
 
     function getTodayKstStr() {
-      if (appData && appData.briefings && appData.briefings[0] && appData.briefings[0].date) {
-        return appData.briefings[0].date;
-      }
+      // 브리핑 날짜가 아니라 실제 한국 시간 오늘을 기준으로 '오늘/어제'를 표시한다
+      if (typeof getKSTNow === 'function') return getKSTNow().dateStr;
       const now = new Date();
       const kst = new Date(now.getTime() + (9 * 60 * 60 * 1000));
       return kst.toISOString().slice(0, 10);
@@ -3743,6 +3744,7 @@ function renderGongguCampaign() {
     function formatFilterDateLabel(d) {
       const parts = (d || '').split('-');
       const md = parts.length === 3 ? `${parts[1]}/${parts[2]}` : d;
+      if (d === 'unknown') return `날짜 미확인 (${dateCounts[d]}건)`;
       if (d === todayKstStr) return `오늘 ${md} (${dateCounts[d]}건)`;
       if (d === yesterdayKstStr) return `어제 ${md} (${dateCounts[d]}건)`;
       return `${md} (${dateCounts[d]}건)`;
@@ -3751,6 +3753,7 @@ function renderGongguCampaign() {
     function formatItemDateBadge(d) {
       const parts = (d || '').split('-');
       const md = parts.length === 3 ? `${parts[1]}/${parts[2]}` : d;
+      if (d === 'unknown' || !d) return '날짜 미확인';
       if (d === todayKstStr) return `${md} (오늘)`;
       if (d === yesterdayKstStr) return `${md} (어제)`;
       return md || '11/09';
@@ -3758,7 +3761,7 @@ function renderGongguCampaign() {
 
     const filteredExcludedList = currentExcludedDateFilter === 'all'
       ? excludedList
-      : excludedList.filter(item => (item.excludeDate || '2026-11-09') === currentExcludedDateFilter);
+      : excludedList.filter(item => (item.excludeDate || 'unknown') === currentExcludedDateFilter);
 
     let excludedHtml = `
       <div style="background: var(--bg-card); border: 1px solid #fecaca; border-radius: 8px; padding: 14px 16px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
