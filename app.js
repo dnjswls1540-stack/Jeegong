@@ -3448,7 +3448,22 @@ function getExcludedList() {
     }
   });
 
+  // 제외한 순서대로 정렬: 최근에 제외한 계정이 맨 위, 날짜 미확인은 맨 아래
+  list.forEach(item => { item.excludeTs = getExcludeTimestamp(item); });
+  list.sort((x, y) => {
+    const dx = x.excludeDate === 'unknown' ? '' : (x.excludeDate || '');
+    const dy = y.excludeDate === 'unknown' ? '' : (y.excludeDate || '');
+    if (dx !== dy) return dx < dy ? 1 : -1;
+    return (y.excludeTs || 0) - (x.excludeTs || 0);
+  });
+
   return list;
+}
+
+function getExcludeTimestamp(item) {
+  const id = (item.id || '').toLowerCase();
+  const rec = handledRegistry && handledRegistry['gx::' + id];
+  return (rec && rec.handledTimestamp) || 0;
 }
 function escapeHtml(str) {
   if (!str) return '';
