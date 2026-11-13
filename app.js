@@ -509,6 +509,11 @@ async function initApp() {
     console.warn('Initial cloud state fetch error:', e);
   }
 
+  // 0-B. 이 기기에만 있던 공구 제외 날짜를 클라우드에 올려 다른 기기에서도 보이게 한다
+  if (backfillGongguExcludeDates()) {
+    setTimeout(() => pushCloudState(), 1500);
+  }
+
   // 1. Ensure today's briefing is selected (어제 날짜 브리핑 노출 원천 차단)
   const todayB = ensureTodayBriefing(todayStr);
 
@@ -3062,7 +3067,8 @@ function applyRemoteSync(remoteData) {
       if (exChanged) {
         gongguChanged = true;
         Object.keys(localStorage).forEach(k => {
-          if (k.startsWith('jeegong_gonggu_excluded_')) {
+          // 제외 날짜 키(jeegong_gonggu_excluded_date_*)는 지우지 않는다
+          if (k.startsWith('jeegong_gonggu_excluded_') && !k.startsWith('jeegong_gonggu_excluded_date_')) {
             const id = k.replace('jeegong_gonggu_excluded_', '');
             if (!gongguExList.includes(id)) {
               localStorage.removeItem(k);
@@ -3211,13 +3217,55 @@ function saveCompletedQueue(queue) {
   } catch (e) {}
 }
 
-function getExcludeDate(item) {
-  const id = (item.id || '').toLowerCase();
+// 제외 날짜는 기기 간에 공유되도록 handled_registry(클라우드 동기화)에 'gx::아이디' 키로도 저장한다
+function recordGongguExcludeDate(rawId, dateStr) {
+  const id = (rawId || '').toLowerCase();
+  if (!id) return;
+  try { localStorage.setItem('jeegong_gonggu_excluded_date_' + id, dateStr); } catch (e) {}
+  handledRegistry['gx::' + id] = { status: 'gonggu_excluded', handledDate: dateStr, handledTimestamp: Date.now() };
+  saveHandledRegistry();
+}
+
+function clearGongguExcludeDate(rawId) {
+  const id = (rawId || '').toLowerCase();
   try {
-    const stored = localStorage.getItem('jeegong_gonggu_excluded_date_' + id);
+    localStorage.removeItem('jeegong_gonggu_excluded_date_' + id);
+    localStorage.removeItem('jeegong_gonggu_excluded_date_' + rawId);
+  } catch (e) {}
+  if (handledRegistry['gx::' + id]) {
+    delete handledRegistry['gx::' + id];
+    saveHandledRegistry();
+  }
+}
+
+// 이 기기에만 남아 있던 제외 날짜를 클라우드 기록으로 올린다 (한 번만, 기록이 없을 때만)
+function backfillGongguExcludeDates() {
+  let added = false;
+  try {
+    Object.keys(localStorage).forEach(k => {
+      if (!k.startsWith('jeegong_gonggu_excluded_date_')) return;
+      const id = k.replace('jeegong_gonggu_excluded_date_', '').toLowerCase();
+      const d = localStorage.getItem(k);
+      if (id && d && !handledRegistry['gx::' + id]) {
+        handledRegistry['gx::' + id] = { status: 'gonggu_excluded', handledDate: d, handledTimestamp: Date.now() };
+        added = true;
+      }
+    });
+  } catch (e) {}
+  if (added) saveHandledRegistry();
+  return added;
+}
+
+function getExcludeDate(item) {
+  const rawId = item.id || '';
+  const id = rawId.toLowerCase();
+  try {
+    const stored = localStorage.getItem('jeegong_gonggu_excluded_date_' + id) || localStorage.getItem('jeegong_gonggu_excluded_date_' + rawId);
     if (stored) return stored;
   } catch (e) {}
-  
+  const rec = handledRegistry && handledRegistry['gx::' + id];
+  if (rec && rec.handledDate) return rec.handledDate;
+
   if (item && item.excludeDate) return item.excludeDate;
 
   const nov11 = [
@@ -3828,9 +3876,7 @@ function renderGongguCampaign() {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-id');
         localStorage.removeItem('jeegong_gonggu_excluded_' + id);
-        try {
-          localStorage.removeItem('jeegong_gonggu_excluded_date_' + id);
-        } catch (e) {}
+        clearGongguExcludeDate(id);
         pushCloudState();
         if (typeof showToast === 'function') {
           showToast(`↩️ @${id} 계정이 발송 대기 목록으로 복구되었습니다.`);
@@ -4028,11 +4074,10 @@ function renderGongguCampaign() {
       btn.addEventListener('click', () => {
         const id = btn.getAttribute('data-id');
         if (confirm(`@${id} 계정을 제안 리스트에서 제외하시겠습니까?`)) {
-          const kstDate = (appData && appData.briefings && appData.briefings[0] && appData.briefings[0].date) || new Date().toISOString().slice(0, 10);
+          // 브리핑 날짜가 아니라 실제 한국 시간 오늘 날짜로 기록한다
+          const kstDate = getKSTNow().dateStr;
           localStorage.setItem('jeegong_gonggu_excluded_' + id, 'true');
-          try {
-            localStorage.setItem('jeegong_gonggu_excluded_date_' + id, kstDate);
-          } catch (e) {}
+          recordGongguExcludeDate(id, kstDate);
           pushCloudState();
           if (typeof showToast === 'function') {
             showToast(`🗑️ @${id} 계정이 목록에서 제외되었습니다.`);
