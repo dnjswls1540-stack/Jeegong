@@ -845,7 +845,7 @@ function renderWeeklyCalendar() {
     btn.classList.toggle('is-active', btn.getAttribute('data-cal-mode') === window.currentCalMode);
   });
   const calPanelTitle = document.getElementById('cal-panel-title');
-  if (calPanelTitle) calPanelTitle.textContent = isMonth ? '캘린더 · 월 (구글 캘린더)' : '캘린더 · 주 (구글 캘린더)';
+  if (calPanelTitle) calPanelTitle.textContent = '캘린더 (구글 캘린더)';
   const rangeTextEl = document.getElementById('cal-week-range-text');
   if (rangeTextEl) rangeTextEl.textContent = rangeStr;
   const fullRangeTextEl = document.getElementById('cal-full-range-text');
