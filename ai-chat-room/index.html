@@ -103,6 +103,28 @@ body.is-embed .appbar{
 body.is-embed .timeline{
   padding-bottom:8px;
 }
+/* 대시보드 팝업에서는 상단을 한 줄로 축소 — 아바타·인원은 팝업 상단 바에 이미 있음 (2026-11-16) */
+body.is-embed .appbar__top,
+body.is-embed .appbar__title{
+  display:none;
+}
+body.is-embed .appbar__sub{
+  margin:0;
+  font-size:12px;
+}
+body.is-embed .tabs{
+  margin:8px -4px 0;
+  padding:3px;
+  border-radius:12px;
+}
+body.is-embed .tab{
+  padding:6px 4px;
+  font-size:12.5px;
+  border-radius:9px;
+}
+body.is-embed .appbar__rule{
+  margin-top:10px;
+}
 @media (max-width:480px){
   body.is-embed .appbar{
     padding-top:calc(12px + env(safe-area-inset-top));

@@ -1792,9 +1792,9 @@ body.light-theme .inquiry-content-text {
   position: absolute;
   right: 0;
   bottom: 60px;
-  width: 400px;
-  height: min(600px, calc(100vh - 140px));
-  height: min(600px, calc(100dvh - 140px));
+  width: 460px;
+  height: min(760px, calc(100vh - 120px));
+  height: min(760px, calc(100dvh - 120px));
   flex-direction: column;
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
