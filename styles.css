@@ -449,6 +449,31 @@ body {
   color: #ffffff;
 }
 
+/* AI 협업방 바로가기 (상단 헤더) — 2026-11-16 */
+a.btn-header-tool {
+  text-decoration: none;
+}
+.btn-header-tool.header-ai-room {
+  background-color: #fff7f3;
+  border-color: rgba(222, 87, 52, 0.28);
+  color: #b8431f;
+}
+.btn-header-tool.header-ai-room:hover {
+  background-color: #fdede6;
+  border-color: rgba(222, 87, 52, 0.45);
+  color: #9e3517;
+}
+[data-theme="dark"] .btn-header-tool.header-ai-room {
+  background-color: rgba(222, 87, 52, 0.16);
+  border-color: rgba(222, 87, 52, 0.38);
+  color: #ffb49e;
+}
+[data-theme="dark"] .btn-header-tool.header-ai-room:hover {
+  background-color: rgba(222, 87, 52, 0.24);
+  border-color: rgba(222, 87, 52, 0.5);
+  color: #ffffff;
+}
+
 .icon-tool-btn {
   background: transparent;
   border: none;
@@ -568,6 +593,30 @@ body {
   background-color: #1a1a1a;
   color: #ffffff;
   border-color: #1a1a1a;
+}
+/* 모바일 탭 줄의 AI 협업방 링크 (탭 전환 버튼과 구분되는 링크) — 2026-11-16 */
+.mobile-room-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(222, 87, 52, 0.32);
+  background-color: #fff7f3;
+  color: #b8431f;
+  font-size: 12.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.mobile-room-link:active {
+  background-color: #fdede6;
+}
+[data-theme="dark"] .mobile-room-link {
+  background-color: rgba(222, 87, 52, 0.16);
+  border-color: rgba(222, 87, 52, 0.4);
+  color: #ffb49e;
 }
 
 /* Content Body */
@@ -2116,6 +2165,10 @@ body.light-theme .inquiry-content-text {
   }
   .breadcrumb-right {
     gap: 6px;
+  }
+  /* 모바일에서는 헤더가 좁아 AI 협업방은 탭 줄 링크로 대신한다 */
+  .breadcrumb-right .btn-header-tool.header-ai-room {
+    display: none;
   }
   .btn-header-tool {
     padding: 5px 8px;

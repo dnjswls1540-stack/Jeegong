@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="color-scheme" content="light" />
 <meta name="theme-color" content="#F3F0EB" />
-<title>AI 협업방 · 구름이·키링·Cue·부이</title>
+<title>AI 협업방 · 구름이(피클)·클로드·코덱스·Cue</title>
 <style>
 /* ============================================================
    1. 디자인 토큰 — 매트/크리스탈 톤 (과한 네온광 없음)
@@ -352,7 +352,8 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
 /* @멘션 하이라이트 */
 .mention{
   font-weight:700;
-  color:var(--mc,#B8431F);
+  /* 밝은 말풍선에서도 WCAG AA(4.5:1) 이상 — 틴트 배경 위 진한 변형 색을 쓴다 */
+  color:var(--mcd,#8F2E12);
   background:var(--mt,#FCEFE9);
   border-radius:5px;
   padding:0 3px;
@@ -532,6 +533,33 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
   color:var(--mcolor,var(--ink));
   box-shadow:0 1px 2px rgba(22,22,26,.05);
 }
+
+/* @멘션 자동완성 목록 */
+.mentions{
+  display:flex;flex-direction:column;gap:1px;
+  margin:0 0 8px;padding:5px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:var(--surface);
+  box-shadow:var(--shadow-2);
+}
+.mentions[hidden]{display:none;}
+.mentions__hint{
+  padding:3px 8px 5px;
+  font-size:10.5px;color:var(--ink-3);
+}
+.mentions__item{
+  appearance:none;display:flex;align-items:center;gap:8px;
+  width:100%;padding:7px 8px;
+  border:0;border-radius:9px;
+  background:transparent;
+  font-size:12.5px;color:var(--ink-2);
+  text-align:left;cursor:pointer;
+}
+.mentions__item:hover{background:var(--surface-2);}
+.mentions__item.is-active{background:var(--surface-3);color:var(--ink);}
+.mentions__item .mention-handle{font-weight:700;color:var(--ink);}
+.mentions__item .mention-role{margin-left:auto;font-size:10.5px;color:var(--ink-3);}
 
 .inputrow{
   display:flex;
@@ -901,7 +929,7 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
       <span class="badge" id="memberBadge"><i class="badge__dot"></i>AI 4개가 함께해요</span>
     </div>
     <h1 class="appbar__title">AI들이 일을 이어 가고 있어요</h1>
-    <p class="appbar__sub" id="headerStatus">구름이 · 키링 · Cue · 부이</p>
+    <p class="appbar__sub" id="headerStatus">구름이(피클) · 클로드 · 코덱스 · Cue</p>
 
     <nav class="tabs" role="tablist" aria-label="화면 선택">
       <button class="tab" role="tab" id="tab-chat" aria-selected="true" aria-controls="view-chat" data-tab="chat" type="button">대화·결정</button>
@@ -924,8 +952,10 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
 
         <div class="chips" id="chips" role="group" aria-label="지시 대상 선택"></div>
 
+        <div class="mentions" id="mentionSuggest" role="listbox" aria-label="@멘션 자동완성" hidden></div>
+
         <div class="inputrow">
-          <textarea id="msgInput" rows="1" placeholder="무엇을 시킬까요?" aria-label="지시 내용" enterkeyhint="send"></textarea>
+          <textarea id="msgInput" rows="1" placeholder="무엇을 시킬까요? (@로 AI 지정)" aria-label="지시 내용" enterkeyhint="send" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="mentionSuggest"></textarea>
           <button class="send" id="sendBtn" type="button" aria-label="지시 남기기" disabled>
             <span>지시 남기기</span>
             <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M12 19V5M12 5l-6 6M12 5l6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -1016,7 +1046,7 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
         <div class="card">
           <h2 class="card__title">정보</h2>
           <p class="fineprint">
-            AI 협업방 <b>v1.1 · 클라우드 자동 연결</b><br />
+            AI 협업방 <b>v1.2 · 4인 체계</b><br />
             HTML + CSS + Vanilla JS 단일 파일 · 외부 라이브러리 없음<br />
             저장 · 이 브라우저 localStorage (<code id="storageKeyLabel">ai-chat-room.v1</code>) ↔ Supabase <code>room_messages</code><br />
             클라우드가 준비되기 전에는 로컬에 기록하고 자동으로 재연결합니다
@@ -1058,21 +1088,21 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
   });
 
   /* ==========================================================
-     1. 참여 AI 정의 — 이름·역할·테마색 (뮤즈 제외, 4명)
+     1. 참여 AI 정의 — 이름·역할·테마색 (4명 고정)
      ========================================================== */
   var MEMBERS = [
-    { id: 'pickle',  name: '구름이', full: '구름이(피클)', role: '실행·전화·예약', mark: '구',
-      color: '#D9532E', tint: '#FCEFE9', deep: '#B23A17',
-      desc: '전화·예약·발송 같은 실제 실행을 맡아요. 지시를 쪼개 진행하고 결과를 이 방에 남깁니다.' },
-    { id: 'keyring', name: '키링',  full: '키링',        role: '일정·정리',     mark: '키',
-      color: '#3C63D9', tint: '#EDF1FD', deep: '#2C4CB0',
-      desc: '일정·할 일·자료 정리를 맡아요. 시간이 겹치는 일을 먼저 찾아 알려줍니다.' },
-    { id: 'cue',     name: 'Cue',   full: 'Cue',         role: '자료조사·분석', mark: 'C',
-      color: '#0E8F6B', tint: '#E7F6F0', deep: '#0A6E52',
-      desc: '자료 조사와 분석을 맡아요. 근거와 출처를 함께 남기는 쪽으로 움직입니다.' },
-    { id: 'booi',    name: '부이',  full: '부이',        role: '비교·취향추천', mark: '부',
-      color: '#7050D6', tint: '#F1ECFC', deep: '#5938BE',
-      desc: '비교와 취향 추천을 맡아요. 후보를 좁히고 고를 기준을 정리해 줍니다.' }
+    { id: 'pickle',  name: '구름이', full: '구름이(피클)', role: '팀장·비서·실행',   mark: '구',
+      color: '#D9532E', tint: '#FCEFE9', deep: '#8F2E12',
+      desc: '팀장·비서·실행을 맡아요. 지시를 쪼개 배분하고, 전화·예약·발송 같은 실제 실행과 최종 보고를 합니다.' },
+    { id: 'claude',  name: '클로드', full: '클로드',        role: '메인 개발·PC 실무', mark: '클',
+      color: '#3C63D9', tint: '#EDF1FD', deep: '#24409B',
+      desc: '메인 개발과 PC 실무를 맡아요. 대시보드·웹 제작과 로컬 파일 작업을 길게 끌고 갑니다.' },
+    { id: 'codex',   name: '코덱스', full: '코덱스',        role: '서브 개발·팩트체크', mark: '코',
+      color: '#7050D6', tint: '#F1ECFC', deep: '#432592',
+      desc: '서브 개발과 팩트체크를 맡아요. 빠른 스크립트로 먼저 돌려 보고, 다른 AI 결과물을 교차 검수합니다.' },
+    { id: 'cue',     name: 'Cue',   full: 'Cue',          role: '외부 리서치·마케팅', mark: 'C',
+      color: '#0E8F6B', tint: '#E7F6F0', deep: '#085C45',
+      desc: '외부 리서치와 마케팅을 맡아요. 트렌드·경쟁사·소재를 출처와 함께 정리합니다.' }
   ];
   var MEMBER_MAP = {};
   MEMBERS.forEach(function (m) { MEMBER_MAP[m.id] = m; });
@@ -1082,11 +1112,39 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
   /* @이름 → 멤버 (긴 이름·별칭 먼저) */
   var MENTION_ALIASES = {
     '구름이': 'pickle', '피클': 'pickle',
-    '키링': 'keyring',
+    '클로드': 'claude',
+    '코덱스': 'codex',
     'cue': 'cue', 'Cue': 'cue', '큐': 'cue',
-    '부이': 'booi',
     '모두': 'all'
   };
+
+  /* 이전 회차(키링·부이) 기록이 클라우드에 남아 있어도 화면이 깨지지 않게 하는 표시용 정의 */
+  var LEGACY_MEMBERS = {
+    keyring: { id: 'keyring', name: '키링', full: '키링', role: '이전 멤버', mark: '키',
+      color: '#8C8C95', tint: '#F1EEE9', deep: '#4A4A53' },
+    booi:    { id: 'booi',   name: '부이', full: '부이', role: '이전 멤버', mark: '부',
+      color: '#8C8C95', tint: '#F1EEE9', deep: '#4A4A53' }
+  };
+
+  /* 알 수 없는 author가 들어와도 크래시 없이 이름만 다르게 그린다 */
+  function memberFor(id) {
+    if (MEMBER_MAP[id]) return MEMBER_MAP[id];
+    if (LEGACY_MEMBERS[id]) return LEGACY_MEMBERS[id];
+    var raw = String(id || '');
+    return {
+      id: raw || 'unknown',
+      name: raw || '알 수 없음',
+      full: raw || '알 수 없음',
+      role: '참여 정보 없음',
+      mark: '?',
+      color: '#8C8C95', tint: '#F1EEE9', deep: '#4A4A53'
+    };
+  }
+
+  /* @자동완성 목록 (모두 + 4명) */
+  var MENTION_HANDLES = [{ id: TARGET_ALL, handle: '모두', role: '전원에게' }].concat(
+    MEMBERS.map(function (m) { return { id: m.id, handle: m.name, role: m.role }; })
+  );
 
   /* ==========================================================
      2. 유틸
@@ -1522,6 +1580,7 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
     membersList: $('#membersList'),
     toastHost: $('#toastHost'),
     composerMode: $('#composerMode'),
+    mentionSuggest: $('#mentionSuggest'),
     sheet: $('#sheet'),
     sheetTitle: $('#sheetTitle'),
     sheetBody: $('#sheetBody'),
@@ -1591,7 +1650,7 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
   }
 
   /* 본문에서 @이름 만 하이라이트 (DOM으로 안전하게) */
-  var MENTION_RE = /@(구름이|피클|키링|cue|Cue|큐|부이|모두)/g;
+  var MENTION_RE = /@(구름이|피클|클로드|코덱스|cue|Cue|큐|모두)/g;
 
   function appendRichText(parent, text) {
     var last = 0;
@@ -1644,7 +1703,7 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
   }
 
   function aiMessageNode(msg) {
-    var member = MEMBER_MAP[msg.author] || MEMBERS[0];
+    var member = memberFor(msg.author);
     var wrap = el('div', 'msg msg--ai' + (msg.done ? ' is-done' : ''));
     wrap.setAttribute('data-id', msg.id);
     wrap.setAttribute('data-tone', member.id);
@@ -1724,9 +1783,9 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
     var quick = el('div', 'quick');
     [
       '@구름이 오늘 할 일 3개만 추려줘',
-      '@키링 이번 주 일정 확인해줘',
-      '@Cue 조사 우선순위 정리해줘',
-      '@부이 노트북 3종 비교해줘'
+      '@클로드 대시보드 수정할 거 정리해줘',
+      '@코덱스 이번 작업 팩트체크해줘',
+      '@Cue 스레드 소재 5개만 조사해줘'
     ].forEach(function (t) {
       var b = el('button', null, t);
       b.type = 'button';
@@ -1814,7 +1873,7 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
 
   function renderMembers() {
     els.membersList.innerHTML = '';
-    els.membersList.appendChild(el('div', 'section-label', '참여 AI 4명 · 뮤즈 제외'));
+    els.membersList.appendChild(el('div', 'section-label', '참여 AI 4명 · 자동 연동'));
 
     MEMBERS.forEach(function (m) {
       var card = el('article', 'member');
@@ -1908,26 +1967,134 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
     els.send.disabled = !has;
   }
 
+  /* --- @멘션 자동완성 ---
+     입력 중인 @토큰만 골라 후보를 띄운다. Enter 후에 전송되지 않고 후보 선택이 먼저다. */
+  var mentionState = { open: false, items: [], active: 0, start: -1 };
+
+  function mentionQuery() {
+    var t = els.input;
+    var pos = t.selectionStart;
+    if (pos === null || pos === undefined) return null;
+    var before = t.value.slice(0, pos);
+    var m = /(^|\s)@([^\s@]{0,12})$/.exec(before);
+    if (!m) return null;
+    return { start: pos - m[2].length - 1, query: m[2], caret: pos };
+  }
+
+  function mentionAliasesFor(id) {
+    if (id === 'pickle') return ['피클'];
+    if (id === 'cue') return ['큐'];
+    return [];
+  }
+
+  function closeMentionSuggest() {
+    mentionState.open = false;
+    mentionState.items = [];
+    mentionState.active = 0;
+    mentionState.start = -1;
+    if (!els.mentionSuggest) return;
+    els.mentionSuggest.hidden = true;
+    els.mentionSuggest.innerHTML = '';
+    els.input.setAttribute('aria-expanded', 'false');
+  }
+
+  function drawMentionSuggest() {
+    var box = els.mentionSuggest;
+    if (!box) return;
+    box.innerHTML = '';
+    if (!mentionState.open || !mentionState.items.length) { box.hidden = true; return; }
+
+    var hint = el('div', 'mentions__hint', '이름을 고르면 지시 대상도 함께 바뀝니다.');
+    hint.setAttribute('aria-hidden', 'true');
+    box.appendChild(hint);
+    mentionState.items.forEach(function (item, i) {
+      var b = el('button', 'mentions__item' + (i === mentionState.active ? ' is-active' : ''));
+      b.type = 'button';
+      b.id = 'mention-opt-' + i;
+      b.setAttribute('role', 'option');
+      b.setAttribute('aria-selected', String(i === mentionState.active));
+      b.setAttribute('data-mention', item.handle);
+      b.tabIndex = -1;
+      var dot = el('i', 'chip__dot');
+      var m = item.id === TARGET_ALL ? null : memberFor(item.id);
+      dot.style.setProperty('--mcolor', m ? m.color : '#8C8C95');
+      b.appendChild(dot);
+      b.appendChild(el('span', 'mention-handle', '@' + item.handle));
+      b.appendChild(el('span', 'mention-role', item.role));
+      box.appendChild(b);
+    });
+
+    box.hidden = false;
+    els.input.setAttribute('aria-expanded', 'true');
+    els.input.setAttribute('aria-controls', 'mentionSuggest');
+    els.input.setAttribute('aria-activedescendant', 'mention-opt-' + mentionState.active);
+  }
+
+  function renderMentionSuggest() {
+    var q = mentionQuery();
+    if (!q) { closeMentionSuggest(); return; }
+    var lower = q.query.toLowerCase();
+    var items = MENTION_HANDLES.filter(function (h) {
+      if (!lower) return true;
+      if (h.handle.toLowerCase().indexOf(lower) === 0) return true;
+      return mentionAliasesFor(h.id).some(function (a) { return a.indexOf(lower) === 0 || lower.indexOf(a) === 0; });
+    }).slice(0, 5);
+    if (!items.length) { closeMentionSuggest(); return; }
+    var wasOpen = mentionState.open && mentionState.start === q.start;
+    mentionState.open = true;
+    mentionState.items = items;
+    mentionState.start = q.start;
+    if (!wasOpen) mentionState.active = 0;
+    if (mentionState.active >= items.length) mentionState.active = 0;
+    drawMentionSuggest();
+  }
+
+  function moveMention(delta) {
+    if (!mentionState.open || !mentionState.items.length) return;
+    var n = mentionState.items.length;
+    mentionState.active = (mentionState.active + delta + n) % n;
+    drawMentionSuggest();
+  }
+
+  function applyMention(item) {
+    if (!item) { closeMentionSuggest(); return; }
+    var t = els.input;
+    var caret = (t.selectionStart === null || t.selectionStart === undefined) ? t.value.length : t.selectionStart;
+    var start = mentionState.start >= 0 ? mentionState.start : caret;
+    var before = t.value.slice(0, start);
+    var after = t.value.slice(caret).replace(/^\s+/, '');
+    var insert = '@' + item.handle + ' ';
+    t.value = before + insert + after;
+    var next = (before + insert).length;
+    closeMentionSuggest();
+    autoGrow();
+    syncSend();
+    t.focus();
+    try { t.setSelectionRange(next, next); } catch (e) { /* noop */ }
+    mentionState.pressing = false;
+    if (item.id !== TARGET_ALL) selectTarget(item.id);
+  }
+
   var DEMO_LINES = {
     pickle: [
-      function (s) { return '@지원진 님, "' + s + '" 확인했어요. 전화·예약 쪽은 제가 먼저 손대서 정리하고 이 방에 남길게요.'; },
-      function (s) { return '@지원진 님, "' + s + '" 접수했어요. 실행 순서만 정해서 바로 움직일게요.'; },
-      function (s) { return '@지원진 님, "' + s + '" 건은 제가 맡을게요. 예약이 필요한지 먼저 확인해서 알려드릴게요.'; }
+      function (s) { return '@지원진 님, "' + s + '" 확인했어요. 제가 지시를 나눠서 진행하고 결과를 이 방에 남길게요.'; },
+      function (s) { return '@지원진 님, "' + s + '" 접수했어요. 실행 순서 정해서 바로 움직일게요.'; },
+      function (s) { return '@지원진 님, "' + s + '" 건은 제가 흔들어 볼게요. 예약·발송이 필요한지 먼저 확인해서 알려드릴게요.'; }
     ],
-    keyring: [
-      function (s) { return '@지원진 님, "' + s + '" 일정 쪽에서 확인했어요. 겹치는 시간 있으면 바로 알려드릴게요.'; },
-      function (s) { return '@지원진 님, "' + s + '" 정리해서 목록으로 남겨둘게요.'; },
-      function (s) { return '@지원진 님, "' + s + '" 이번 주 안에서 언제 할지 먼저 잡아둘게요.'; }
+    claude: [
+      function (s) { return '@지원진 님, "' + s + '" 코드·PC 쪽은 제가 맡을게요. 브랜치 따서 바로 붙이겠습니다.'; },
+      function (s) { return '@지원진 님, "' + s + '" 영향 범위부터 확인하고 커밋 올려서 보고드릴게요.'; },
+      function (s) { return '@지원진 님, "' + s + '" 로컬에서 실제로 돌려 보고 결과만 짧게 남기겠습니다.'; }
+    ],
+    codex: [
+      function (s) { return '@지원진 님, "' + s + '" 먼저 교차 검수할게요. 숫자·출처가 빈 부분은 그대로 알려드립니다.'; },
+      function (s) { return '@지원진 님, "' + s + '" 스크립트로 검증 돌려서 결과만 올리겠습니다.'; },
+      function (s) { return '@지원진 님, "' + s + '" 클로드 결과물과 대조해서 틀린 부분 있으면 표시해 둘게요.'; }
     ],
     cue: [
-      function (s) { return '@지원진 님, "' + s + '" 조사해서 근거랑 같이 정리할게요.'; },
-      function (s) { return '@지원진 님, "' + s + '" 쪽은 출처 확인부터 들어갈게요. 결과는 요약 3줄로 남깁니다.'; },
-      function (s) { return '@지원진 님, "' + s + '" 분석 기준을 먼저 잡고 비교표로 정리해 둘게요.'; }
-    ],
-    booi: [
-      function (s) { return '@지원진 님, "' + s + '" 비교 기준부터 잡을게요. 후보 3개로 좁혀서 볼까요?'; },
-      function (s) { return '@지원진 님, "' + s + '" 취향 기준으로 추리면 2개 정도로 좁혀집니다. 바로 정리해 둘게요.'; },
-      function (s) { return '@지원진 님, "' + s + '" 장단점만 짧게 비교해서 올릴게요.'; }
+      function (s) { return '@지원진 님, "' + s + '" 조사해서 근거 링크랑 같이 정리할게요.'; },
+      function (s) { return '@지원진 님, "' + s + '" 쪽은 트렌드·경쟁사부터 훑고 요약 3줄로 남깁니다.'; },
+      function (s) { return '@지원진 님, "' + s + '" 마케팅 소재로 쓸 만한 사례만 추려서 올릴게요.'; }
     ]
   };
 
@@ -1970,6 +2137,7 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
     els.input.value = '';
     autoGrow();
     syncSend();
+    closeMentionSuggest();
 
     Room.add(msg).then(function () {
       renderTimeline();
@@ -2059,15 +2227,15 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
     }
     return [
       { id: uid(), author: 'pickle', target: 'user', demo: false, done: true, sample: true,
-        at: iso(y, 17, 40), text: '@지원진 님, 오늘 지시 3건 중 2건 마무리했어요. 남은 1건은 내일 오전에 처리하고 이 방에 남길게요.' },
-      { id: uid(), author: 'keyring', target: 'user', done: true, sample: true,
-        at: iso(y, 17, 42), text: '이번 주 일정 정리해뒀어요. 겹치는 시간은 없고, 목요일 오후만 비워두면 됩니다.' },
+        at: iso(y, 17, 40), text: '@지원진 님, 오늘 지시 3건 중 2건 마무리했어요. 남은 1건(렌터카 확인)은 내일 오전에 처리해서 이 방에 남길게요.' },
+      { id: uid(), author: 'claude', target: 'user', done: true, sample: true,
+        at: iso(y, 17, 42), text: '대시보드 수정 커밋 올렸습니다. 캐시 버전까지 갱신해서 새로고침하면 바로 반영됩니다.' },
       { id: uid(), author: 'user', target: 'all', done: false, sample: true,
-        at: iso(0, 9, 12), text: '@Cue 이번 주 조사 우선순위 3개만 뽑아줘. @부이 그중 하나는 비교로 붙여줘.' },
-      { id: uid(), author: 'cue', target: 'user', done: false, demo: false, sample: true,
-        at: iso(0, 9, 14), text: '@지원진 님, 우선순위 3개 뽑았어요 — ① 시장 ② 경쟁사 ③ 원가 구조. ①부터 정리할게요.' },
-      { id: uid(), author: 'booi', target: 'user', done: false, sample: true,
-        at: iso(0, 9, 15), text: '비교는 ② 경쟁사 쪽이 빨라요. 3곳으로 추리면 고르는 기준까지 같이 정리됩니다.' }
+        at: iso(0, 9, 12), text: '@클로드 대시보드에 AI 협업방 버튼 붙여줘. @코덱스 그거 검수하고, @Cue 스레드 소재 5개만 조사해줘.' },
+      { id: uid(), author: 'codex', target: 'user', done: false, sample: true,
+        at: iso(0, 9, 14), text: '검수 결과 문제 없습니다. 링크 target=_blank·rel=noopener 확인했고 기존 기능도 그대로입니다.' },
+      { id: uid(), author: 'cue', target: 'user', done: false, sample: true,
+        at: iso(0, 9, 15), text: '소재 5개 추렸습니다 — 렌터카·숙소 후기, 12월 제주 날씨, 공구 개시 3일차 반응. 출처 링크는 정리해서 올릴게요.' }
     ];
   }
 
@@ -2108,7 +2276,7 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
           lines.push('--- ' + dayLabel(m.at) + ' ---');
           lastDay = k;
         }
-        var who = m.author === 'user' ? '지원진' : (MEMBER_MAP[m.author] ? MEMBER_MAP[m.author].full : m.author);
+        var who = m.author === 'user' ? '지원진' : memberFor(m.author).full;
         var to = m.author === 'user' ? ' → ' + targetLabel(m.target) : '';
         lines.push('[' + fmtTime(m.at) + '] ' + who + to + (m.done ? ' (완료)' : ''));
         lines.push(m.text);
@@ -2313,15 +2481,41 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
 
     // 입력
     els.input.addEventListener('input', function () {
+      mentionState.pressing = false;
       autoGrow();
       syncSend();
+      renderMentionSuggest();
     });
     els.input.addEventListener('keydown', function (e) {
+      if (mentionState.open) {
+        if (e.key === 'ArrowDown') { e.preventDefault(); moveMention(1); return; }
+        if (e.key === 'ArrowUp') { e.preventDefault(); moveMention(-1); return; }
+        if (e.key === 'Enter' || e.key === 'Tab') {
+          if (!e.isComposing) { e.preventDefault(); applyMention(mentionState.items[mentionState.active]); return; }
+        }
+        if (e.key === 'Escape') { e.preventDefault(); closeMentionSuggest(); return; }
+      }
       if (e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
         e.preventDefault();
         sendCurrent();
       }
     });
+    els.input.addEventListener('blur', function () {
+      /* 후보를 누르려는 blur는 잠시 봐준다 */
+      setTimeout(function () { if (!mentionState.pressing) closeMentionSuggest(); }, 140);
+    });
+    if (els.mentionSuggest) {
+      els.mentionSuggest.addEventListener('pointerdown', function () {
+        mentionState.pressing = true;
+      });
+      els.mentionSuggest.addEventListener('click', function (e) {
+        mentionState.pressing = false;
+        var btn = e.target.closest('[data-mention]');
+        if (!btn) return;
+        var i = parseInt(btn.id.replace('mention-opt-', ''), 10);
+        applyMention(mentionState.items[isNaN(i) ? 0 : i]);
+      });
+    }
     els.send.addEventListener('click', sendCurrent);
 
     // 타임라인 (완료 토글 · 샘플 · 빠른 시작)
@@ -2461,6 +2655,7 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
   }
 
   function applyQuick(text) {
+    closeMentionSuggest();
     els.input.value = text;
     var ids = extractMentionIds(text);
     if (ids.length && ids[0] !== TARGET_ALL) selectTarget(ids[0]);

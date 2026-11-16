@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>지공 출근 에이전트 | 업무 현황 대시보드</title>
-  <link rel="stylesheet" href="styles.css?v=20261116_calmonth">
+  <link rel="stylesheet" href="styles.css?v=20261116_airoom">
 </head>
 <body>
   <div class="app-container">
@@ -97,6 +97,10 @@
         </div>
         <div class="breadcrumb-right">
           <span class="status-save-text">저장됨</span>
+          <a class="btn-header-tool header-ai-room" id="btn-ai-collab-room" href="./ai-chat-room/?room=Jeegong_0724" target="_blank" rel="noopener" title="AI 협업방 열기 — 구름이(피클)·클로드·코덱스·Cue">
+            <span aria-hidden="true">💬</span>
+            <span class="header-ai-room__label">AI 협업방</span>
+          </a>
           <button class="btn-header-tool" id="btn-theme-toggle" title="테마 전환">
             <span id="btn-theme-icon">🌙</span>
             <span id="btn-theme-label">다크모드</span>
@@ -147,6 +151,7 @@
         <button class="mobile-tab-btn" data-view="work-status-view">📊 업무 현황</button>
         <button class="mobile-tab-btn" data-view="gonggu-view">🤝 공구 영업</button>
         <button class="mobile-tab-btn" data-view="sales-view">💰 정산·매출</button>
+        <a class="mobile-room-link" id="btn-ai-collab-room-mobile" href="./ai-chat-room/?room=Jeegong_0724" target="_blank" rel="noopener">💬 AI 협업방</a>
       </nav>
 
       <main class="content-body">
