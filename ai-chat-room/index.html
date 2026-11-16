@@ -1289,7 +1289,18 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
         });
       },
       add: function (msg) {
-        var row = Object.assign({}, msg, { room_id: settings.roomId });
+        /* 서버에 보낼 열만 골라낸다(로겁용 표시 같은 부가 필드는 제외) */
+        var row = {
+          id: msg.id,
+          room_id: settings.roomId,
+          author: msg.author,
+          target: msg.target || null,
+          text: msg.text,
+          done: !!msg.done,
+          demo: !!msg.demo,
+          sample: !!msg.sample,
+          at: msg.at
+        };
         return fetch(q('room_messages'), {
           method: 'POST',
           headers: Object.assign({ 'Prefer': 'return=minimal' }, headers),
@@ -1388,7 +1399,9 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
       var seen = {};
       rows.forEach(function (r) { if (r && r.id) seen[r.id] = true; });
       var local = readState().messages.filter(function (m) {
-        return m && m.id && !m._removed && !seen[m.id];
+        /* 다른 방에서 남은 기록은 올리지 않는다 */
+        return m && m.id && !m._removed && !seen[m.id] &&
+          (!m.room || m.room === self.settings.roomId);
       });
       if (!local.length) return Promise.resolve({ rows: rows, failed: false });
       var failed = 0;
@@ -1403,9 +1416,11 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
       var self = this;
       this.messages.push(msg);
       if (this.adapter.kind !== 'cloud' || this.cloudState === 'pending') {
+        msg.room = msg.room || this.settings.roomId;
         return LocalAdapter.add(msg).catch(function () {});
       }
       return this.adapter.add(msg).catch(function () {
+        msg.room = msg.room || self.settings.roomId;
         LocalAdapter.add(msg).catch(function () {});
         self.cloudState = 'pending';
         scheduleCloudRetry(self);
