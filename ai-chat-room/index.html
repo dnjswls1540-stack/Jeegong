@@ -132,6 +132,24 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
   font-variant-numeric:tabular-nums;
 }
 
+/* 실시간 연결 표시 — 과하지 않은 작은 점 하나 */
+.live-dot{
+  display:inline-block;
+  width:5px;height:5px;
+  border-radius:50%;
+  margin-right:5px;
+  vertical-align:1px;
+  background:var(--ok);
+  box-shadow:0 0 0 2.5px rgba(15,138,95,.12);
+  animation:livepulse 2.6s ease-in-out infinite;
+}
+.live-dot.is-off{
+  background:#BEB9B1;
+  box-shadow:0 0 0 2.5px rgba(190,185,177,.16);
+  animation:none;
+}
+@keyframes livepulse{0%,100%{opacity:1;}50%{opacity:.42;}}
+
 /* 탭 */
 .tabs{
   display:flex;
@@ -1321,6 +1339,22 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
        );
      RLS를 켜고 room_id 기준 정책을 걸어 쓰는 전제입니다.
   ---------------------------------------------------------- */
+  /* Supabase 행(row) → 화면 메시지(messages[]) 한 가지 모양으로 통일한다.
+     REST 목록·Realtime INSERT·폴링이 모두 같은 함수를 거치므로 중복 판단이 어긋나지 않는다. */
+  function rowToMessage(r) {
+    if (!r || !r.id) return null;
+    return {
+      id: String(r.id),
+      author: r.author,
+      target: r.target == null ? null : r.target,
+      text: r.text == null ? '' : String(r.text),
+      done: !!r.done,
+      demo: !!r.demo,
+      sample: !!r.sample,
+      at: r.at
+    };
+  }
+
   function makeSupabaseAdapter(settings) {
     var base = String(settings.url || '').replace(/\/+$/, '');
     var headers = {
@@ -1338,12 +1372,7 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
           if (!res.ok) throw new Error('list ' + res.status);
           return res.json();
         }).then(function (rows) {
-          return (rows || []).map(function (r) {
-            return {
-              id: r.id, author: r.author, target: r.target, text: r.text,
-              done: !!r.done, demo: !!r.demo, sample: !!r.sample, at: r.at
-            };
-          });
+          return (rows || []).map(rowToMessage).filter(Boolean);
         });
       },
       add: function (msg) {
@@ -1429,6 +1458,7 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
         /* 읽기는 돼도 쓰기가 막혔으면(Room ID 정책) 대기 상태를 유지한다 */
         self.cloudState = res.failed ? 'pending' : 'ok';
         self.messages = res.rows || [];
+        self.messages.forEach(function (m) { if (m && m.id) syncedIds[m.id] = true; });
         return !res.failed;
       }).catch(function () {
         self.cloudState = 'pending';
@@ -1549,6 +1579,7 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
           renderTimeline();
           renderMembers();
           renderSettingsState();
+          startLive();
           toast('클라우드에 연결됐어요. 이제 기기끼리 기록이 함께 남습니다.');
         } else {
           room.retryDelay = Math.min(Math.round((room.retryDelay || RETRY_BASE) * 1.6), RETRY_MAX);
@@ -1556,6 +1587,357 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
         }
       });
     }, room.retryDelay || RETRY_BASE);
+  }
+
+  /* ==========================================================
+     3.5 실시간 동기화 — Realtime WebSocket(1차) + 백업 폴링(2차)
+     ----------------------------------------------------------
+     · 1차: Supabase Realtime 채널(Phoenix 프로토콜)을 Vanilla JS로 직접 붙인다.
+             phx_join → postgres_changes(INSERT/UPDATE/DELETE, room_id 필터)
+             phx_heartbeat 25초 주기, 끊기면 지수 백오프로 재연결.
+     · 2차: 모바일 사파리 백그라운드 등으로 소켓이 조용히 죽어도 화면이 멈추지 않도록
+             3.5초 폴링이 같은 병합 함수로 차이분만 반영한다. (document.hidden이면 쉼)
+     두 경로 모두 id 기준으로 병합하므로 낙관적 UI와 중복 렌더링되지 않는다.
+     ========================================================== */
+  var POLL_MS = 3500;
+  var HEARTBEAT_MS = 25000;
+  var LIVE_DELAY_START = 1000;
+  var LIVE_DELAY_MAX = 30000;
+  var MSG_FIELDS = ['author', 'target', 'text', 'done', 'demo', 'sample', 'at'];
+
+  /* 클라우드에서 실제로 본 id만 기록한다 — 아직 못 올린 낙관적 메시지를 지우지 않기 위해서 */
+  var syncedIds = {};
+
+  function wsBase(url) {
+    var u = String(url || '').trim().replace(/\/+$/, '');
+    if (/^https:/i.test(u)) return u.replace(/^https:/i, 'wss:');
+    if (/^http:/i.test(u)) return u.replace(/^http:/i, 'ws:');
+    if (/^wss?:/i.test(u)) return u;
+    return 'wss://' + u;
+  }
+
+  /* 클라우드 목록·Realtime 레코드를 messages[]에 id 기준으로 합친다(중복 없음). */
+  function mergeRows(rows, opts) {
+    opts = opts || {};
+    var changed = false;
+    var byId = {};
+    Room.messages.forEach(function (m) { if (m && m.id) byId[m.id] = m; });
+    var seen = {};
+
+    (rows || []).forEach(function (r) {
+      var msg = rowToMessage(r);
+      if (!msg) return;
+      seen[msg.id] = true;
+      syncedIds[msg.id] = true;
+      var cur = byId[msg.id];
+      if (!cur) {
+        Room.messages.push(msg);
+        byId[msg.id] = msg;
+        changed = true;
+        return;
+      }
+      MSG_FIELDS.forEach(function (k) {
+        if (cur[k] !== msg[k]) { cur[k] = msg[k]; changed = true; }
+      });
+    });
+
+    /* 서버에서 확인된 뒤 사라진 것만 지운다(다른 기기·창에서 삭제된 메시지) */
+    if (opts.prune) {
+      var removed = [];
+      var kept = Room.messages.filter(function (m) {
+        if (!m || !m.id || seen[m.id]) return true;
+        if (!syncedIds[m.id]) return true;
+        removed.push(m.id);
+        changed = true;
+        return false;
+      });
+      if (removed.length) {
+        Room.messages = kept;
+        dropFromLocalCache(removed);
+      }
+    }
+
+    return changed;
+  }
+
+  function mergeRow(row) { return mergeRows([row], { prune: false }); }
+
+  /* 삭제된 메시지가 다음 부팅 때 uploadLocalOnly로 되살아나지 않게 로컬 사본도 지운다 */
+  function dropFromLocalCache(ids) {
+    if (!ids || !ids.length) return;
+    try {
+      var st = readState();
+      var after = st.messages.filter(function (m) { return ids.indexOf(m.id) === -1; });
+      if (after.length === st.messages.length) return;
+      st.messages = after;
+      writeState(st);
+    } catch (e) { /* noop */ }
+  }
+
+  function removeMessageById(id) {
+    var before = Room.messages.length;
+    Room.messages = Room.messages.filter(function (m) { return !m || m.id !== id; });
+    delete syncedIds[id];
+    if (Room.messages.length !== before) {
+      dropFromLocalCache([id]);
+      return true;
+    }
+    return false;
+  }
+
+  var Live = {
+    ws: null,
+    status: 'off',        // 'off' | 'connecting' | 'joined' | 'retry'
+    ref: 0,
+    joinRef: null,
+    joinTimer: null,
+    hbTimer: null,
+    retryTimer: null,
+    attempts: 0,
+    events: 0,
+    lastEventAt: 0,
+    roomId: '',
+
+    url: function () {
+      var s = Room.settings;
+      return wsBase(s.url) + '/realtime/v1/websocket?apikey=' +
+        encodeURIComponent(s.anonKey) + '&vsn=1.0.0';
+    },
+
+    setStatus: function (s) {
+      if (this.status === s) return;
+      this.status = s;
+      renderHeader();
+    },
+
+    send: function (frame) {
+      if (!this.ws || this.ws.readyState !== 1) return false;
+      try { this.ws.send(JSON.stringify(frame)); return true; } catch (e) { return false; }
+    },
+
+    start: function () {
+      this.stop();
+      if (Room.settings.mode !== 'cloud' || !Room.canUseCloud()) { this.setStatus('off'); return; }
+      if (typeof WebSocket === 'undefined') { this.setStatus('off'); return; }
+      if (this.roomId !== Room.settings.roomId) this.roomId = Room.settings.roomId;
+      this.attempts = 0;
+      this.connect();
+    },
+
+    connect: function () {
+      var self = this;
+      if (this.retryTimer) { clearTimeout(this.retryTimer); this.retryTimer = null; }
+      this.setStatus('connecting');
+      var ws;
+      try {
+        ws = new WebSocket(this.url());
+      } catch (e) {
+        this.scheduleReconnect();
+        return;
+      }
+      this.ws = ws;
+
+      ws.onopen = function () { self.join(); };
+      ws.onmessage = function (ev) { self.onMessage(ev && ev.data); };
+      ws.onerror = function () { /* onclose가 뒤따라 온다 */ };
+      ws.onclose = function () {
+        if (self.ws !== ws) return;
+        self.ws = null;
+        if (self.status === 'off') return;
+        self.scheduleReconnect();
+      };
+    },
+
+    /* room_messages 테이블의 해당 방만 구독한다 */
+    join: function () {
+      var self = this;
+      var s = Room.settings;
+      var ref = String(++this.ref);
+      this.joinRef = ref;
+      this.send({
+        topic: 'realtime:room_messages',
+        event: 'phx_join',
+        payload: {
+          config: {
+            broadcast: { self: false },
+            presence: { key: '' },
+            postgres_changes: [{
+              event: '*',
+              schema: 'public',
+              table: 'room_messages',
+              filter: 'room_id=eq.' + s.roomId
+            }]
+          },
+          access_token: s.anonKey
+        },
+        ref: ref,
+        join_ref: ref
+      });
+
+      if (this.joinTimer) clearTimeout(this.joinTimer);
+      this.joinTimer = setTimeout(function () {
+        self.joinTimer = null;
+        if (self.status === 'joined') return;
+        /* 구독 응답이 없으면 이 소켓은 버리고 다시 붙는다(폴링이 그동안 화면을 지킨다) */
+        self.hardClose();
+        self.scheduleReconnect();
+      }, 12000);
+    },
+
+    onMessage: function (raw) {
+      var msg;
+      try { msg = JSON.parse(raw); } catch (e) { return; }
+      if (!msg || !msg.event) return;
+
+      if (msg.event === 'phx_reply') {
+        var st = msg.payload && msg.payload.status;
+        if (msg.ref === this.joinRef) {
+          if (st === 'ok') this.onJoined();
+          else { this.hardClose(); this.scheduleReconnect(); }
+        } else if (st === 'error') {
+          this.hardClose();
+          this.scheduleReconnect();
+        }
+        return;
+      }
+
+      if (msg.event === 'postgres_changes') { this.onChange(msg.payload); return; }
+      /* system / presence 이벤트는 화면에 쓰지 않는다 */
+    },
+
+    onJoined: function () {
+      this.attempts = 0;
+      if (this.joinTimer) { clearTimeout(this.joinTimer); this.joinTimer = null; }
+      this.setStatus('joined');
+      this.startHeartbeat();
+      pollTick();   // 붙는 사이에 놓친 변경을 한 번 맞춘다
+    },
+
+    startHeartbeat: function () {
+      var self = this;
+      if (this.hbTimer) clearInterval(this.hbTimer);
+      this.hbTimer = setInterval(function () {
+        self.send({ topic: 'phoenix', event: 'heartbeat', payload: {}, ref: String(++self.ref), join_ref: null });
+      }, HEARTBEAT_MS);
+    },
+
+    onChange: function (payload) {
+      var data = payload && payload.data ? payload.data : payload;
+      if (!data || !data.type) return;
+      var type = String(data.type).toUpperCase();
+      var rec = data.record || null;
+      var old = data.old_record || data.oldRecord || null;
+
+      this.events += 1;
+      this.lastEventAt = Date.now();
+
+      if (type === 'DELETE') {
+        var goneId = (old && old.id) || (rec && rec.id);
+        if (goneId && removeMessageById(goneId)) {
+          syncTimeline();
+          renderMembers();
+        }
+        return;
+      }
+
+      if (!rec || !rec.id) return;
+      if (rec.room_id && rec.room_id !== Room.settings.roomId) return;
+      if (mergeRow(rec)) {
+        syncTimeline();
+        renderMembers();
+      }
+    },
+
+    scheduleReconnect: function () {
+      var self = this;
+      if (this.status === 'off' || this.retryTimer) return;
+      this.attempts += 1;
+      var wait = Math.min(LIVE_DELAY_START * Math.pow(2, this.attempts - 1), LIVE_DELAY_MAX);
+      wait = Math.round(wait * (0.8 + Math.random() * 0.4));
+      this.setStatus('retry');
+      this.retryTimer = setTimeout(function () {
+        self.retryTimer = null;
+        self.connect();
+      }, wait);
+    },
+
+    hardClose: function () {
+      var ws = this.ws;
+      this.ws = null;
+      if (this.hbTimer) { clearInterval(this.hbTimer); this.hbTimer = null; }
+      if (this.joinTimer) { clearTimeout(this.joinTimer); this.joinTimer = null; }
+      if (ws) {
+        ws.onopen = ws.onmessage = ws.onerror = ws.onclose = null;
+        try { ws.close(); } catch (e) { /* noop */ }
+      }
+    },
+
+    stop: function () {
+      if (this.retryTimer) { clearTimeout(this.retryTimer); this.retryTimer = null; }
+      this.hardClose();
+      this.attempts = 0;
+      this.joinRef = null;
+      this.status = 'off';
+    },
+
+    /* 탭으로 돌아왔을 때: 살아 있으면 하트비트만, 죽었으면 다시 붙는다 */
+    ensure: function () {
+      if (this.status === 'joined') { this.startHeartbeat(); return; }
+      if (this.status === 'connecting') return;
+      this.start();
+    }
+  };
+
+  var Poll = { timer: null, busy: false, count: 0 };
+
+  function startPolling() {
+    stopPolling();
+    if (Room.settings.mode !== 'cloud' || !Room.canUseCloud()) return;
+    Poll.timer = setInterval(function () {
+      if (document.hidden) return;      // 백그라운드에선 쉰다
+      pollTick();
+    }, POLL_MS);
+  }
+
+  function stopPolling() {
+    if (Poll.timer) { clearInterval(Poll.timer); Poll.timer = null; }
+    Poll.busy = false;
+  }
+
+  /* 경량 폴링 — 새 항목·완료 변경·삭제 차이만 반영한다 */
+  function pollTick() {
+    if (Poll.busy) return Promise.resolve(false);
+    if (Room.adapter.kind !== 'cloud' || !Room.canUseCloud()) return Promise.resolve(false);
+    if (Room.cloudState !== 'ok') return Promise.resolve(false);
+    Poll.busy = true;
+    Poll.count += 1;
+    return Room.adapter.list().then(function (rows) {
+      var changed = mergeRows(rows, { prune: true });
+      if (changed) {
+        syncTimeline();
+        renderMembers();
+        renderSettingsState();
+      }
+      return changed;
+    }).catch(function () {
+      return false;
+    }).then(function (r) {
+      Poll.busy = false;
+      return r;
+    });
+  }
+
+  /* 실시간 라인 전체를 (재)시작한다 — 설정·방 변경 후에도 부른다 */
+  function startLive() {
+    stopPolling();
+    Live.stop();
+    if (Room.settings.mode !== 'cloud' || !Room.canUseCloud()) {
+      renderHeader();
+      return;
+    }
+    Live.start();
+    startPolling();
+    renderHeader();
   }
 
   /* ==========================================================
@@ -1613,10 +1995,16 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
     parts.push('기록 ' + Room.messages.length + '개');
     els.headerStatus.textContent = parts.join(' · ');
 
-    els.composerMode.textContent =
-      (Room.settings.mode !== 'cloud'
-        ? '로컬 저장'
-        : (Room.cloudState === 'ok' ? '클라우드 저장' : '클라우드 대기 · 로컬 저장')) +
+    var storeLabel = Room.settings.mode !== 'cloud'
+      ? '로컬 저장'
+      : (Room.cloudState === 'ok' ? '클라우드 저장' : '클라우드 대기 · 로컬 저장');
+    var liveOn = Room.settings.mode === 'cloud' && Live.status === 'joined';
+    var liveLabel = Room.settings.mode !== 'cloud'
+      ? ''
+      : (liveOn ? '실시간' : (Live.status === 'connecting' ? '실시간 연결 중' : '폴링 동기화'));
+
+    els.composerMode.innerHTML = '<i class="live-dot' + (liveOn ? '' : ' is-off') + '"></i>' +
+      storeLabel + (liveLabel ? ' · ' + liveLabel : '') +
       ' · 데모 응답 ' + (Room.settings.demoReplies ? '켜짐' : '꺼짐');
   }
 
@@ -1814,9 +2202,15 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
     return bar;
   }
 
+  function isNearBottom() {
+    var tl = els.timeline;
+    if (!tl) return true;
+    return tl.scrollHeight - tl.scrollTop - tl.clientHeight < 120;
+  }
+
   function renderTimeline() {
     var tl = els.timeline;
-    var atBottom = tl.scrollHeight - tl.scrollTop - tl.clientHeight < 120;
+    var atBottom = isNearBottom();
     tl.innerHTML = '';
 
     if (!Room.messages.length) {
@@ -1851,6 +2245,124 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
 
     renderHeader();
     if (atBottom) scrollToEnd(false);
+  }
+
+  /* ----------------------------------------------------------
+     차이분(diff)만 반영하는 타임라인 동기화
+     - 실시간 수신·폴링·삭제 모두 이 함수로 들어온다.
+     - 전체를 다시 그리지 않으므로 깜빡임·스크롤 튐·애니메이션 재생이 없다.
+     ---------------------------------------------------------- */
+  function timelineNodeMap() {
+    var out = {};
+    Array.prototype.slice.call(els.timeline.querySelectorAll('.msg[data-id]')).forEach(function (n) {
+      out[n.getAttribute('data-id')] = n;
+    });
+    return out;
+  }
+
+  function sortMessages(list) {
+    return list.slice().sort(function (a, b) {
+      return new Date(a.at).getTime() - new Date(b.at).getTime();
+    });
+  }
+
+  /* "입력 중" 말풍선보다는 앞, 아니면 맨 끝에 붙인다 */
+  function insertMessageNode(node) {
+    var tl = els.timeline;
+    var typing = tl.querySelector('.msg.is-typing');
+    if (typing) tl.insertBefore(node, typing);
+    else tl.appendChild(node);
+  }
+
+  /* 날짜 구분선은 메시지 순서에서 다시 계산해 끼워 넣는다 */
+  function ensureDayDividers(sorted) {
+    var tl = els.timeline;
+    Array.prototype.slice.call(tl.querySelectorAll('.day')).forEach(function (n) {
+      if (n.parentNode) n.parentNode.removeChild(n);
+    });
+    var nodes = timelineNodeMap();
+    var lastDay = null;
+    sorted.forEach(function (m) {
+      var k = dayKey(m.at);
+      if (k === lastDay) return;
+      lastDay = k;
+      var node = nodes[m.id];
+      if (!node || node.parentNode !== tl) return;
+      var d = el('div', 'day');
+      d.setAttribute('data-day', k);
+      d.appendChild(el('span', null, dayLabel(m.at)));
+      tl.insertBefore(d, node);
+    });
+  }
+
+  function syncTimeline() {
+    var tl = els.timeline;
+    if (!tl) return;
+    var sorted = sortMessages(Room.messages);
+    if (!sorted.length) { renderTimeline(); return; }
+    if (tl.querySelector('.empty')) { renderTimeline(); return; }
+
+    var needSample = sorted.some(function (m) { return m.sample; });
+    if (needSample !== !!tl.querySelector('.sample-bar')) { renderTimeline(); return; }
+
+    var atBottom = isNearBottom();
+    var nodes = timelineNodeMap();
+    var changed = false;
+    var existing = {};
+    sorted.forEach(function (m) { existing[m.id] = true; });
+
+    /* 1) 서버에서 사라진 메시지 — DOM에서도 지운다 */
+    Object.keys(nodes).forEach(function (id) {
+      if (existing[id]) return;
+      var n = nodes[id];
+      if (n && n.parentNode) n.parentNode.removeChild(n);
+      delete nodes[id];
+      changed = true;
+    });
+
+    /* 2) 이미 있는 메시지 — 완료 표시 등 상태만 그 자리에서 갱신 */
+    sorted.forEach(function (m) {
+      var node = nodes[m.id];
+      if (!node) return;
+      if (node.classList.contains('is-done') !== !!m.done) {
+        applyDoneVisual(node, !!m.done);
+        changed = true;
+      }
+    });
+
+    /* 3) 새 메시지 — 시간 순서에 맞는 자리에 끼워 넣는다 */
+    sorted.forEach(function (m, i) {
+      if (nodes[m.id]) return;
+      var node = (m.author === 'user') ? userMessageNode(m) : aiMessageNode(m);
+      var ref = null;
+      for (var j = i + 1; j < sorted.length; j++) {
+        var cand = nodes[sorted[j].id];
+        if (cand && cand.parentNode === tl) { ref = cand; break; }
+      }
+      if (ref) tl.insertBefore(node, ref);
+      else insertMessageNode(node);
+      nodes[m.id] = node;
+      changed = true;
+    });
+
+    if (!changed) return;
+
+    ensureDayDividers(sorted);
+    renderHeader();
+    renderSettingsState();
+    if (atBottom) scrollToEnd(true);
+  }
+
+  /* 완료 상태 시각만 바꿔 준다(다른 창에서 누른 완료도 이 경로로 반영) */
+  function applyDoneVisual(node, done) {
+    node.classList.toggle('is-done', done);
+    var btn = node.querySelector('.done-btn');
+    if (!btn) return;
+    btn.setAttribute('aria-pressed', String(done));
+    btn.setAttribute('aria-label', done ? '완료 취소' : '완료 표시');
+    if (btn.lastChild && btn.lastChild.nodeType === 3) {
+      btn.lastChild.textContent = done ? '완료' : '완료 표시';
+    }
   }
 
   function isBusy(memberId) {
@@ -2200,18 +2712,10 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
     if (!msg) return;
     var next = !msg.done;
     Room.setDone(id, next).then(function () {
-      renderTimeline();
-      renderMembers();
       var node = els.timeline.querySelector('[data-id="' + id + '"]');
-      if (node) {
-        node.classList.toggle('is-done', next);
-        var btn = node.querySelector('.done-btn');
-        if (btn) {
-          btn.setAttribute('aria-pressed', String(next));
-          btn.setAttribute('aria-label', next ? '완료 취소' : '완료 표시');
-          btn.lastChild.textContent = next ? '완료' : '완료 표시';
-        }
-      }
+      if (node) applyDoneVisual(node, next);
+      renderMembers();
+      renderHeader();
       toast(next ? '완료로 표시했어요.' : '완료를 풀었어요.');
     });
   }
@@ -2425,6 +2929,7 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
         renderTimeline();
         renderMembers();
         renderSettingsState();
+        startLive();
       });
     }
   }
@@ -2453,11 +2958,13 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
         renderTimeline();
         renderMembers();
         renderSettingsState();
+        startLive();
         toast(Room.cloudState === 'ok' ? '클라우드 모드로 바꿨어요.' : '아직 연결 전이에요. 로컬에 기록하며 자동 재연결을 시도합니다.');
       });
     } else {
       renderSettingsState();
       renderHeader();
+      startLive();
       toast('로컬 모드로 바꿨어요.');
     }
   }
@@ -2587,6 +3094,7 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
         renderTimeline();
         renderMembers();
         renderSettingsState();
+        startLive();
       });
     });
     $('#peekKey').addEventListener('click', function () {
@@ -2640,17 +3148,31 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
       if (e.key === 'Escape' && els.sheet.classList.contains('is-open')) closeSheet(false);
     });
 
-    // 탭으로 돌아오면 클라우드 재연결을 한 번 시도한다(테이블이 생겼을 수 있다)
+    // 탭으로 돌아오면: 실시간 라인을 깨우고 즉시 1회 동기화한다
     document.addEventListener('visibilitychange', function () {
-      if (document.hidden || Room.cloudState !== 'pending') return;
-      clearCloudRetry();
-      Room.retryDelay = RETRY_BASE;
-      Room.syncCloud().then(function (ok) {
-        if (!ok) { scheduleCloudRetry(Room); return; }
-        renderTimeline();
-        renderMembers();
-        renderSettingsState();
-      });
+      if (document.hidden) return;
+      if (Room.cloudState === 'pending') {
+        clearCloudRetry();
+        Room.retryDelay = RETRY_BASE;
+        Room.syncCloud().then(function (ok) {
+          if (!ok) { scheduleCloudRetry(Room); return; }
+          renderTimeline();
+          renderMembers();
+          renderSettingsState();
+          startLive();
+        });
+        return;
+      }
+      if (Room.settings.mode !== 'cloud' || !Room.canUseCloud()) return;
+      Live.ensure();
+      pollTick();
+    });
+
+    // 네트워크가 돌아오면 바로 다시 붙는다
+    window.addEventListener('online', function () {
+      if (Room.settings.mode !== 'cloud' || !Room.canUseCloud()) return;
+      Live.ensure();
+      pollTick();
     });
   }
 
@@ -2711,6 +3233,7 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
       renderTimeline();
       renderMembers();
       renderSettingsState();
+      startLive();
       scrollToEnd(false);
       if (invitedRoom) {
         toast('방 ' + invitedRoom + ' · ' +
@@ -2721,12 +3244,21 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
         state: function () {
           return {
             settings: Room.settings, messages: Room.messages,
-            adapter: Room.adapter.kind, cloudState: Room.cloudState
+            adapter: Room.adapter.kind, cloudState: Room.cloudState,
+            live: { status: Live.status, events: Live.events, lastEventAt: Live.lastEventAt },
+            poll: { count: Poll.count, everyMs: POLL_MS }
           };
+        },
+        ids: function () {
+          return Room.messages.map(function (m) { return m.id; });
+        },
+        live: function () {
+          return { status: Live.status, events: Live.events, lastEventAt: Live.lastEventAt, polls: Poll.count };
         },
         exportJson: buildExportJson,
         exportText: buildExportText
       };
+      DIAG.sync = { poll: pollTick, merge: mergeRows, startPolling: startPolling, startLive: startLive };
     });
   }
 
