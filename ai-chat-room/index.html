@@ -1354,12 +1354,13 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
     syncCloud: function () {
       var self = this;
       return this.adapter.list().then(function (rows) {
-        self.cloudState = 'ok';
         self.retryDelay = RETRY_BASE;
         return self.uploadLocalOnly(rows);
-      }).then(function (list) {
-        self.messages = list || [];
-        return true;
+      }).then(function (res) {
+        /* 읽기는 돼도 쓰기가 막혔으면(Room ID 정책) 대기 상태를 유지한다 */
+        self.cloudState = res.failed ? 'pending' : 'ok';
+        self.messages = res.rows || [];
+        return !res.failed;
       }).catch(function () {
         self.cloudState = 'pending';
         self.messages = readState().messages;
@@ -1389,11 +1390,12 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
       var local = readState().messages.filter(function (m) {
         return m && m.id && !m._removed && !seen[m.id];
       });
-      if (!local.length) return Promise.resolve(rows);
+      if (!local.length) return Promise.resolve({ rows: rows, failed: false });
+      var failed = 0;
       return Promise.all(local.slice(-200).map(function (m) {
-        return self.adapter.add(m).catch(function () {});
+        return self.adapter.add(m).catch(function () { failed += 1; });
       })).then(function () {
-        return rows.concat(local);
+        return { rows: rows.concat(local), failed: failed > 0 };
       });
     },
 
