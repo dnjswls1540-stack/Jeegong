@@ -2166,10 +2166,6 @@ body.light-theme .inquiry-content-text {
   .breadcrumb-right {
     gap: 6px;
   }
-  /* 모바일에서는 헤더가 좁아 AI 협업방은 탭 줄 링크로 대신한다 */
-  .breadcrumb-right .btn-header-tool.header-ai-room {
-    display: none;
-  }
   .btn-header-tool {
     padding: 5px 8px;
     font-size: 11px;
@@ -2750,3 +2746,15 @@ body.light-theme .inquiry-content-text {
   .week-calendar-grid.is-month .cal-event-card { padding: 1px 3px; }
 }
 .week-calendar-grid.is-month .day-column:nth-child(n+8) .day-name { display: none; }
+
+/* AI 협업방 진입점 — 좁은 화면은 탭 줄 링크, 481px 이상은 헤더 버튼 (2026-11-16) */
+@media (max-width: 480px) {
+  .breadcrumb-right .btn-header-tool.header-ai-room {
+    display: none;
+  }
+}
+@media (min-width: 481px) {
+  .mobile-nav-tabs .mobile-room-link {
+    display: none;
+  }
+}
