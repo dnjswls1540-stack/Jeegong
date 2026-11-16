@@ -16,13 +16,6 @@ const SYNC_TOPIC = 'jeegong_sync_dnjswls1540_2026';
 const SYNC_ENDPOINT = 'https://ntfy.sh/' + SYNC_TOPIC;
 let syncEventSource = null;
 
-// Multi-date Chat Sessions
-let chatSessions = {};
-let activeChatDate = '2026-10-22';
-let currentAttachments = [];
-let currentChatView = 'list'; // 'list' or 'room'
-let chatMessages = [];
-
 // =========================================================
 // HANDLED ITEMS REGISTRY (Cross-day Deduplication Engine)
 // Handled items (done, sent, excluded) will NEVER appear on subsequent days
@@ -543,25 +536,6 @@ async function initApp() {
     if (savedTs) lastLocalUpdateTimestamp = Number(savedTs) || 0;
   } catch (e) {}
 
-  // 3. Load chat sessions from localStorage
-  try {
-    const savedSessions = localStorage.getItem('jeegong_chat_sessions');
-    if (savedSessions) {
-      chatSessions = JSON.parse(savedSessions);
-    }
-  } catch (e) {}
-
-  if (!chatSessions[kst.dateStr]) {
-    chatSessions[kst.dateStr] = [
-      {
-        role: 'bot',
-        text: '지원진 님 안녕하세요! 구름이예요 ㅎㅎ 오늘 우주맘마 아넬라 공구 오픈과 식스샵 외주 회신 등 업무들 차근차근 챙겨드릴게요. 궁금하신 점이나 처리할 일 있으시면 말씀해 주세요!',
-        time: '08:30'
-      }
-    ];
-  }
-  activeChatDate = kst.dateStr;
-
   // 4. Update top navbar date badge
   const dateBadge = document.getElementById('current-date-text');
   if (dateBadge) {
@@ -575,7 +549,7 @@ async function initApp() {
   setupNavigation();
   updateWorkButtonUI();
   setupInteractions();
-  setupChatbot();
+  setupAiRoomWidget();
   renderTodayView();
   renderArchiveView();
   renderHistoryView();
@@ -1964,15 +1938,6 @@ function setupInteractions() {
         renderHistoryView();
         showToast('🌙 오늘 하루도 고생 많으셨습니다! 업무가 성공적으로 종료되었습니다.');
 
-        // Add farewell bot chat message
-        chatMessages.push({
-          role: 'bot',
-          text: '지원진 님, 오늘 하루도 정말 고생 많으셨어요! 👏\n내일 오전 8시 30분 출근 알람 때 산뜻하게 다시 찾아뵐게요. 편안한 저녁 보내세요 ㅎㅎ',
-          time: `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`
-        });
-        saveChatHistory();
-        renderChatMessages();
-
       } else if (workState === 'finished') {
         if (confirm('오늘 업무를 다시 시작(출근 상태로 복원)하시겠습니까?')) {
           workState = 'ready';
@@ -2090,8 +2055,6 @@ window.refreshDashboardData = async function(showNotice = true) {
     // 7. Re-render all views
     renderTodayView();
     renderGongguCampaign();
-    if (typeof renderChatConversationList === 'function') renderChatConversationList();
-    if (typeof renderChatMessages === 'function') renderChatMessages();
 
     // 8. Publish refresh signal to ntfy for background agent to sync Todomate
     if (showNotice) {
@@ -2177,692 +2140,55 @@ function showToast(msg) {
 }
 
 // =========================================================
-// CHATBOT WIDGET LOGIC (채널톡 스타일 대화 목록 & 개별 대화방)
+// AI 협업방 플로팅 위젯 (2026-11-16 4차 — 기존 구름이 챗봇 자리를 대체)
+//   · 우측 하단 런처 → 챗봇형 팝업(데스크톱 400x600 카드 / 모바일 풀시트)
+//   · 팝업 안에는 ./ai-chat-room/?room=Jeegong_0724&embed=1 을 iframe으로 띄운다
+//   · 첫 클릭 전에는 iframe을 로드하지 않아 대시보드 초기 로딩을 무겁게 하지 않는다
 // =========================================================
+function setupAiRoomWidget() {
+  const widget = document.getElementById('airoom-widget');
+  const launcher = document.getElementById('airoom-launcher');
+  const panel = document.getElementById('airoom-panel');
+  const closeBtn = document.getElementById('airoom-close');
+  const frame = document.getElementById('airoom-frame');
 
-function setupChatbot() {
-  const toggleBtn = document.getElementById('btn-chatbot-toggle');
-  const modal = document.getElementById('chatbot-modal');
-  const listCloseBtn = document.getElementById('btn-chat-list-close');
-  const roomCloseBtn = document.getElementById('btn-chatbot-close');
-  const backBtn = document.getElementById('btn-chat-back');
-  const newInquiryBtn = document.getElementById('btn-chat-new-inquiry');
-  const clearBtn = document.getElementById('btn-chatbot-clear');
-  const sendBtn = document.getElementById('chatbot-send-btn');
-  const inputEl = document.getElementById('chatbot-input');
-  const badge = document.getElementById('trigger-unread-badge');
-  const attachBtn = document.getElementById('btn-chatbot-attach');
-  const fileInput = document.getElementById('chatbot-file-input');
+  if (!widget || !launcher || !panel || !frame) return;
 
-  if (!toggleBtn || !modal) return;
+  const frameSrc = frame.getAttribute('data-src') || './ai-chat-room/?room=Jeegong_0724&embed=1';
+  let loaded = false;
 
-  // Initialize Sessions
-  if (!chatSessions['2026-10-21'] || chatSessions['2026-10-21'].length === 0) {
-    chatSessions['2026-10-21'] = [
-      {
-        role: 'bot',
-        text: '지원진 님 안녕하세요! 구름이예요 ㅎㅎ 웹에서도 편하게 말씀해 주세요. 오늘 일정이나 메일, 할 일 관련해서 궁금하신 점이나 처리할 일 있으시면 바로 해결해 드릴게요!',
-        time: '08:30'
-      },
-      {
-        role: 'user',
-        text: '이미 끝난 작업들이야',
-        time: '17:44'
-      },
-      {
-        role: 'bot',
-        text: '이미 마무리하신 작업들이군요! 확인했습니다 ㅎㅎ 대시보드 목록에서도 깔끔하게 완료 상태로 정리해 둘게요.',
-        time: '17:44'
-      }
-    ];
-  }
-  if (!chatSessions['session-sixshop']) {
-    chatSessions['session-sixshop'] = [
-      {
-        role: 'bot',
-        text: '온세스 사업용 메일로 식스샵 신규 의뢰(이준석 대표, 예산 100~200만 원)가 도착해 임시보관함에 답장 초안을 작성해 두었습니다!',
-        time: '17:50'
-      }
-    ];
-  }
-  if (!chatSessions['2026-10-20']) {
-    chatSessions['2026-10-20'] = [
-      {
-        role: 'bot',
-        text: '지원진 님, 10/20 크몽 전자책 승인 검토 카드와 마진계산기 피드백 확인했습니다.',
-        time: '1일 전'
-      }
-    ];
+  function loadFrame() {
+    if (loaded) return;
+    loaded = true;
+    frame.setAttribute('src', frameSrc);
   }
 
-  const kst = getKSTNow();
-  activeChatDate = kst.dateStr;
-  if (!chatSessions[activeChatDate] || chatSessions[activeChatDate].length === 0) {
-    chatSessions[activeChatDate] = [
-      {
-        role: 'bot',
-        text: '지원진 님 안녕하세요! 구름이예요 ㅎㅎ 오늘 일정이나 메일, 할 일 관련해서 처리할 작업 있으시면 편하게 말씀해 주세요!',
-        time: '08:30'
-      }
-    ];
-  }
-  chatMessages = chatSessions[activeChatDate];
-
-  currentChatView = 'room';
-  const initialRoomView = document.getElementById('chat-view-room');
-  if (initialRoomView) initialRoomView.style.display = 'flex';
-
-  // Navigation: Back to List
-  if (backBtn) {
-    backBtn.addEventListener('click', () => {
-      showChatList();
-    });
+  function open() {
+    widget.setAttribute('data-open', 'true');
+    panel.setAttribute('aria-hidden', 'false');
+    launcher.setAttribute('aria-expanded', 'true');
+    loadFrame();
   }
 
-  // New Inquiry Floating Button
-  if (newInquiryBtn) {
-    newInquiryBtn.addEventListener('click', () => {
-      const now = new Date();
-      const timeTag = `${now.getHours()}시${String(now.getMinutes()).padStart(2, '0')}분`;
-      const newKey = `새 대화 (${timeTag})`;
-      chatSessions[newKey] = [
-        {
-          role: 'bot',
-          text: `새로운 대화가 시작되었습니다! (${newKey})\n궁금하신 점이나 처리할 업무 편하게 남겨주세요 ㅎㅎ`,
-          time: `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`
-        }
-      ];
-      activeChatDate = newKey;
-      chatMessages = chatSessions[newKey];
-      saveChatHistory();
-      showChatRoom(newKey);
-      showToast('✨ 새로운 대화방이 열렸습니다.');
-    });
+  function close() {
+    widget.setAttribute('data-open', 'false');
+    panel.setAttribute('aria-hidden', 'true');
+    launcher.setAttribute('aria-expanded', 'false');
   }
 
-  // File Attachments Handler
-  if (attachBtn && fileInput) {
-    attachBtn.addEventListener('click', () => {
-      fileInput.click();
-    });
-
-    fileInput.addEventListener('change', (e) => {
-      const files = Array.from(e.target.files);
-      if (!files.length) return;
-
-      files.forEach(file => {
-        const isImg = file.type.startsWith('image/');
-        const isVideo = file.type.startsWith('video/');
-        const fileType = isImg ? 'image' : isVideo ? 'video' : 'file';
-        const reader = new FileReader();
-
-        reader.onload = (loadEvt) => {
-          currentAttachments.push({
-            id: `att-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
-            name: file.name,
-            type: fileType,
-            dataUrl: loadEvt.target.result,
-            size: (file.size / 1024).toFixed(1) + ' KB'
-          });
-          renderAttachmentPreviews();
-        };
-
-        reader.readAsDataURL(file);
-      });
-
-      fileInput.value = '';
-    });
+  function toggle() {
+    if (widget.getAttribute('data-open') === 'true') close();
+    else open();
   }
 
-  // Clipboard Paste Handler (Ctrl+V / Cmd+V for screenshots)
-  if (inputEl) {
-    inputEl.addEventListener('paste', (e) => {
-      const items = (e.clipboardData || window.clipboardData)?.items;
-      if (!items) return;
-
-      for (let i = 0; i < items.length; i++) {
-        if (items[i].type.indexOf('image') !== -1) {
-          const blob = items[i].getAsFile();
-          if (!blob) continue;
-
-          const reader = new FileReader();
-          reader.onload = (loadEvt) => {
-            currentAttachments.push({
-              id: `att-paste-${Date.now()}`,
-              name: `캡처_이미지_${Date.now().toString().slice(-4)}.png`,
-              type: 'image',
-              dataUrl: loadEvt.target.result,
-              size: (blob.size / 1024).toFixed(1) + ' KB'
-            });
-            renderAttachmentPreviews();
-            showToast('📋 클립보드 캡처 이미지가 첨부되었습니다!');
-          };
-          reader.readAsDataURL(blob);
-          break;
-        }
-      }
-    });
-
-    // Shift+Enter Newline & Enter to Send
-    inputEl.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        if (e.shiftKey) {
-          setTimeout(() => {
-            inputEl.style.height = 'auto';
-            inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + 'px';
-          }, 10);
-          return;
-        }
-        e.preventDefault();
-        markAsRead();
-        handleChatSend();
-        inputEl.style.height = '38px';
-      }
-    });
-
-    inputEl.addEventListener('input', () => {
-      inputEl.style.height = 'auto';
-      inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + 'px';
-    });
-  }
-
-  // Check unread status from localStorage
-  const isRead = localStorage.getItem('jeegong_chat_unread') === 'false';
-  if (isRead && badge) {
-    badge.classList.add('hidden');
-  }
-
-  function markAsRead() {
-    if (badge) {
-      badge.classList.add('hidden');
-    }
-    try {
-      localStorage.setItem('jeegong_chat_unread', 'false');
-    } catch (e) {}
-  }
-
-  toggleBtn.addEventListener('click', () => {
-    modal.classList.toggle('open');
-    if (modal.classList.contains('open')) {
-      markAsRead();
-      const rView = document.getElementById('chat-view-room');
-      if (rView) rView.style.display = 'flex';
-      renderChatMessages();
-      if (inputEl) inputEl.focus();
-    }
+  launcher.addEventListener('click', toggle);
+  if (closeBtn) closeBtn.addEventListener('click', close);
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && widget.getAttribute('data-open') === 'true') close();
   });
 
-  if (listCloseBtn) {
-    listCloseBtn.addEventListener('click', () => {
-      modal.classList.remove('open');
-    });
-  }
-
-  if (roomCloseBtn) {
-    roomCloseBtn.addEventListener('click', () => {
-      modal.classList.remove('open');
-    });
-  }
-
-  if (clearBtn) {
-    clearBtn.addEventListener('click', () => {
-      chatMessages = [
-        {
-          role: 'bot',
-          text: '대화 기록이 정리되었어요! 새로운 용건이나 작업 말씀해 주시면 바로 챙길게요.',
-          time: '방금 전'
-        }
-      ];
-      saveChatHistory();
-      renderChatMessages();
-    });
-  }
-
-  if (sendBtn) {
-    sendBtn.addEventListener('click', () => {
-      markAsRead();
-      handleChatSend();
-    });
-  }
-
-  renderChatMessages();
-}
-
-window.showChatList = function() {
-  currentChatView = 'room';
-  const roomView = document.getElementById('chat-view-room');
-  if (roomView) roomView.style.display = 'flex';
-  renderChatMessages();
-};
-
-window.showChatRoom = function(sessionId) {
-  currentChatView = 'room';
-  if (sessionId) {
-    activeChatDate = sessionId;
-  }
-  const kst = getKSTNow();
-  if (!activeChatDate) activeChatDate = kst.dateStr;
-  if (!chatSessions[activeChatDate]) {
-    chatSessions[activeChatDate] = [
-      {
-        role: 'bot',
-        text: '지원진 님 안녕하세요! 구름이예요 ㅎㅎ 웹에서도 편하게 말씀해 주세요.',
-        time: '08:30'
-      }
-    ];
-  }
-  chatMessages = chatSessions[activeChatDate];
-  
-  const roomView = document.getElementById('chat-view-room');
-  if (roomView) roomView.style.display = 'flex';
-  renderChatMessages();
-  const inputEl = document.getElementById('chatbot-input');
-  if (inputEl) inputEl.focus();
-};
-
-function renderChatConversationList() {
-  const container = document.getElementById('chat-conv-list-container');
-  if (!container) return;
-
-  const sessionKeys = Object.keys(chatSessions);
-
-  container.innerHTML = sessionKeys.map(key => {
-    const msgs = chatSessions[key] || [];
-    const lastMsg = msgs.length > 0 ? msgs[msgs.length - 1] : { text: '대화 시작하기', time: '' };
-
-    let title = '구름이';
-    let timeTag = '오늘';
-
-    if (key === '2026-10-21') {
-      title = '구름이 (오늘 업무)';
-      timeTag = lastMsg.time || '오늘';
-    } else if (key === 'session-sixshop') {
-      title = '식스샵 신규 프로젝트 의뢰 (이준석 대표)';
-      timeTag = '17:50';
-    } else if (key === '2026-10-20') {
-      title = '구름이 (어제 업무)';
-      timeTag = '1일 전';
-    } else if (key === '2026-10-19') {
-      title = '구름이 (시스템 연동)';
-      timeTag = '2일 전';
-    } else {
-      title = `대화 (${key})`;
-      timeTag = lastMsg.time || '최근';
-    }
-
-    const previewText = (lastMsg.text || '대화가 없습니다.').replace(/\n/g, ' ');
-
-    return `
-      <div class="chat-conv-item" onclick="showChatRoom('${key}')">
-        <img src="gureumi_avatar.png" alt="구름이" class="chat-conv-avatar">
-        <div class="chat-conv-content">
-          <div class="chat-conv-meta">
-            <span class="chat-conv-name">${title}</span>
-            <span class="chat-conv-time">${timeTag}</span>
-          </div>
-          <div class="chat-conv-preview">${previewText}</div>
-        </div>
-      </div>
-    `;
-  }).join('');
-}
-
-function renderAttachmentPreviews() {
-  const previewBar = document.getElementById('chatbot-file-preview-bar');
-  if (!previewBar) return;
-
-  if (currentAttachments.length === 0) {
-    previewBar.style.display = 'none';
-    previewBar.innerHTML = '';
-    return;
-  }
-
-  previewBar.style.display = 'flex';
-  previewBar.innerHTML = currentAttachments.map((att, idx) => `
-    <div class="file-preview-chip">
-      ${att.type === 'image' ? `<img src="${att.dataUrl}" class="file-preview-thumb">` : att.type === 'video' ? '🎬' : '📄'}
-      <span class="file-preview-name" title="${att.name}">${att.name}</span>
-      <button class="file-preview-remove" onclick="removeAttachment(${idx})">✕</button>
-    </div>
-  `).join('');
-}
-
-window.removeAttachment = function(idx) {
-  currentAttachments.splice(idx, 1);
-  renderAttachmentPreviews();
-};
-
-function saveChatHistory() {
-  if (!chatSessions[activeChatDate]) {
-    chatSessions[activeChatDate] = [];
-  }
-  chatSessions[activeChatDate] = chatMessages.slice(-30);
-
-  try {
-    localStorage.setItem('jeegong_chat_sessions', JSON.stringify(chatSessions));
-  } catch (e) {}
-
-  pushCloudState();
-}
-
-function renderChatMessages() {
-  const container = document.getElementById('chatbot-messages');
-  if (!container) return;
-
-  container.innerHTML = chatMessages.map(m => `
-    <div class="chat-bubble ${m.role}">
-      ${m.attachments && m.attachments.length ? `
-        <div class="chat-attachment-grid">
-          ${m.attachments.map(att => att.type === 'image' ? `
-            <img src="${att.dataUrl}" class="chat-attachment-img" onclick="window.open('${att.dataUrl}')" alt="${att.name}" title="클릭 시 크게 보기">
-          ` : att.type === 'video' ? `
-            <video src="${att.dataUrl}" controls class="chat-attachment-video"></video>
-          ` : `
-            <a href="${att.dataUrl}" download="${att.name}" class="chat-attachment-doc">
-              <span>📄</span>
-              <span style="font-weight: 500;">${att.name}</span>
-              <span style="font-size: 10.5px; opacity: 0.7;">(${att.size})</span>
-            </a>
-          `).join('')}
-        </div>
-      ` : ''}
-      ${m.text ? `<div>${m.text.replace(/\n/g, '<br>')}</div>` : ''}
-      <div class="chat-bubble-meta">${m.time || ''}</div>
-    </div>
-  `).join('');
-
-  container.scrollTop = container.scrollHeight;
-}
-
-window.sendQuickMessage = function(text) {
-  const modal = document.getElementById('chatbot-modal');
-  const badge = document.getElementById('trigger-unread-badge');
-  if (badge) {
-    badge.classList.add('hidden');
-  }
-  try {
-    localStorage.setItem('jeegong_chat_unread', 'false');
-  } catch (e) {}
-
-  if (!modal.classList.contains('open')) {
-    modal.classList.add('open');
-  }
-  processUserMessage(text, []);
-};
-
-function handleChatSend() {
-  const inputEl = document.getElementById('chatbot-input');
-  const text = inputEl.value.trim();
-  if (!text && currentAttachments.length === 0) return;
-
-  const sendingAttachments = [...currentAttachments];
-  currentAttachments = [];
-  renderAttachmentPreviews();
-  inputEl.value = '';
-
-  processUserMessage(text, sendingAttachments);
-}
-
-async function processUserMessage(text, attachments = []) {
-  const now = new Date();
-  const timeStr = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
-
-  // Add User Message
-  chatMessages.push({
-    role: 'user',
-    text: text,
-    attachments: attachments,
-    time: timeStr
-  });
-  renderChatMessages();
-
-  // Show Typing Indicator
-  const container = document.getElementById('chatbot-messages');
-  const typingEl = document.createElement('div');
-  typingEl.className = 'chat-bubble bot';
-  typingEl.id = 'typing-indicator';
-  typingEl.innerHTML = '<span style="color:var(--text-tertiary);">구름이가 생각하고 있어요...</span>';
-  container.appendChild(typingEl);
-  container.scrollTop = container.scrollHeight;
-
-  // Generate Reply (Contextual Assistant logic)
-  const reply = await generateAssistantResponse(text, attachments);
-
-  // Remove typing indicator
-  const ind = document.getElementById('typing-indicator');
-  if (ind) ind.remove();
-
-  // Add Bot Reply
-  chatMessages.push({
-    role: 'bot',
-    text: reply,
-    time: timeStr
-  });
-  saveChatHistory();
-  renderChatMessages();
-}
-
-async function generateAssistantResponse(prompt, attachments = []) {
-  await new Promise(r => setTimeout(r, 450));
-
-  // If attachments are present
-  if (attachments && attachments.length > 0) {
-    const fileNames = attachments.map(a => `'${a.name}'`).join(', ');
-    const hasVideo = attachments.some(a => a.type === 'video');
-    const hasImage = attachments.some(a => a.type === 'image');
-
-    if (hasVideo) {
-      return `보내주신 동영상 파일(${fileNames}) 잘 확인했습니다! 🎬 영상 편집이나 배치 등 필요한 점 말씀해 주세요 ㅎㅎ`;
-    } else if (hasImage) {
-      return `보내주신 캡처/이미지(${fileNames}) 확인했습니다! 📷 검토 후 필요한 작업 바로 처리해 드릴게요.`;
-    } else {
-      return `첨부해 주신 파일(${fileNames}) 안전하게 접수했습니다! 📄 관련해서 진행할 작업 알려주세요.`;
-    }
-  }
-
-  const clean = prompt.trim();
-
-  // 1. Phone Call / Booking inquiry
-  if (clean.includes('전화') || clean.includes('예약')) {
-    return `실제 매장 전화 예약이나 통화는 피클(Pickle) 앱 채팅에서 저에게 바로 말씀해 주시면 제가 전화 에이전트로 대신 전화를 걸어 예약해 드릴 수 있어요! 📞\n웹 챗봇은 대시보드 인터랙션 전용이라, 통화나 결제 같은 실제 외부 작업은 피클 앱에서 말씀해 주시면 제가 즉시 실행합니다 ㅎㅎ`;
-  }
-
-  // 2. Google Calendar Event Registration
-  if (clean.includes('캘린더') || (clean.includes('일정') && (clean.includes('등록') || clean.includes('추가')))) {
-    return `일정 등록 요청 확인했습니다! 📅 실제 구글 캘린더 API 연동 및 일정 생성은 피클 앱에서 저에게 말씀해 주시면 즉시 계정에 등록해 드립니다. 웹 화면상의 오늘 일정에도 함께 표기해 드릴게요!`;
-  }
-
-  // 3. Completed Tasks / Done
-  if (clean.includes('끝난') || clean.includes('완료') || clean.includes('다 했') || clean.includes('끝냈') || clean.includes('마쳤')) {
-    return `이미 마무리하신 작업들이군요! 확인했습니다 ㅎㅎ 대시보드 목록에서도 깔끔하게 완료 상태로 정리해 둘게요.`;
-  }
-
-  // 4. Gratitude / Casual
-  if (clean.includes('고마워') || clean.includes('감사') || clean.includes('수고')) {
-    return `별말씀을요! 오늘 하루도 파이팅이에요 ㅎㅎ 추가로 필요한 작업 있으시면 언제든 말씀해 주세요.`;
-  }
-
-  // 5-A. Todo Word Removal & Text Cleanup (e.g. '오늘 단어는 삭제해야지', '"오늘" 단어 빼줘', '단어 삭제')
-  if (
-    (clean.includes('단어') || clean.includes('글자') || clean.includes('문구')) &&
-    (clean.includes('삭제') || clean.includes('빼') || clean.includes('지워') || clean.includes('제거') || clean.includes('없애'))
-  ) {
-    if (appData && appData.briefings) {
-      const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
-      let targetWord = '';
-      const quoteMatch = clean.match(/["'“‘]([^"'“”‘’]+)["'”’]/);
-      if (quoteMatch) {
-        targetWord = quoteMatch[1].trim();
-      } else {
-        const match = clean.match(/([^\s]+)\s*(?:단어|글자|문구)/);
-        if (match) targetWord = match[1].trim();
-      }
-      if (!targetWord && clean.includes('오늘')) targetWord = '오늘';
-
-      if (targetWord && b.todomateTodos && b.todomateTodos.length > 0) {
-        const targetTodo = b.todomateTodos.find(t => t.text.includes(targetWord));
-        if (targetTodo) {
-          let newText = targetTodo.text.replace(new RegExp(targetWord, 'g'), '');
-          newText = newText.replace(/["'“”‘’]/g, '').trim();
-          if (!newText) newText = '새로운 업무';
-          targetTodo.text = newText;
-
-          saveCustomTodos(b.id);
-          saveLocalTodosState(b.id);
-          renderTodayView();
-          pushCloudState();
-          return `✏️ 할 일에서 '${targetWord}' 단어를 제외하고 '${newText}'(으)로 깔끔하게 수정했습니다!`;
-        }
-      }
-    }
-  }
-
-  // 5-B. Todo Rename / Edit (e.g. '할 일 X로 수정해줘', 'X로 바꿔줘')
-  if (
-    (clean.includes('수정') || clean.includes('바꿔') || clean.includes('변경')) &&
-    (clean.includes('할 일') || clean.includes('할일') || clean.includes('투두') || clean.includes('로 ') || clean.includes('으로 '))
-  ) {
-    if (appData && appData.briefings) {
-      const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
-      let newName = '';
-      const quoteMatch = clean.match(/["'“‘]([^"'“”‘’]+)["'”’]/);
-      if (quoteMatch) {
-        newName = quoteMatch[1].trim();
-      } else {
-        const match = clean.match(/(?:할\s*일|할일|투두)?\s*(.+?)(?:로|으로)\s*(?:수정|변경|바꿔)/);
-        if (match) newName = match[1].trim();
-      }
-      if (newName && b.todomateTodos && b.todomateTodos.length > 0) {
-        const targetTodo = b.todomateTodos.find(t => t.id.startsWith('custom-')) || b.todomateTodos[0];
-        if (targetTodo) {
-          targetTodo.text = newName;
-          saveCustomTodos(b.id);
-          saveLocalTodosState(b.id);
-          renderTodayView();
-          pushCloudState();
-          return `✏️ 할 일을 '${newName}'(으)로 수정했습니다!`;
-        }
-      }
-    }
-  }
-
-  // 5-C. Todo Deletion (e.g. '컴퓨터 폴더 정리 삭제해줘', '방금 추가한 거 삭제해줘', '할 일 삭제')
-  if (
-    (clean.includes('삭제') || clean.includes('지워') || clean.includes('제거') || clean.includes('빼줘') || clean.includes('없애줘')) &&
-    (clean.includes('할 일') || clean.includes('할일') || clean.includes('투두') || clean.includes('방금') || clean.includes('추가한'))
-  ) {
-    if (appData && appData.briefings) {
-      const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
-      if (b.todomateTodos && b.todomateTodos.length > 0) {
-        let targetIdx = -1;
-        const quoteMatch = clean.match(/["'“‘]([^"'“”‘’]+)["'”’]/);
-        if (quoteMatch) {
-          const query = quoteMatch[1].trim();
-          targetIdx = b.todomateTodos.findIndex(t => t.text.includes(query));
-        }
-        if (targetIdx === -1 && (clean.includes('방금') || clean.includes('마지막'))) {
-          targetIdx = b.todomateTodos.findIndex(t => t.id.startsWith('custom-'));
-          if (targetIdx === -1) targetIdx = 0;
-        }
-        if (targetIdx === -1) {
-          const cleanQuery = clean.replace(/(할 일에|할일에서|투두에서|할 일을|할일을|투두를|할 일|할일|투두|삭제해줘|지워줘|제거해줘|빼줘|삭제|지워|제거)/g, '').trim();
-          if (cleanQuery) {
-            targetIdx = b.todomateTodos.findIndex(t => t.text.includes(cleanQuery));
-          }
-        }
-
-        if (targetIdx !== -1) {
-          const targetName = b.todomateTodos[targetIdx].text;
-          b.todomateTodos.splice(targetIdx, 1);
-          saveCustomTodos(b.id);
-          saveLocalTodosState(b.id);
-          renderTodayView();
-          pushCloudState();
-          return `🗑️ 할 일 '${targetName}'을(를) 대시보드 목록에서 삭제했습니다!`;
-        }
-      }
-    }
-  }
-
-  // 5-D. Todo Addition (e.g. '오늘 할 일에 "컴퓨터 폴더 정리" 추가해줘')
-  if (
-    clean.includes('추가') &&
-    (clean.includes('할 일') || clean.includes('할일') || clean.includes('투두') || clean.includes('등록') || clean.includes('넣어'))
-  ) {
-    if (appData && appData.briefings) {
-      const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
-      let cleanTask = clean;
-      const quoteMatch = clean.match(/["'“‘]([^"'“”‘’]+)["'”’]/);
-      if (quoteMatch && quoteMatch[1].trim()) {
-        cleanTask = quoteMatch[1].trim();
-      } else {
-        cleanTask = cleanTask.replace(/^(오늘|내일|이번주)?\s*(?:할\s*일(?:에|은|도|을|를)?|할일(?:에|은|도|을|를)?|투두(?:에|는|도|를)?)\s*/g, '');
-        cleanTask = cleanTask.replace(/(?:추가해줘|추가해|추가|등록해줘|등록해|등록|넣어줘|넣어)\s*$/g, '');
-        cleanTask = cleanTask.replace(/^(오늘|내일)\s+/g, '');
-        cleanTask = cleanTask.replace(/["'“”‘’]/g, '').trim();
-      }
-      if (!cleanTask) cleanTask = '새로운 업무 확인';
-
-      b.todomateTodos.unshift({
-        id: `custom-${Date.now()}`,
-        text: cleanTask,
-        category: '사업or수익',
-        done: false
-      });
-      saveCustomTodos(b.id);
-      saveLocalTodosState(b.id);
-      renderTodayView();
-      pushCloudState();
-      return `📝 오늘 할 일에 '${cleanTask}'을(를) 추가했습니다! (대시보드 실시간 반영)`;
-    }
-  }
-
-  // 6. General Modification / Bug Feedback
-  if (
-    clean.includes('수정') || clean.includes('처리') || clean.includes('버튼') ||
-    clean.includes('붙여넣기') || clean.includes('줄엔터') || clean.includes('동기화') ||
-    clean.includes('아카이브') || clean.includes('기록') || clean.includes('오류') ||
-    clean.includes('안돼')
-  ) {
-    return `지원진 님, 요청해 주신 내용 확인했습니다! 문제점 즉시 검토해서 대시보드에 바로 반영하겠습니다.`;
-  }
-
-  // 7. Questions about priorities (Dynamic from briefing)
-  if (clean.includes('우선순위') || clean.includes('핵심')) {
-    if (appData && appData.briefings) {
-      const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
-      const items = (b.agentPriorities || []).filter(ap => !ap.excluded).map((ap, i) => `${i + 1}. [${ap.priority}] ${ap.title}${ap.done ? ' (완료)' : ''}`);
-      return `⚡ 오늘 집중하셔야 할 핵심 우선순위예요:\n` + items.join('\n');
-    }
-  }
-
-  // 8. Questions about todos / uncompleted tasks
-  if (clean.includes('투두') || clean.includes('할 일') || clean.includes('할일') || clean.includes('미처리')) {
-    if (appData && appData.briefings) {
-      const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
-      const pending = (b.todomateTodos || []).filter(t => !t.done);
-      if (pending.length === 0) return `오늘 등록된 모든 할 일을 완료하셨어요! 🎉`;
-      return `📋 오늘 처리 대기 중인 할 일(${pending.length}건)이에요:\n` + pending.map((t, i) => `${i + 1}. ${t.text}`).join('\n');
-    }
-  }
-
-  // 9. Questions about mails / leads
-  if (clean.includes('메일') || clean.includes('리드') || clean.includes('문의')) {
-    if (appData && appData.briefings) {
-      const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
-      const pendingMails = (b.emails || []).filter(e => e.status !== 'excluded' && e.status !== 'done');
-      if (pendingMails.length === 0) return `현재 미처리된 중요 메일이나 의뢰가 없습니다!`;
-      return `📬 확인 필요한 중요 메일/의뢰 목록이에요:\n` + pendingMails.map((m, i) => `${i + 1}. [${m.priority}] ${m.subject} (${m.from})`).join('\n');
-    }
-  }
-
-  // 10. Role Guidance / Pickle Assistant vs Web Controller
-  if (clean.includes('역할') || clean.includes('안내') || clean.includes('피클') || clean.includes('비서')) {
-    return `⚡ [역할 안내]\n• 웹 대시보드: 일정·메일·할 일을 0.1초 만에 확인하고 원클릭으로 조작하는 초고속 컨트롤 타워\n• 피클(Pickle) 앱 구름이: 실제 계정(Gmail, 네이버, 캘린더, 투두메이트, 쿠팡 등)을 직접 움직이고, 전화·결제·외주 초안·자동화까지 전담하는 진짜 AI 비서입니다!`;
-  }
-
-  // Natural Concise Default response (NO repetitive schedule recitation)
-  return `네 지원진 님, '${clean}' 내용 접수했습니다! 말씀해 주신 내용 바탕으로 바로 챙겨둘게요 ㅎㅎ`;
+  // 다른 화면으로 이동해도 열린 상태는 유지하되, 창이 좁아지면(모바일) 시트로 자연스럽게 전환된다.
+  window.__aiRoomWidget = { open, close, toggle };
 }
 
 // =========================================================

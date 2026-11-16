@@ -78,6 +78,38 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
 }
 
 /* ============================================================
+   ?embed=1 — 대시보드 우측 하단 챗봇 팝업(iframe) 안에서
+   여백·둥근 모서리·그림자 없이 꽉 차게 (독립 접속 시에는 영향 없음)
+   ============================================================ */
+body.is-embed{
+  display:block;
+  padding:0;
+  background:#fff;
+}
+body.is-embed .phone{
+  display:flex;
+  width:100%;
+  max-width:none;
+  height:100dvh;
+  min-height:0;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  margin:0 auto;
+}
+body.is-embed .appbar{
+  padding-top:12px;
+}
+body.is-embed .timeline{
+  padding-bottom:8px;
+}
+@media (max-width:480px){
+  body.is-embed .appbar{
+    padding-top:calc(12px + env(safe-area-inset-top));
+  }
+}
+
+/* ============================================================
    2. 헤더
    ============================================================ */
 .appbar{
@@ -3224,7 +3256,17 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
     } catch (e) { /* noop */ }
   }
 
+  /* 대시보드 챗봇 팝업(iframe) 삽입 모드 — ?embed=1 */
+  function applyEmbedMode() {
+    var search = String(location.search || '');
+    if (!/[?&]embed=1(?:&|$)/.test(search)) return false;
+    document.documentElement.classList.add('is-embed');
+    document.body.classList.add('is-embed');
+    return true;
+  }
+
   function boot() {
+    var embedded = applyEmbedMode();
     var invitedRoom = applyRoomParam();
     bind();
     renderChips();
@@ -3246,7 +3288,8 @@ input,textarea{font-family:inherit;letter-spacing:inherit;color:inherit;}
             settings: Room.settings, messages: Room.messages,
             adapter: Room.adapter.kind, cloudState: Room.cloudState,
             live: { status: Live.status, events: Live.events, lastEventAt: Live.lastEventAt },
-            poll: { count: Poll.count, everyMs: POLL_MS }
+            poll: { count: Poll.count, everyMs: POLL_MS },
+            embed: embedded
           };
         },
         ids: function () {

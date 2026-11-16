@@ -449,31 +449,6 @@ body {
   color: #ffffff;
 }
 
-/* AI 협업방 바로가기 (상단 헤더) — 2026-11-16 */
-a.btn-header-tool {
-  text-decoration: none;
-}
-.btn-header-tool.header-ai-room {
-  background-color: #fff7f3;
-  border-color: rgba(222, 87, 52, 0.28);
-  color: #b8431f;
-}
-.btn-header-tool.header-ai-room:hover {
-  background-color: #fdede6;
-  border-color: rgba(222, 87, 52, 0.45);
-  color: #9e3517;
-}
-[data-theme="dark"] .btn-header-tool.header-ai-room {
-  background-color: rgba(222, 87, 52, 0.16);
-  border-color: rgba(222, 87, 52, 0.38);
-  color: #ffb49e;
-}
-[data-theme="dark"] .btn-header-tool.header-ai-room:hover {
-  background-color: rgba(222, 87, 52, 0.24);
-  border-color: rgba(222, 87, 52, 0.5);
-  color: #ffffff;
-}
-
 .icon-tool-btn {
   background: transparent;
   border: none;
@@ -593,30 +568,6 @@ a.btn-header-tool {
   background-color: #1a1a1a;
   color: #ffffff;
   border-color: #1a1a1a;
-}
-/* 모바일 탭 줄의 AI 협업방 링크 (탭 전환 버튼과 구분되는 링크) — 2026-11-16 */
-.mobile-room-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  flex: none;
-  padding: 6px 12px;
-  border-radius: var(--radius-pill);
-  border: 1px solid rgba(222, 87, 52, 0.32);
-  background-color: #fff7f3;
-  color: #b8431f;
-  font-size: 12.5px;
-  font-weight: 700;
-  white-space: nowrap;
-  text-decoration: none;
-}
-.mobile-room-link:active {
-  background-color: #fdede6;
-}
-[data-theme="dark"] .mobile-room-link {
-  background-color: rgba(222, 87, 52, 0.16);
-  border-color: rgba(222, 87, 52, 0.4);
-  color: #ffb49e;
 }
 
 /* Content Body */
@@ -1785,272 +1736,216 @@ body.light-theme .inquiry-content-text {
   opacity: 1;
 }
 
-/* Chatbot Floating Widget */
-.chatbot-floating-wrapper {
+/* =========================================================
+   AI 협업방 플로팅 위젯 (2026-11-16 4차 — 기존 구름이 챗봇 자리 대체)
+   · 우측 하단 런처 → 챗봇형 팝업(데스크톱 400x600 카드 / 480px 이하 풀시트)
+   · 팝업 본문은 ai-chat-room(?embed=1) iframe
+   ========================================================= */
+.airoom-widget {
   position: fixed;
-  bottom: 24px;
   right: 24px;
-  z-index: 999;
-}
-.chatbot-trigger-btn {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-color: #1a1a1a;
-  border: none;
-  box-shadow: var(--shadow-lg);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  transition: transform 0.2s;
-}
-.chatbot-trigger-btn:hover {
-  transform: scale(1.05);
-}
-.trigger-avatar-img {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-}
-.trigger-badge {
-  position: absolute;
-  top: -2px;
-  right: -2px;
-  background-color: var(--accent-red);
-  color: #ffffff;
-  font-size: 10px;
-  font-weight: 700;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  bottom: 24px;
+  z-index: 1000;
 }
 
-.chatbot-modal {
+.airoom-launcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 48px;
+  padding: 0 18px 0 15px;
+  border: 0;
+  border-radius: 999px;
+  background: #16171a;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.24), 0 1px 2px rgba(0, 0, 0, 0.16);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+.airoom-launcher:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28), 0 2px 4px rgba(0, 0, 0, 0.16);
+}
+.airoom-launcher:active {
+  transform: translateY(0);
+}
+.airoom-launcher:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 3px;
+}
+.airoom-launcher__icon {
+  font-size: 16px;
+  line-height: 1;
+}
+[data-theme="dark"] .airoom-launcher {
+  background: #f3f4f6;
+  color: #16171a;
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.55), 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.airoom-panel {
   display: none;
   position: absolute;
-  bottom: 60px;
   right: 0;
-  width: 360px;
-  height: 520px;
-  background-color: #ffffff;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-lg);
+  bottom: 60px;
+  width: 400px;
+  height: min(600px, calc(100vh - 140px));
+  height: min(600px, calc(100dvh - 140px));
+  flex-direction: column;
+  background: var(--bg-card);
   border: 1px solid var(--border-subtle);
+  border-radius: 18px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.22), 0 2px 8px rgba(0, 0, 0, 0.06);
   overflow: hidden;
-  flex-direction: column;
+  transform-origin: bottom right;
+  animation: airoomIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.chatbot-modal.open {
+.airoom-widget[data-open="true"] .airoom-panel {
   display: flex;
 }
-.chatbot-view {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-}
-.chatbot-header {
-  padding: 12px 16px;
-  background-color: #1a1a1a;
-  color: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.chatbot-header-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.chatbot-header-avatar-img {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-}
-.chatbot-title {
-  font-size: 13px;
-  font-weight: 700;
-}
-.chatbot-status {
-  font-size: 10.5px;
-  color: #9ca3af;
-}
-.chat-circle-btn, .chatbot-btn-icon {
-  background: transparent;
-  border: none;
-  color: #ffffff;
-  cursor: pointer;
-  font-size: 14px;
-}
-.chatbot-guide-banner {
-  background-color: #f3f4f6;
-  padding: 8px 12px;
-  font-size: 11px;
-  color: var(--text-secondary);
-}
-.chatbot-chips-bar {
-  display: flex;
-  gap: 6px;
-  padding: 8px 12px;
-  overflow-x: auto;
-  border-bottom: 1px solid var(--border-subtle);
-}
-.chat-chip {
-  background-color: var(--bg-card-subtle);
-  border: 1px solid var(--border-subtle);
-  padding: 4px 8px;
-  border-radius: var(--radius-pill);
-  font-size: 11px;
-  white-space: nowrap;
-  cursor: pointer;
-}
-.chatbot-messages {
-  flex: 1;
-  padding: 12px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.chat-bubble {
-  max-width: 84%;
-  padding: 9px 13px;
-  border-radius: 14px;
-  font-size: 12.5px;
-  line-height: 1.45;
-  word-break: break-word;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.chat-bubble.bot {
-  align-self: flex-start;
-  background-color: #f1f2f5;
-  color: #1f2937;
-  border-bottom-left-radius: 4px;
-}
-.chat-bubble.user {
-  align-self: flex-end;
-  background-color: #1a1a1a;
-  color: #ffffff;
-  border-bottom-right-radius: 4px;
-}
-.chat-bubble-meta {
-  font-size: 10px;
-  opacity: 0.65;
-  align-self: flex-end;
-  margin-top: 2px;
-}
-.chat-bubble.bot .chat-bubble-meta {
-  align-self: flex-start;
-}
-.chat-attachment-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 4px;
-}
-.chat-attachment-img {
-  max-width: 100%;
-  max-height: 180px;
-  border-radius: 8px;
-  cursor: pointer;
-  object-fit: cover;
-}
-.chat-attachment-doc {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(0, 0, 0, 0.05);
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-size: 11.5px;
-  text-decoration: none;
-  color: inherit;
-}
-.chatbot-input-bar {
-  padding: 10px 12px;
-  border-top: 1px solid var(--border-subtle);
-  display: flex;
-  gap: 8px;
-}
-#chatbot-input {
-  flex: 1;
-  border: 1px solid var(--border-subtle);
-  border-radius: 6px;
-  padding: 6px 8px;
-  font-size: 12px;
-  font-family: inherit;
-  resize: none;
-}
-.chatbot-send-btn {
-  background-color: #1a1a1a;
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  padding: 6px 12px;
-  font-size: 12px;
-  cursor: pointer;
+@keyframes airoomIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.985); }
+  to { opacity: 1; transform: none; }
 }
 
-/* Chatbot Dark Theme */
-[data-theme="dark"] .chatbot-modal {
-  background-color: #1c1d24;
-  border-color: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65);
+.airoom-panel__bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 10px 9px 12px;
+  background: linear-gradient(180deg, #fdfbf8 0%, var(--bg-card) 100%);
+  border-bottom: 1px solid var(--border-subtle);
 }
-[data-theme="dark"] .chatbot-header {
-  background-color: #13141a;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+[data-theme="dark"] .airoom-panel__bar {
+  background: #1b1d23;
 }
-[data-theme="dark"] .chatbot-guide-banner {
-  background-color: #232530;
-  color: #a0a5b2;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+.airoom-panel__avatars {
+  display: flex;
+  flex: none;
 }
-[data-theme="dark"] .chatbot-chips-bar {
-  background-color: #1c1d24;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+.airoom-av {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-style: normal;
+  font-size: 11px;
+  font-weight: 700;
+  margin-left: -7px;
+  box-shadow: 0 0 0 2px var(--bg-card);
+  background: #f1eee9;
+  color: #57575f;
 }
-[data-theme="dark"] .chat-chip {
-  background-color: #262834;
-  border-color: rgba(255, 255, 255, 0.08);
-  color: #e2e4ea;
+.airoom-av:first-child { margin-left: 0; }
+.airoom-av[data-tone="pickle"] { background: #fcefe9; color: #8f2e12; }
+.airoom-av[data-tone="claude"] { background: #edf1fd; color: #24409b; }
+.airoom-av[data-tone="codex"] { background: #f1ecfc; color: #432592; }
+.airoom-av[data-tone="cue"] { background: #e7f6f0; color: #085c45; }
+
+.airoom-panel__titles {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
 }
-[data-theme="dark"] .chat-chip:hover {
-  background-color: #323545;
-  color: #ffffff;
+.airoom-panel__title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
 }
-[data-theme="dark"] .chatbot-messages {
-  background-color: #1c1d24;
+.airoom-panel__sub {
+  font-size: 10.5px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-[data-theme="dark"] .chat-bubble.bot {
-  background-color: #282a36;
-  color: #f3f4f6;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+
+.airoom-panel__btn {
+  flex: none;
+  padding: 5px 9px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-card-subtle);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease;
 }
-[data-theme="dark"] .chat-bubble.user {
-  background-color: #3b82f6;
-  color: #ffffff;
+.airoom-panel__btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
 }
-[data-theme="dark"] .chatbot-input-bar {
-  background-color: #17181e;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+.airoom-panel__close {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
 }
-[data-theme="dark"] #chatbot-input {
-  background-color: #232530;
-  border-color: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
+.airoom-panel__close:hover {
+  background: var(--bg-card-subtle);
+  color: var(--text-primary);
 }
-[data-theme="dark"] .chatbot-send-btn {
-  background-color: #3b82f6;
-  color: #ffffff;
+
+.airoom-panel__body {
+  flex: 1;
+  min-height: 0;
+  background: #ffffff;
+}
+[data-theme="dark"] .airoom-panel__body {
+  background: #0f1013;
+}
+.airoom-frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: #ffffff;
+}
+[data-theme="dark"] .airoom-frame {
+  background: #0f1013;
+}
+
+/* 모바일(480px 이하)은 화면에 꽉 차는 풀시트로 — 앱처럼 보이게 */
+@media (max-width: 480px) {
+  .airoom-widget {
+    right: 14px;
+    bottom: 16px;
+  }
+  .airoom-panel {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .airoom-panel__bar {
+    padding-top: calc(9px + env(safe-area-inset-top));
+  }
+  .airoom-widget[data-open="true"] .airoom-launcher {
+    display: none;
+  }
 }
 
 /* =========================================================
@@ -2215,25 +2110,10 @@ body.light-theme .inquiry-content-text {
     min-width: 520px;
   }
 
-  /* Mobile Chatbot Modal Sizing & Positioning */
-  .chatbot-floating-wrapper {
-    bottom: 20px;
-    right: 18px;
-    z-index: 1002;
-  }
-  .chatbot-modal {
-    position: fixed;
-    bottom: 84px;
-    right: 16px;
-    left: 16px;
-    width: auto;
-    max-width: 420px;
-    margin: 0 auto;
-    height: 72vh;
-    max-height: 540px;
-    border-radius: 16px;
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
-    z-index: 1002;
+  /* Mobile: AI 협업방 위젯 위치 (풀시트 전환은 480px 이하 규칙) */
+  .airoom-widget {
+    right: 14px;
+    bottom: 16px;
   }
 }
 
@@ -2747,14 +2627,4 @@ body.light-theme .inquiry-content-text {
 }
 .week-calendar-grid.is-month .day-column:nth-child(n+8) .day-name { display: none; }
 
-/* AI 협업방 진입점 — 좁은 화면은 탭 줄 링크, 481px 이상은 헤더 버튼 (2026-11-16) */
-@media (max-width: 480px) {
-  .breadcrumb-right .btn-header-tool.header-ai-room {
-    display: none;
-  }
-}
-@media (min-width: 481px) {
-  .mobile-nav-tabs .mobile-room-link {
-    display: none;
-  }
-}
+/* AI 협업방 진입점은 우측 하단 플로팅 위젯으로 옮겼다 (2026-11-16 4차) */

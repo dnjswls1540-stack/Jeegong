@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>지공 출근 에이전트 | 업무 현황 대시보드</title>
-  <link rel="stylesheet" href="styles.css?v=20261116_airoom2">
+  <link rel="stylesheet" href="styles.css?v=20261116_airoom3">
 </head>
 <body>
   <div class="app-container">
@@ -97,10 +97,6 @@
         </div>
         <div class="breadcrumb-right">
           <span class="status-save-text">저장됨</span>
-          <a class="btn-header-tool header-ai-room" id="btn-ai-collab-room" href="./ai-chat-room/?room=Jeegong_0724" target="_blank" rel="noopener" title="AI 협업방 열기 — 구름이(피클)·클로드·코덱스·Cue">
-            <span aria-hidden="true">💬</span>
-            <span class="header-ai-room__label">AI 협업방</span>
-          </a>
           <button class="btn-header-tool" id="btn-theme-toggle" title="테마 전환">
             <span id="btn-theme-icon">🌙</span>
             <span id="btn-theme-label">다크모드</span>
@@ -151,7 +147,6 @@
         <button class="mobile-tab-btn" data-view="work-status-view">📊 업무 현황</button>
         <button class="mobile-tab-btn" data-view="gonggu-view">🤝 공구 영업</button>
         <button class="mobile-tab-btn" data-view="sales-view">💰 정산·매출</button>
-        <a class="mobile-room-link" id="btn-ai-collab-room-mobile" href="./ai-chat-room/?room=Jeegong_0724" target="_blank" rel="noopener">💬 AI 협업방</a>
       </nav>
 
       <main class="content-body">
@@ -619,58 +614,38 @@
     </div>
   </div>
 
-  <!-- Floating Chatbot Widget (구름이 업무 컨트롤러) -->
-  <div class="chatbot-floating-wrapper" id="chatbot-wrapper">
-    <div class="chatbot-modal" id="chatbot-modal">
-      <div class="chatbot-view" id="chat-view-room">
-        <div class="chatbot-header">
-          <div class="chatbot-header-left">
-            <img src="gureumi_avatar.png" alt="구름이" class="chatbot-header-avatar-img">
-            <div>
-              <div class="chatbot-title">구름이 (업무 컨트롤러)</div>
-              <div class="chatbot-status">
-                <span class="status-dot"></span>
-                <span>초고속 대시보드 도우미</span>
-              </div>
-            </div>
-          </div>
-          <div class="chatbot-header-right">
-            <button class="chatbot-btn-icon" id="btn-chatbot-clear" title="대화 지우기">🗑️</button>
-            <button class="chat-circle-btn" id="btn-chatbot-close" title="닫기">✕</button>
-          </div>
+  <!-- Floating AI 협업방 위젯 (기존 구름이 챗봇 자리 · 2026-11-16 4차) -->
+  <div class="airoom-widget" id="airoom-widget" data-open="false">
+    <section class="airoom-panel" id="airoom-panel" aria-hidden="true" aria-label="AI 협업방">
+      <header class="airoom-panel__bar">
+        <span class="airoom-panel__avatars" aria-hidden="true">
+          <i class="airoom-av" data-tone="pickle">구</i>
+          <i class="airoom-av" data-tone="claude">클</i>
+          <i class="airoom-av" data-tone="codex">코</i>
+          <i class="airoom-av" data-tone="cue">C</i>
+        </span>
+        <div class="airoom-panel__titles">
+          <strong class="airoom-panel__title">AI 협업방 · 4인</strong>
+          <span class="airoom-panel__sub">구름이(피클)·클로드·코덱스·Cue</span>
         </div>
-
-        <div class="chatbot-guide-banner">
-          <span>💡</span>
-          <span>실제 계정 조작·통화·업무 실행은 <strong>피클(Pickle) 앱 구름이</strong>가 직접 처리합니다!</span>
-        </div>
-
-        <div class="chatbot-chips-bar" id="chatbot-chips-bar">
-          <button class="chat-chip" onclick="sendQuickMessage('오늘 우선순위 핵심 짚어줘')">⚡ 오늘 우선순위</button>
-          <button class="chat-chip" onclick="sendQuickMessage('오늘 미처리 할 일 목록 보여줘')">📋 투두 목록 점검</button>
-          <button class="chat-chip" onclick="sendQuickMessage('미처리 중요 메일 확인해줘')">📬 중요 메일 확인</button>
-        </div>
-
-        <div class="chatbot-messages" id="chatbot-messages"></div>
-
-        <div class="chatbot-input-bar">
-          <textarea id="chatbot-input" rows="1" placeholder="메시지를 입력하세요..." autocomplete="off"></textarea>
-          <button id="chatbot-send-btn" class="chatbot-send-btn">
-            <span>전송</span>
-            <span>↗</span>
-          </button>
-        </div>
+        <a class="airoom-panel__btn" id="airoom-open-tab" href="./ai-chat-room/?room=Jeegong_0724" target="_blank" rel="noopener">새 탭에서 열기</a>
+        <button class="airoom-panel__close" id="airoom-close" type="button" aria-label="닫기" title="닫기">✕</button>
+      </header>
+      <div class="airoom-panel__body">
+        <iframe class="airoom-frame" id="airoom-frame" title="AI 협업방 — 구름이(피클)·클로드·코덱스·Cue"
+                data-src="./ai-chat-room/?room=Jeegong_0724&amp;embed=1"
+                loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="clipboard-write"></iframe>
       </div>
-    </div>
+    </section>
 
-    <button class="chatbot-trigger-btn" id="btn-chatbot-toggle" title="구름이와 실시간 대화">
-      <img src="gureumi_avatar.png" alt="구름이" class="trigger-avatar-img">
-      <span class="trigger-badge" id="trigger-unread-badge">1</span>
+    <button class="airoom-launcher" id="airoom-launcher" type="button" aria-expanded="false" aria-controls="airoom-panel" title="AI 협업방 열기 — 구름이(피클)·클로드·코덱스·Cue">
+      <span class="airoom-launcher__icon" aria-hidden="true">💬</span>
+      <span class="airoom-launcher__label">AI 협업방</span>
     </button>
   </div>
 
   <div class="toast-notice" id="toast-notice">클립보드에 복사되었습니다.</div>
 
-  <script src="app.js?v=20261116_caltitle"></script>
+  <script src="app.js?v=20261116_airoom3"></script>
 </body>
 </html>
