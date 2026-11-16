@@ -251,14 +251,18 @@
               <div class="panel-header">
                 <div class="panel-title">
                   <span>📅</span>
-                  <span>캘린더 · 주 (구글 캘린더)</span>
+                  <span id="cal-panel-title">캘린더 · 주 (구글 캘린더)</span>
                 </div>
                 <div class="cal-nav-controls">
                   <span class="cal-range-text" id="cal-week-range-text">11월 2일~8일</span>
+                  <div class="cal-btn-group cal-mode-group">
+                    <button class="cal-today-btn cal-mode-btn is-active" data-cal-mode="week">주</button>
+                    <button class="cal-today-btn cal-mode-btn" data-cal-mode="month">월</button>
+                  </div>
                   <div class="cal-btn-group">
-                    <button class="cal-arrow-btn" id="btn-cal-prev" title="이전 주">&lt;</button>
+                    <button class="cal-arrow-btn" id="btn-cal-prev" title="이전">&lt;</button>
                     <button class="cal-today-btn" id="btn-cal-today">오늘</button>
-                    <button class="cal-arrow-btn" id="btn-cal-next" title="다음 주">&gt;</button>
+                    <button class="cal-arrow-btn" id="btn-cal-next" title="다음">&gt;</button>
                   </div>
                 </div>
               </div>

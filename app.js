@@ -745,10 +745,50 @@ function setupNavigation() {
       renderWeeklyCalendar();
     });
   }
+  // 주/월 보기 전환
+  document.querySelectorAll('.cal-mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mode = btn.getAttribute('data-cal-mode');
+      if (mode === window.currentCalMode) return;
+      window.currentCalMode = mode;
+      window.currentCalWeekOffset = 0;
+      try { localStorage.setItem('jeegong_cal_mode', mode); } catch (e) {}
+      renderWeeklyCalendar();
+    });
+  });
 }
 
 // Weekly Google Calendar State
 window.currentCalWeekOffset = 0;
+window.currentCalMode = (function () {
+  try { return localStorage.getItem('jeegong_cal_mode') === 'month' ? 'month' : 'week'; } catch (e) { return 'week'; }
+})();
+
+// 월 보기: 해당 월 1일이 속한 주 월요일 ~ 말일이 속한 주 일요일
+function getMonthDateRange(offset = 0) {
+  const kst = getKSTNow();
+  const base = new Date(kst.d);
+  const first = new Date(base.getFullYear(), base.getMonth() + offset, 1);
+  const last = new Date(first.getFullYear(), first.getMonth() + 1, 0);
+  const start = new Date(first);
+  start.setDate(first.getDate() - ((first.getDay() + 6) % 7));
+  const end = new Date(last);
+  end.setDate(last.getDate() + (6 - ((last.getDay() + 6) % 7)));
+  const dayNames = ['월', '화', '수', '목', '금', '토', '일'];
+  const days = [];
+  for (let d = new Date(start), i = 0; d <= end; d.setDate(d.getDate() + 1), i++) {
+    const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    days.push({
+      dateStr,
+      month: d.getMonth() + 1,
+      dayNum: d.getDate(),
+      dayName: dayNames[i % 7],
+      isToday: dateStr === kst.dateStr,
+      isOtherMonth: d.getMonth() !== first.getMonth()
+    });
+  }
+  return { days, year: first.getFullYear(), month: first.getMonth() + 1 };
+}
 
 function getWeekDateRange(offset = 0) {
   const kst = getKSTNow();
@@ -789,20 +829,39 @@ function renderWeeklyCalendar() {
   const b = appData.briefings.find(item => item.id === currentBriefingId) || appData.briefings[0];
   const events = (b.calendarEvents || []);
   
-  const days = getWeekDateRange(window.currentCalWeekOffset);
-  const startDay = days[0];
-  const endDay = days[6];
-  
-  const rangeStr = `${startDay.month}월 ${startDay.dayNum}일~${endDay.month === startDay.month ? '' : endDay.month + '월 '}${endDay.dayNum}일`;
+  const isMonth = window.currentCalMode === 'month';
+  let days, rangeStr;
+  if (isMonth) {
+    const mr = getMonthDateRange(window.currentCalWeekOffset);
+    days = mr.days;
+    rangeStr = `${mr.year}년 ${mr.month}월`;
+  } else {
+    days = getWeekDateRange(window.currentCalWeekOffset);
+    const startDay = days[0];
+    const endDay = days[6];
+    rangeStr = `${startDay.month}월 ${startDay.dayNum}일~${endDay.month === startDay.month ? '' : endDay.month + '월 '}${endDay.dayNum}일`;
+  }
+  document.querySelectorAll('.cal-mode-btn').forEach(btn => {
+    btn.classList.toggle('is-active', btn.getAttribute('data-cal-mode') === window.currentCalMode);
+  });
+  const calPanelTitle = document.getElementById('cal-panel-title');
+  if (calPanelTitle) calPanelTitle.textContent = isMonth ? '캘린더 · 월 (구글 캘린더)' : '캘린더 · 주 (구글 캘린더)';
   const rangeTextEl = document.getElementById('cal-week-range-text');
   if (rangeTextEl) rangeTextEl.textContent = rangeStr;
   const fullRangeTextEl = document.getElementById('cal-full-range-text');
   if (fullRangeTextEl) fullRangeTextEl.textContent = rangeStr;
 
+  const rangeStart = days[0].dateStr;
+  const rangeEnd = days[days.length - 1].dateStr;
+  const visibleEvents = events.filter(ev => {
+    const s = ev.startDate || ev.date;
+    const e = ev.endDate || s;
+    return !s || (s <= rangeEnd && e >= rangeStart);
+  });
   const calBannerCount = document.getElementById('calendar-view-banner-count');
-  if (calBannerCount) calBannerCount.textContent = `${events.length}건`;
+  if (calBannerCount) calBannerCount.textContent = `${visibleEvents.length}건`;
   const calAgendaBadge = document.getElementById('calendar-agenda-badge');
-  if (calAgendaBadge) calAgendaBadge.textContent = `${events.length}개 일정`;
+  if (calAgendaBadge) calAgendaBadge.textContent = `${visibleEvents.length}개 일정`;
 
   function buildGridHtml() {
     let html = '';
@@ -833,12 +892,12 @@ function renderWeeklyCalendar() {
         `;
       });
       
-      if (dayEvents.length === 0) {
+      if (dayEvents.length === 0 && !isMonth) {
         eventsHtml = `<div style="font-size: 11px; color: var(--text-tertiary); text-align: center; margin-top: 24px;">-</div>`;
       }
       
       html += `
-        <div class="day-column ${day.isToday ? 'is-today' : ''}">
+        <div class="day-column ${day.isToday ? 'is-today' : ''} ${day.isOtherMonth ? 'is-other-month' : ''}">
           <div class="day-header">
             <div class="day-name">${day.dayName}</div>
             <div class="day-num">${day.dayNum}</div>
@@ -853,6 +912,7 @@ function renderWeeklyCalendar() {
   }
 
   const gridHtml = buildGridHtml();
+  [container, fullContainer].forEach(el => { if (el) el.classList.toggle('is-month', isMonth); });
   if (container) {
     container.innerHTML = gridHtml;
     // Mobile responsive: automatically scroll to today's column
@@ -878,10 +938,10 @@ function renderWeeklyCalendar() {
   // Render Agenda List in calendar-view
   if (agendaContainer) {
     agendaContainer.innerHTML = '';
-    if (events.length === 0) {
-      agendaContainer.innerHTML = '<div class="empty-state">이번 주 예정된 구글 캘린더 일정이 없습니다.</div>';
+    if (visibleEvents.length === 0) {
+      agendaContainer.innerHTML = '<div class="empty-state">이 기간에 예정된 구글 캘린더 일정이 없습니다.</div>';
     } else {
-      events.forEach(ev => {
+      visibleEvents.forEach(ev => {
         let badgeClass = 'badge-yellow';
         if (ev.tag === '공구') badgeClass = 'badge-orange';
         else if (ev.tag === '개인') badgeClass = 'badge-red';
@@ -1051,7 +1111,8 @@ function renderTodayView() {
   // Stats Counters (Lean-AX Metric Cards: clean numbers)
   const calCountEl = document.getElementById('stat-calendar-count');
   if (calCountEl) {
-    const weekEventsCount = b.calendarEvents ? b.calendarEvents.length : (b.calendar ? b.calendar.count : 0);
+    const _wk = getWeekDateRange(0);
+    const weekEventsCount = b.calendarEvents ? b.calendarEvents.filter(ev => { const s = ev.startDate || ev.date; const e = ev.endDate || s; return !s || (s <= _wk[6].dateStr && e >= _wk[0].dateStr); }).length : (b.calendar ? b.calendar.count : 0);
     calCountEl.textContent = weekEventsCount || '4';
   }
 
