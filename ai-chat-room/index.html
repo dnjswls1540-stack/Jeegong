@@ -2359,11 +2359,12 @@ body.is-dragging .tools__hint{color:var(--accent-ink);font-weight:700;}
 
   function renderFolderPresets() {
     if (!els.folderPresets) return;
+    var draft = String(els.folderInput.value || '').trim();
     els.folderPresets.innerHTML = '';
     FOLDER_PRESETS.forEach(function (preset) {
       var b = el('button', 'folder-item');
       b.type = 'button';
-      b.setAttribute('aria-pressed', String((preset.path || '') === (ui.folder || '')));
+      b.setAttribute('aria-pressed', String((preset.path || '') === draft));
       b.appendChild(el('b', null, preset.label));
       b.appendChild(el('span', null, preset.hint || '—'));
       b.addEventListener('click', function () {
@@ -2626,7 +2627,8 @@ body.is-dragging .tools__hint{color:var(--accent-ink);font-weight:700;}
       if (img) {
         var thumb = el('img');
         thumb.src = f.url;
-        thumb.alt = f.name || '첨부 이미지';
+        thumb.alt = '';
+        thumb.setAttribute('aria-hidden', 'true');
         thumb.loading = 'lazy';
         a.appendChild(thumb);
         a.appendChild(el('div', 'att__cap', (f.name || '첨부 이미지') + (f.size ? ' · ' + fmtBytes(f.size) : '')));
@@ -3607,6 +3609,7 @@ body.is-dragging .tools__hint{color:var(--accent-ink);font-weight:700;}
       });
     }
     if (els.folderInput) {
+      els.folderInput.addEventListener('input', renderFolderPresets);
       els.folderInput.addEventListener('keydown', function (e) {
         if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); applyFolder(); }
         if (e.key === 'Escape') { e.preventDefault(); closeFolderSheet(); }
