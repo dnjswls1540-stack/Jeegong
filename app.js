@@ -2144,18 +2144,38 @@ function showToast(msg) {
 //   · 우측 하단 런처 → 챗봇형 팝업(데스크톱 400x600 카드 / 모바일 풀시트)
 //   · 팝업 안에는 ./ai-chat-room/?room=Jeegong_0724&embed=1 을 iframe으로 띄운다
 //   · 첫 클릭 전에는 iframe을 로드하지 않아 대시보드 초기 로딩을 무겁게 하지 않는다
+//   · 2026-11-17: 플로팅 버튼에 '안 읽은 AI 메시지' 숫자 배지 추가
+//       읽음 기준은 ai-chat-room과 같은 localStorage 키를 쓰고,
+//       팝업을 열면 즉시 0으로 초기화되며, 열려 있는 동안 도착분은 읽은 것으로 처리한다.
 // =========================================================
+const AIROOM_ID = 'Jeegong_0724';
+const AIROOM_READ_KEY = 'ai-chat-room.lastReadAt';
+const AIROOM_POLL_MS = 20000;
+
+function aiRoomReadStamp() {
+  try { return localStorage.getItem(AIROOM_READ_KEY) || ''; } catch (e) { return ''; }
+}
+
+function aiRoomWriteStamp(at) {
+  if (!at) return;
+  try { localStorage.setItem(AIROOM_READ_KEY, at); } catch (e) { /* noop */ }
+}
+
 function setupAiRoomWidget() {
   const widget = document.getElementById('airoom-widget');
   const launcher = document.getElementById('airoom-launcher');
   const panel = document.getElementById('airoom-panel');
   const closeBtn = document.getElementById('airoom-close');
   const frame = document.getElementById('airoom-frame');
+  const badge = document.getElementById('airoom-badge');
 
   if (!widget || !launcher || !panel || !frame) return;
 
   const frameSrc = frame.getAttribute('data-src') || './ai-chat-room/?room=Jeegong_0724&embed=1';
   let loaded = false;
+  let polling = false;
+
+  function isOpen() { return widget.getAttribute('data-open') === 'true'; }
 
   function loadFrame() {
     if (loaded) return;
@@ -2163,32 +2183,118 @@ function setupAiRoomWidget() {
     frame.setAttribute('src', frameSrc);
   }
 
+  function postToFrame(msg) {
+    try {
+      if (frame.contentWindow) {
+        frame.contentWindow.postMessage(Object.assign({ source: 'jeegong-dashboard' }, msg), '*');
+      }
+    } catch (e) { /* noop */ }
+  }
+
+  function renderBadge(n) {
+    if (!badge) return;
+    const count = Math.max(0, Number(n) || 0);
+    if (count > 0 && !isOpen()) {
+      badge.textContent = count > 99 ? '99+' : String(count);
+      badge.hidden = false;
+      launcher.setAttribute('data-unread', String(count));
+      launcher.setAttribute('title', `AI 협업방 열기 — 안 읽은 메시지 ${count}건`);
+    } else {
+      badge.hidden = true;
+      badge.textContent = '';
+      launcher.removeAttribute('data-unread');
+      launcher.setAttribute('title', 'AI 협업방 열기 — 구름이(피클)·클로드·코덱스·Cue');
+    }
+  }
+
+  async function refreshUnread() {
+    if (polling || document.hidden) return;
+    let since = aiRoomReadStamp();
+    if (!since) {
+      // 처음 쓰는 기기: 지금부터 새로 오는 글만 센다(과거 글로 배지가 뜨지 않게)
+      aiRoomWriteStamp(new Date().toISOString());
+      renderBadge(0);
+      return;
+    }
+    polling = true;
+    try {
+      const url = `${SUPABASE_URL}/rest/v1/room_messages?room_id=eq.${encodeURIComponent(AIROOM_ID)}`
+        + '&select=id,author,at&author=neq.user&demo=eq.false&sample=eq.false'
+        + `&at=gt.${encodeURIComponent(since)}&order=at.desc&limit=100`;
+      const res = await fetch(url, {
+        headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+      });
+      if (!res.ok) return;
+      const rows = await res.json();
+      const list = (Array.isArray(rows) ? rows : []).filter((r) => r && r.author && r.author !== 'user');
+      if (isOpen()) {
+        // 열려 있으면 보는 중 — 최신 시각까지 읽음으로 올리고 배지는 없앤다
+        if (list.length && list[0].at) aiRoomWriteStamp(list[0].at);
+        renderBadge(0);
+      } else {
+        renderBadge(list.length);
+      }
+    } catch (e) {
+      /* 네트워크가 흔들리면 다음 주기에 다시 */
+    } finally {
+      polling = false;
+    }
+  }
+
   function open() {
     widget.setAttribute('data-open', 'true');
     panel.setAttribute('aria-hidden', 'false');
     launcher.setAttribute('aria-expanded', 'true');
     loadFrame();
+    // 열면 바로 읽음 처리 — 배지 숫자가 즉시 사라진다
+    aiRoomWriteStamp(new Date().toISOString());
+    renderBadge(0);
+    postToFrame({ type: 'ai-room:panel', open: true });
   }
 
   function close() {
     widget.setAttribute('data-open', 'false');
     panel.setAttribute('aria-hidden', 'true');
     launcher.setAttribute('aria-expanded', 'false');
+    postToFrame({ type: 'ai-room:panel', open: false });
+    refreshUnread();
   }
 
   function toggle() {
-    if (widget.getAttribute('data-open') === 'true') close();
+    if (isOpen()) close();
     else open();
   }
 
   launcher.addEventListener('click', toggle);
   if (closeBtn) closeBtn.addEventListener('click', close);
   window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && widget.getAttribute('data-open') === 'true') close();
+    if (e.key === 'Escape' && isOpen()) close();
   });
 
+  // 팝업 iframe이 준비되면 열림 상태를 다시 알려 준다(로딩 타이밍 차이 대비)
+  frame.addEventListener('load', () => {
+    if (isOpen()) postToFrame({ type: 'ai-room:panel', open: true });
+  });
+
+  // 방 페이지가 읽음/새 메시지를 알려 오면 배지를 맞춘다
+  window.addEventListener('message', (e) => {
+    const d = e && e.data;
+    if (!d || d.source !== 'ai-chat-room') return;
+    if (d.type === 'ai-room:read') {
+      if (d.at) aiRoomWriteStamp(d.at);
+      renderBadge(0);
+    }
+  });
+
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) refreshUnread(); });
+  window.addEventListener('online', refreshUnread);
+
+  renderBadge(0);
+  refreshUnread();
+  setInterval(refreshUnread, AIROOM_POLL_MS);
+
   // 다른 화면으로 이동해도 열린 상태는 유지하되, 창이 좁아지면(모바일) 시트로 자연스럽게 전환된다.
-  window.__aiRoomWidget = { open, close, toggle };
+  window.__aiRoomWidget = { open, close, toggle, refreshUnread };
 }
 
 // =========================================================

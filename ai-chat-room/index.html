@@ -701,6 +701,103 @@ body.is-embed .appbar__rule{
   text-decoration:underline;text-underline-offset:2px;
   cursor:pointer;padding:2px;
 }
+/* 파일을 끌어오는 동안 입력 카드를 살짝 띄운다 */
+body.is-dragging .composer{
+  border-top-color:var(--accent);
+  box-shadow:inset 0 0 0 2px rgba(222,87,52,.14);
+}
+body.is-dragging .tools__hint{color:var(--accent-ink);font-weight:700;}
+
+/* ============================================================
+   5-1. 작업 폴더 · 파일 첨부 (2026-11-17)
+   ============================================================ */
+.composer__tools{
+  display:flex;align-items:center;gap:6px;
+  margin:0 1px 8px;
+}
+.tool{
+  appearance:none;display:inline-flex;align-items:center;gap:5px;
+  height:28px;padding:0 9px;border-radius:999px;
+  border:1px solid var(--line);background:#fff;color:var(--ink-2);
+  font-size:11.5px;font-weight:600;cursor:pointer;white-space:nowrap;
+  transition:border-color .15s ease,background .15s ease,color .15s ease;
+}
+.tool:hover{border-color:#D8D1C7;background:#FDFBF8;}
+.tool--icon{padding:0 8px;font-size:13px;}
+.tool.is-on{background:var(--accent-tint);border-color:#F2C7B6;color:var(--accent-ink);}
+.tool__text{max-width:200px;overflow:hidden;text-overflow:ellipsis;direction:ltr;text-align:left;}
+.tools__hint{margin-left:auto;font-size:10px;color:var(--ink-3);white-space:nowrap;}
+
+/* 첨부 대기 줄 */
+.attach-strip{
+  display:flex;gap:6px;overflow-x:auto;
+  padding:0 1px 8px;margin:0 -1px;
+  scrollbar-width:none;
+}
+.attach-strip[hidden]{display:none;}
+.attach-strip::-webkit-scrollbar{display:none;}
+.attach-chip{
+  position:relative;flex:none;display:flex;align-items:center;gap:6px;
+  max-width:220px;padding:5px 6px;border-radius:10px;
+  border:1px solid var(--line);background:var(--surface-2);
+  font-size:11px;color:var(--ink-2);
+}
+.attach-chip img{width:26px;height:26px;border-radius:6px;object-fit:cover;flex:none;}
+.attach-chip__icon{
+  width:26px;height:26px;border-radius:6px;background:var(--surface-3);
+  display:grid;place-items:center;font-size:13px;flex:none;
+}
+.attach-chip__body{min-width:0;display:flex;flex-direction:column;gap:1px;}
+.attach-chip__name{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.attach-chip__state{font-size:10px;color:var(--ink-3);}
+.attach-chip__state.is-err{color:var(--danger);}
+.attach-chip__x{
+  appearance:none;border:0;background:transparent;color:var(--ink-3);
+  font-size:12px;line-height:1;padding:3px;margin-left:2px;cursor:pointer;
+}
+.attach-chip.is-error{border-color:#EFC9C1;background:#FDF3F1;}
+
+/* 말풍선 안 폴더 배지 · 첨부 카드 */
+.bubble__folder{
+  display:inline-flex;align-items:center;gap:5px;max-width:100%;
+  margin:0 0 8px;padding:3px 8px;border-radius:8px;
+  background:rgba(22,22,26,.055);color:var(--ink-2);
+  font-size:11px;font-weight:600;
+}
+.msg--user .bubble__folder{background:rgba(255,255,255,.16);color:#fff;}
+.bubble__folder span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;direction:ltr;}
+.att-grid{display:grid;gap:6px;margin-top:2px;}
+.att{
+  display:flex;align-items:center;gap:8px;max-width:100%;
+  padding:6px;border-radius:10px;
+  background:#fff;border:1px solid var(--line);
+  text-decoration:none;color:inherit;
+}
+.msg--user .att{background:rgba(255,255,255,.94);border-color:transparent;color:var(--ink);}
+.att__thumb{width:44px;height:44px;border-radius:8px;object-fit:cover;flex:none;background:var(--surface-3);}
+.att__icon{
+  width:44px;height:44px;border-radius:8px;flex:none;
+  display:grid;place-items:center;background:var(--surface-3);font-size:17px;
+}
+.att__meta{min-width:0;display:flex;flex-direction:column;gap:2px;}
+.att__name{font-size:12px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.att__sub{font-size:10.5px;color:var(--ink-3);}
+.att--image{display:block;padding:0;overflow:hidden;background:transparent;border:0;}
+.att--image img{display:block;width:100%;max-width:230px;border-radius:10px;background:var(--surface-3);}
+.att--image .att__cap{font-size:10.5px;color:var(--ink-3);padding:4px 2px 0;}
+
+/* 폴더 선택 목록 */
+.folder-list{display:flex;flex-direction:column;gap:6px;margin:2px 0 12px;max-height:230px;overflow-y:auto;}
+.folder-item{
+  appearance:none;text-align:left;width:100%;
+  padding:9px 11px;border-radius:11px;border:1px solid var(--line);background:#fff;
+  font-size:12.5px;color:var(--ink-2);cursor:pointer;
+  transition:border-color .15s ease,background .15s ease;
+}
+.folder-item:hover{border-color:#D8D1C7;background:#FDFBF8;}
+.folder-item b{display:block;font-size:12px;color:var(--ink);margin-bottom:2px;}
+.folder-item span{font-size:10.5px;color:var(--ink-3);word-break:break-all;}
+.folder-item[aria-pressed="true"]{border-color:#F2C7B6;background:var(--accent-tint);}
 
 /* ============================================================
    6. 멤버 뷰
@@ -1022,6 +1119,18 @@ body.is-embed .appbar__rule{
           <span class="composer__hint" id="targetSummary">받는 AI · 모두에게</span>
         </div>
 
+        <div class="composer__tools">
+          <button class="tool" type="button" id="folderBtn" aria-haspopup="dialog" aria-controls="folderSheet" title="작업 폴더 지정 — 클로드·코덱스가 이 폴더에서 일합니다">
+            <span aria-hidden="true">📁</span>
+            <span class="tool__text" id="folderBtnText">기본 폴더</span>
+          </button>
+          <button class="tool tool--icon" type="button" id="attachBtn" aria-label="파일 첨부" title="파일 첨부">📎</button>
+          <span class="tools__hint" id="toolsHint">끌어다 놓기·붙여넣기 가능</span>
+          <input type="file" id="fileInput" multiple hidden />
+        </div>
+
+        <div class="attach-strip" id="attachStrip" hidden aria-label="첨부 대기 중인 파일"></div>
+
         <div class="chips" id="chips" role="group" aria-label="지시 대상 선택"></div>
 
         <div class="mentions" id="mentionSuggest" role="listbox" aria-label="@멘션 자동완성" hidden></div>
@@ -1118,9 +1227,10 @@ body.is-embed .appbar__rule{
         <div class="card">
           <h2 class="card__title">정보</h2>
           <p class="fineprint">
-            AI 협업방 <b>v1.2 · 4인 체계</b><br />
+            AI 협업방 <b>v1.3 · 폴더·첨부</b><br />
             HTML + CSS + Vanilla JS 단일 파일 · 외부 라이브러리 없음<br />
             저장 · 이 브라우저 localStorage (<code id="storageKeyLabel">ai-chat-room.v1</code>) ↔ Supabase <code>room_messages</code><br />
+            폴더는 본문 첫 줄 <code>[폴더: 경로]</code>, 첨부는 본문 끝 <code>[첨부: URL|이름|MIME|바이트]</code> 태그로 기록합니다<br />
             클라우드가 준비되기 전에는 로컬에 기록하고 자동으로 재연결합니다
           </p>
         </div>
@@ -1138,6 +1248,23 @@ body.is-embed .appbar__rule{
       <div class="sheet__actions">
         <button class="btn" type="button" id="sheetCancel">취소</button>
         <button class="btn btn--danger-solid" type="button" id="sheetOk">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="sheet" id="folderSheet" role="dialog" aria-modal="true" aria-labelledby="folderSheetTitle" aria-hidden="true">
+    <div class="sheet__panel">
+      <h2 class="sheet__title" id="folderSheetTitle">작업 폴더</h2>
+      <p class="sheet__body">클로드·코덱스가 이 폴더에서 일합니다. 비우면 PC 기본 폴더를 씁니다.</p>
+      <div class="field">
+        <label for="folderInput">직접 입력</label>
+        <input id="folderInput" type="text" autocomplete="off" spellcheck="false" placeholder="C:\Users\PC\Desktop\Jeegong" />
+        <p class="field__note">PC에 실제로 있는 폴더만 적용됩니다. 없으면 기본 폴더로 돌아가고, AI가 그 사실을 알려줍니다.</p>
+      </div>
+      <div class="folder-list" id="folderPresets"></div>
+      <div class="sheet__actions">
+        <button class="btn" type="button" id="folderCancel">취소</button>
+        <button class="btn btn--primary" type="button" id="folderOk">적용</button>
       </div>
     </div>
   </div>
@@ -1266,6 +1393,114 @@ body.is-embed .appbar__rule{
     if (target === TARGET_ALL || !target) return '모두에게';
     var m = MEMBER_MAP[target];
     return m ? m.full : '모두에게';
+  }
+
+  /* ==========================================================
+     2-1. 작업 폴더 · 첨부 (2026-11-17 추가)
+     ----------------------------------------------------------
+     DB 스키마를 바꾸지 않고 기존 room_messages와 호환되도록
+     폴더는 본문 첫 줄 표준 태그 [폴더: C:\경로]로,
+     첨부는 본문 끝 [첨부: URL|이름|MIME|바이트] 태그로 실어 보냅니다.
+     PC의 claude_room_watcher.py · codex_room_watcher.py가 같은 태그를 읽어
+     cwd(작업 폴더)와 내려받은 로컬 파일 경로로 바꿉니다.
+     ========================================================== */
+  var FOLDER_KEY = 'ai-chat-room.folder';
+  var READ_KEY = 'ai-chat-room.lastReadAt';
+  var ATTACH_BUCKET = 'room-attachments';
+  var ATTACH_MAX_BYTES = 25 * 1024 * 1024;
+  var FOLDER_PRESETS = [
+    { label: '기본 폴더 (지정 안 함)', hint: 'PC 감시 스크립트의 work_dir에서 일합니다', path: '' },
+    { label: '지공 저장소', hint: 'C:\\Users\\PC\\Desktop\\Jeegong', path: 'C:\\Users\\PC\\Desktop\\Jeegong' },
+    { label: 'PC 도구', hint: 'C:\\Users\\PC\\pc-tools', path: 'C:\\Users\\PC\\pc-tools' },
+    { label: '01_WORK', hint: 'D:\\01_WORK', path: 'D:\\01_WORK' },
+    { label: '공동구매 중개', hint: 'D:\\01_WORK\\02_공동구매 중개', path: 'D:\\01_WORK\\02_공동구매 중개' },
+    { label: '온세스 스튜디오', hint: 'D:\\01_WORK\\03_온세스 스튜디오 홈페이지 제작', path: 'D:\\01_WORK\\03_온세스 스튜디오 홈페이지 제작' }
+  ];
+
+  function fmtBytes(n) {
+    var b = Number(n) || 0;
+    if (!b) return '';
+    if (b < 1024) return b + 'B';
+    if (b < 1024 * 1024) return Math.round(b / 1024) + 'KB';
+    return (Math.round(b / 1024 / 1024 * 10) / 10) + 'MB';
+  }
+
+  function fileNameFromUrl(url) {
+    try {
+      var clean = String(url || '').split('?')[0].split('#')[0];
+      var name = decodeURIComponent(clean.slice(clean.lastIndexOf('/') + 1));
+      return name || '첨부 파일';
+    } catch (e) { return '첨부 파일'; }
+  }
+
+  function fileIcon(f) {
+    var name = (f && f.name) || '';
+    var mime = (f && f.mime) || '';
+    if (/pdf$/i.test(name) || /pdf/i.test(mime)) return '📄';
+    if (/\.(xlsx?|csv)$/i.test(name)) return '📊';
+    if (/\.(docx?|hwp|hwpx|txt|md)$/i.test(name)) return '📝';
+    if (/\.(zip|7z|rar)$/i.test(name)) return '🗜';
+    if (/audio\//i.test(mime)) return '🎧';
+    if (/video\//i.test(mime)) return '🎖';
+    return '📎';
+  }
+
+  function isImageFile(f) {
+    if (!f) return false;
+    if (/^image\//i.test(f.mime || '')) return true;
+    return /\.(png|jpe?g|gif|webp|bmp|avif|svg)$/i.test(f.name || '');
+  }
+
+  /* 경로가 길면 끝(파일명)을 살리고 중간을 줄인다 */
+  function shortenPath(path, max) {
+    var p = String(path || '');
+    var m = max || 34;
+    if (p.length <= m) return p;
+    var head = p.slice(0, Math.max(6, m - 18));
+    var tail = p.slice(-14);
+    return head + '…' + tail;
+  }
+
+  var ATTACH_TAG_SRC = '\\[첨부:\\s*([^\\]\\s|]+)(?:\\s*\\|\\s*([^|\\]]*))?(?:\\s*\\|\\s*([^|\\]]*))?(?:\\s*\\|\\s*(\\d+))?\\s*\\]';
+  var FOLDER_TAG_SRC = '^\\s*\\[폴더:\\s*([^\\]\\r\\n]+)\\]\\s*\\r?\\n?';
+
+  /* 본문 → { folder, body, files } */
+  function parseMessageText(text) {
+    var raw = text == null ? '' : String(text);
+    var folder = null;
+    var fm = new RegExp(FOLDER_TAG_SRC).exec(raw);
+    if (fm) { folder = fm[1].trim(); raw = raw.slice(fm[0].length); }
+    var files = [];
+    var re = new RegExp(ATTACH_TAG_SRC, 'g');
+    var m;
+    while ((m = re.exec(raw)) !== null) {
+      files.push({
+        url: m[1],
+        name: (m[2] || '').trim() || fileNameFromUrl(m[1]),
+        mime: (m[3] || '').trim(),
+        size: m[4] ? parseInt(m[4], 10) : 0
+      });
+    }
+    var body = raw.replace(new RegExp(ATTACH_TAG_SRC, 'g'), '').replace(/\n{3,}/g, '\n\n').trim();
+    return { folder: folder, body: body, files: files };
+  }
+
+  /* 타이핑한 본문 + 폴더 + 첨부 → DB에 저장할 한 줄 본문(태그 포함) */
+  function buildWireText(body, folder, files) {
+    var out = '';
+    if (folder) out += '[폴더: ' + String(folder).replace(/[\]\r\n]/g, ' ').trim() + ']\n';
+    out += String(body || '').trim();
+    (files || []).forEach(function (f) {
+      var name = String(f.name || 'file').replace(/[|\]\r\n]/g, '-');
+      out += (out ? '\n' : '') + '[첨부: ' + f.url + '|' + name + '|' + (f.mime || '') + '|' + (f.size || 0) + ']';
+    });
+    return out.trim();
+  }
+
+  /* 안전한 저장 파일명 — 경로에는 ASCII만, 원래 이름은 태그에 남긴다 */
+  function storageName(file) {
+    var ext = (/(\.[A-Za-z0-9]{1,8})$/.exec(file && file.name || '') || ['', ''])[1].toLowerCase();
+    return 'f' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7) + ext;
   }
 
   /* ==========================================================
@@ -2001,7 +2236,8 @@ body.is-embed .appbar__rule{
     tab: 'chat',
     target: TARGET_ALL,
     typing: [],       // 응답을 준비 중인 멤버 id
-    busyCount: {}     // 데모 응답 스케줄 중복 방지
+    busyCount: {},    // 데모 응답 스케줄 중복 방지
+    folder: ''        // 작업 폴더(빈 값 = PC 기본 폴더)
   };
 
   var els = {
@@ -2021,7 +2257,19 @@ body.is-embed .appbar__rule{
     sheetTitle: $('#sheetTitle'),
     sheetBody: $('#sheetBody'),
     sheetOk: $('#sheetOk'),
-    sheetCancel: $('#sheetCancel')
+    sheetCancel: $('#sheetCancel'),
+    // 작업 폴더 · 첨부
+    folderBtn: $('#folderBtn'),
+    folderBtnText: $('#folderBtnText'),
+    attachBtn: $('#attachBtn'),
+    attachStrip: $('#attachStrip'),
+    fileInput: $('#fileInput'),
+    toolsHint: $('#toolsHint'),
+    folderSheet: $('#folderSheet'),
+    folderInput: $('#folderInput'),
+    folderPresets: $('#folderPresets'),
+    folderOk: $('#folderOk'),
+    folderCancel: $('#folderCancel')
   };
 
   /* ==========================================================
@@ -2091,6 +2339,219 @@ body.is-embed .appbar__rule{
     els.targetSummary.textContent = '받는 AI · ' + targetLabel(ui.target);
   }
 
+  /* ==========================================================
+     5-1. 작업 폴더 · 첨부 UI
+     ========================================================== */
+  function readFolder() {
+    try { return localStorage.getItem(FOLDER_KEY) || ''; } catch (e) { return ''; }
+  }
+  function saveFolder(p) {
+    try { localStorage.setItem(FOLDER_KEY, p || ''); } catch (e) { /* noop */ }
+  }
+
+  function renderFolderChip() {
+    if (!els.folderBtnText) return;
+    var p = ui.folder || '';
+    els.folderBtnText.textContent = p ? shortenPath(p, 26) : '기본 폴더';
+    els.folderBtn.title = p ? ('작업 폴더 · ' + p) : '작업 폴더 지정 (비우면 PC 기본 폴더)';
+    els.folderBtn.classList.toggle('is-on', !!p);
+  }
+
+  function renderFolderPresets() {
+    if (!els.folderPresets) return;
+    els.folderPresets.innerHTML = '';
+    FOLDER_PRESETS.forEach(function (preset) {
+      var b = el('button', 'folder-item');
+      b.type = 'button';
+      b.setAttribute('aria-pressed', String((preset.path || '') === (ui.folder || '')));
+      b.appendChild(el('b', null, preset.label));
+      b.appendChild(el('span', null, preset.hint || '—'));
+      b.addEventListener('click', function () {
+        els.folderInput.value = preset.path || '';
+        renderFolderPresets();
+      });
+      els.folderPresets.appendChild(b);
+    });
+  }
+
+  function openFolderSheet() {
+    if (!els.folderSheet) return;
+    els.folderInput.value = ui.folder || '';
+    renderFolderPresets();
+    els.folderSheet.classList.add('is-open');
+    els.folderSheet.setAttribute('aria-hidden', 'false');
+    setTimeout(function () { try { els.folderInput.focus(); } catch (e) { /* noop */ } }, 120);
+  }
+
+  function closeFolderSheet() {
+    if (!els.folderSheet) return;
+    els.folderSheet.classList.remove('is-open');
+    els.folderSheet.setAttribute('aria-hidden', 'true');
+  }
+
+  function applyFolder() {
+    var raw = String(els.folderInput.value || '').trim().replace(/^["']+|["']+$/g, '').trim();
+    ui.folder = raw;
+    saveFolder(raw);
+    renderFolderChip();
+    closeFolderSheet();
+    toast(raw ? ('작업 폴더 · ' + shortenPath(raw, 40)) : '기본 폴더를 씁니다.');
+  }
+
+  /* ---------- 첨부 업로드 큐 ---------- */
+  var Attach = {
+    items: [],
+    seq: 0,
+    add: function (fileList) {
+      if (!fileList || !fileList.length) return;
+      if (Room.settings.mode !== 'cloud') {
+        toast('클라우드 모드에서만 파일을 첨부할 수 있어요.');
+        return;
+      }
+      var accepted = [];
+      for (var i = 0; i < fileList.length; i++) {
+        var f = fileList[i];
+        if (!f) continue;
+        if (f.size > ATTACH_MAX_BYTES) {
+          toast((f.name || '파일') + ' · 25MB가 넘어 첨부하지 않았어요.');
+          continue;
+        }
+        accepted.push(f);
+      }
+      accepted.forEach(function (f) {
+        var item = {
+          key: 'a' + (++Attach.seq),
+          file: f,
+          name: f.name || '첨부 파일',
+          mime: f.type || '',
+          size: f.size || 0,
+          state: 'uploading',
+          url: '',
+          error: ''
+        };
+        Attach.items.push(item);
+        uploadOne(item);
+      });
+      renderAttachStrip();
+      syncSend();
+    },
+    remove: function (key) {
+      Attach.items = Attach.items.filter(function (i) { return i.key !== key; });
+      renderAttachStrip();
+      syncSend();
+    },
+    clear: function () {
+      Attach.items = [];
+      renderAttachStrip();
+      syncSend();
+    },
+    ready: function () {
+      return Attach.items.filter(function (i) { return i.state === 'done'; });
+    },
+    uploading: function () {
+      return Attach.items.some(function (i) { return i.state === 'uploading'; });
+    },
+    failed: function () {
+      return Attach.items.some(function (i) { return i.state === 'error'; });
+    }
+  };
+
+  function uploadOne(item) {
+    var base = String(Room.settings.url || '').replace(/\/+$/, '');
+    var path = encodeURIComponent(Room.settings.roomId) + '/' + storageName(item.file);
+    var headers = {
+      'apikey': Room.settings.anonKey,
+      'Authorization': 'Bearer ' + Room.settings.anonKey,
+      'Content-Type': item.mime || 'application/octet-stream',
+      'x-upsert': 'false'
+    };
+    return fetch(base + '/storage/v1/object/' + ATTACH_BUCKET + '/' + path, {
+      method: 'POST',
+      headers: headers,
+      body: item.file
+    }).then(function (res) {
+      if (!res.ok) throw new Error('업로드 실패 ' + res.status);
+      item.url = base + '/storage/v1/object/public/' + ATTACH_BUCKET + '/' + path;
+      item.state = 'done';
+      renderAttachStrip();
+      syncSend();
+    }).catch(function (err) {
+      item.state = 'error';
+      item.error = (err && err.message) || String(err);
+      renderAttachStrip();
+      syncSend();
+    });
+  }
+
+  function renderAttachStrip() {
+    if (!els.attachStrip) return;
+    els.attachStrip.innerHTML = '';
+    if (!Attach.items.length) {
+      els.attachStrip.hidden = true;
+      return;
+    }
+    els.attachStrip.hidden = false;
+    Attach.items.forEach(function (item) {
+      var chip = el('div', 'attach-chip' + (item.state === 'error' ? ' is-error' : ''));
+      if (item.state === 'done' && isImageFile({ name: item.name, mime: item.mime })) {
+        var img = el('img');
+        img.src = item.url;
+        img.alt = item.name;
+        chip.appendChild(img);
+      } else {
+        chip.appendChild(el('span', 'attach-chip__icon', fileIcon({ name: item.name, mime: item.mime })));
+      }
+      var body = el('div', 'attach-chip__body');
+      body.appendChild(el('span', 'attach-chip__name', item.name));
+      body.appendChild(el('span', 'attach-chip__state' + (item.state === 'error' ? ' is-err' : ''),
+        item.state === 'uploading' ? '올리는 중…' :
+          (item.state === 'error' ? '업로드 실패' : (fmtBytes(item.size) || '첨부됨'))));
+      chip.appendChild(body);
+      var x = el('button', 'attach-chip__x', '✕');
+      x.type = 'button';
+      x.setAttribute('aria-label', item.name + ' 첨부 취소');
+      x.addEventListener('click', function () { Attach.remove(item.key); });
+      chip.appendChild(x);
+      els.attachStrip.appendChild(chip);
+    });
+  }
+
+  /* ---------- 읽음 처리 (대시보드 알림 배지와 같은 키를 쓴다) ---------- */
+  var embedFlags = { embedded: false, panelOpen: true };
+
+  function latestMessageAt() {
+    var at = null;
+    Room.messages.forEach(function (m) {
+      if (m && m.at && (at === null || m.at > at)) at = m.at;
+    });
+    return at;
+  }
+
+  function notifyParent(payload) {
+    if (!window.parent || window.parent === window) return;
+    var data = Object.assign({ source: 'ai-chat-room', room: Room.settings.roomId }, payload);
+    try { window.parent.postMessage(data, '*'); } catch (e) { /* noop */ }
+  }
+
+  function markRead(force) {
+    if (!force) {
+      if (document.hidden) return;
+      if (embedFlags.embedded && !embedFlags.panelOpen) return;
+    }
+    var at = latestMessageAt() || new Date().toISOString();
+    try { localStorage.setItem(READ_KEY, at); } catch (e) { /* noop */ }
+    notifyParent({ type: 'ai-room:read', at: at });
+  }
+
+  window.addEventListener('message', function (e) {
+    var d = e && e.data;
+    if (!d || d.source !== 'jeegong-dashboard') return;
+    if (d.type === 'ai-room:panel') {
+      embedFlags.panelOpen = !!d.open;
+      if (d.open) markRead(true);
+    }
+  });
+
   /* 본문에서 @이름 만 하이라이트 (DOM으로 안전하게) */
   var MENTION_RE = /@(구름이|피클|클로드|코덱스|cue|Cue|큐|모두)/g;
 
@@ -2144,6 +2605,55 @@ body.is-embed .appbar__rule{
     return b;
   }
 
+  /* 말풍선 안에 폴더 배지 · 본문 · 첨부 카드를 차례로 그린다 */
+  function folderBadge(path) {
+    var b = el('div', 'bubble__folder');
+    b.appendChild(document.createTextNode('📁'));
+    b.appendChild(el('span', null, path));
+    b.title = '작업 폴더 · ' + path;
+    return b;
+  }
+
+  function attachmentGrid(files) {
+    var grid = el('div', 'att-grid');
+    (files || []).forEach(function (f) {
+      var img = isImageFile(f);
+      var a = el('a', 'att' + (img ? ' att--image' : ''));
+      a.href = f.url;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.title = (f.name || '첨부') + (f.size ? ' · ' + fmtBytes(f.size) : '');
+      if (img) {
+        var thumb = el('img');
+        thumb.src = f.url;
+        thumb.alt = f.name || '첨부 이미지';
+        thumb.loading = 'lazy';
+        a.appendChild(thumb);
+        a.appendChild(el('div', 'att__cap', (f.name || '첨부 이미지') + (f.size ? ' · ' + fmtBytes(f.size) : '')));
+      } else {
+        a.appendChild(el('span', 'att__icon', fileIcon(f)));
+        var meta = el('div', 'att__meta');
+        meta.appendChild(el('span', 'att__name', f.name || '첨부 파일'));
+        meta.appendChild(el('span', 'att__sub', (f.mime || 'file') + (f.size ? ' · ' + fmtBytes(f.size) : '')));
+        a.appendChild(meta);
+      }
+      grid.appendChild(a);
+    });
+    return grid;
+  }
+
+  function appendMessageContent(bubble, text, isUser) {
+    var parsed = parseMessageText(text);
+    if (parsed.folder) bubble.appendChild(folderBadge(parsed.folder));
+    if (parsed.body) {
+      appendRichText(bubble, parsed.body);
+    } else if (!parsed.files.length) {
+      appendRichText(bubble, '');
+    }
+    if (parsed.files.length) bubble.appendChild(attachmentGrid(parsed.files));
+    if (isUser) bubble.setAttribute('data-attach', parsed.files.length ? '1' : '0');
+  }
+
   function aiMessageNode(msg) {
     var member = memberFor(msg.author);
     var wrap = el('div', 'msg msg--ai' + (msg.done ? ' is-done' : ''));
@@ -2158,7 +2668,7 @@ body.is-embed .appbar__rule{
     wrap.appendChild(head);
 
     var bubble = el('div', 'bubble');
-    appendRichText(bubble, msg.text);
+    appendMessageContent(bubble, msg.text);
     wrap.appendChild(bubble);
 
     var meta = el('div', 'msg__meta');
@@ -2178,7 +2688,7 @@ body.is-embed .appbar__rule{
     wrap.appendChild(to);
 
     var bubble = el('div', 'bubble');
-    appendRichText(bubble, msg.text);
+    appendMessageContent(bubble, msg.text, true);
     wrap.appendChild(bubble);
 
     var meta = el('div', 'msg__meta');
@@ -2299,6 +2809,7 @@ body.is-embed .appbar__rule{
 
     renderHeader();
     if (atBottom) scrollToEnd(false);
+    markRead();
   }
 
   /* ----------------------------------------------------------
@@ -2405,6 +2916,7 @@ body.is-embed .appbar__rule{
     renderHeader();
     renderSettingsState();
     if (atBottom) scrollToEnd(true);
+    markRead();
   }
 
   /* 완료 상태 시각만 바꿔 준다(다른 창에서 누른 완료도 이 경로로 반영) */
@@ -2529,8 +3041,8 @@ body.is-embed .appbar__rule{
   }
 
   function syncSend() {
-    var has = els.input.value.trim().length > 0;
-    els.send.disabled = !has;
+    var has = els.input.value.trim().length > 0 || Attach.ready().length > 0;
+    els.send.disabled = !has || Attach.uploading();
   }
 
   /* --- @멘션 자동완성 ---
@@ -2683,7 +3195,12 @@ body.is-embed .appbar__rule{
 
   function sendCurrent() {
     var text = els.input.value.trim();
-    if (!text) { els.input.focus(); return; }
+    var files = Attach.ready();
+    if (Attach.uploading()) {
+      toast('파일을 올리는 중이에요. 끝나면 바로 보낼 수 있어요.');
+      return;
+    }
+    if (!text && !files.length) { els.input.focus(); return; }
     if (ui.busyCount.pending) return;
 
     var mentioned = extractMentionIds(text);
@@ -2695,12 +3212,13 @@ body.is-embed .appbar__rule{
       id: uid(),
       author: 'user',
       target: target,
-      text: text,
+      text: buildWireText(text, ui.folder, files),
       done: false,
       at: new Date().toISOString()
     };
 
     els.input.value = '';
+    Attach.clear();
     autoGrow();
     syncSend();
     closeMentionSuggest();
@@ -3079,6 +3597,61 @@ body.is-embed .appbar__rule{
     }
     els.send.addEventListener('click', sendCurrent);
 
+    /* 작업 폴더 지정 */
+    if (els.folderBtn) els.folderBtn.addEventListener('click', openFolderSheet);
+    if (els.folderOk) els.folderOk.addEventListener('click', applyFolder);
+    if (els.folderCancel) els.folderCancel.addEventListener('click', closeFolderSheet);
+    if (els.folderSheet) {
+      els.folderSheet.addEventListener('click', function (e) {
+        if (e.target === els.folderSheet) closeFolderSheet();
+      });
+    }
+    if (els.folderInput) {
+      els.folderInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); applyFolder(); }
+        if (e.key === 'Escape') { e.preventDefault(); closeFolderSheet(); }
+      });
+    }
+
+    /* 파일 첨부 — 버튼 · 드래그&드롭 · 클립보드 붙여넣기 */
+    if (els.attachBtn) {
+      els.attachBtn.addEventListener('click', function () {
+        if (els.fileInput) els.fileInput.click();
+      });
+    }
+    if (els.fileInput) {
+      els.fileInput.addEventListener('change', function () {
+        Attach.add(els.fileInput.files);
+        els.fileInput.value = '';
+      });
+    }
+    ['dragenter', 'dragover'].forEach(function (type) {
+      document.addEventListener(type, function (e) {
+        var types = (e.dataTransfer && e.dataTransfer.types) || [];
+        if (Array.prototype.indexOf.call(types, 'Files') === -1) return;
+        e.preventDefault();
+        document.body.classList.add('is-dragging');
+      });
+    });
+    ['dragleave', 'dragend'].forEach(function (type) {
+      document.addEventListener(type, function (e) {
+        if (e.relatedTarget) return;   // 패널 내부 이동은 그대로 둔다
+        document.body.classList.remove('is-dragging');
+      });
+    });
+    document.addEventListener('drop', function (e) {
+      if (!e.dataTransfer || !e.dataTransfer.files || !e.dataTransfer.files.length) return;
+      e.preventDefault();
+      document.body.classList.remove('is-dragging');
+      Attach.add(e.dataTransfer.files);
+    });
+    els.input.addEventListener('paste', function (e) {
+      var dt = e.clipboardData;
+      if (!dt || !dt.files || !dt.files.length) return;
+      e.preventDefault();
+      Attach.add(dt.files);
+    });
+
     // 타임라인 (완료 토글 · 샘플 · 빠른 시작)
     els.timeline.addEventListener('click', function (e) {
       var doneBtn = e.target.closest('[data-done-for]');
@@ -3199,12 +3772,15 @@ body.is-embed .appbar__rule{
       if (e.target === els.sheet) closeSheet(false);
     });
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && els.sheet.classList.contains('is-open')) closeSheet(false);
+      if (e.key !== 'Escape') return;
+      if (els.folderSheet && els.folderSheet.classList.contains('is-open')) { closeFolderSheet(); return; }
+      if (els.sheet.classList.contains('is-open')) closeSheet(false);
     });
 
     // 탭으로 돌아오면: 실시간 라인을 깨우고 즉시 1회 동기화한다
     document.addEventListener('visibilitychange', function () {
       if (document.hidden) return;
+      markRead();
       if (Room.cloudState === 'pending') {
         clearCloudRetry();
         Room.retryDelay = RETRY_BASE;
@@ -3293,6 +3869,12 @@ body.is-embed .appbar__rule{
     bind();
     renderChips();
     syncSend();
+    /* 작업 폴더 복원 · 삽입 모드에서의 읽음 판단 기준 */
+    ui.folder = readFolder();
+    renderFolderChip();
+    embedFlags.embedded = embedded;
+    embedFlags.panelOpen = !embedded;   // iframe은 대시보드가 '열림'을 알려올 때까지 닫힌 것으로 본다
+    renderAttachStrip();
     Room.boot().then(function () {
       renderTimeline();
       renderMembers();
