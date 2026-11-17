@@ -729,8 +729,7 @@ body.is-dragging .tools__hint{color:var(--accent-ink);font-weight:700;opacity:1;
 .tool:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
 .tool.is-on{background:var(--accent-tint);border-color:#F2C7B6;color:var(--accent-ink);}
 .tool__icon{display:inline-flex;align-items:center;justify-content:center;flex:none;font-size:11px;line-height:1;}
-.tool__svg{display:block;flex:none;color:var(--ink-3);}
-.tool:hover .tool__svg{color:var(--ink-2);}
+.tool__svg{display:block;flex:none;}
 .tool__text{min-width:0;max-width:200px;overflow:hidden;text-overflow:ellipsis;direction:ltr;text-align:left;}
 #folderBtn{flex:0 1 auto;min-width:0;}
 #attachBtn{flex:none;}
@@ -1139,7 +1138,7 @@ body.is-dragging .tools__hint{color:var(--accent-ink);font-weight:700;opacity:1;
             <span class="tool__text" id="folderBtnText">기본 폴더</span>
           </button>
           <button class="tool" type="button" id="attachBtn" aria-label="파일 첨부" title="파일 첨부 — 끌어다 놓거나 붙여넣어도 됩니다">
-            <svg class="tool__svg" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+            <svg class="tool__svg" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
             <span class="tool__text">파일 첨부</span>
           </button>
           <span class="tools__hint" id="toolsHint" aria-hidden="true">여기에 놓기</span>
