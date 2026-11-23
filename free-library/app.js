@@ -21,6 +21,18 @@
     "#jpnLibRoot .cat-card h2{font-size:26px;font-weight:700;line-height:1.28;letter-spacing:-0.03em;margin:0 0 8px;color:inherit;}",
     "#jpnLibRoot .cat-card p{font-size:15px;line-height:1.58;letter-spacing:-0.02em;margin:0;opacity:.8;}",
     "#jpnLibRoot .cat-card-cta{font-size:14.5px;font-weight:700;letter-spacing:-0.02em;display:inline-flex;align-items:center;gap:6px;}",
+    /* 첫 화면: 대제목 아래 구분선 + 카테고리별 섹션 경계선 */
+    "#jpnLibRoot .hero{padding-bottom:40px;border-bottom:1px solid var(--line2);}",
+    "#jpnLibRoot .hero-eyebrow{font-size:14px;font-weight:700;color:var(--coral);letter-spacing:-0.01em;margin:0 0 14px;}",
+    "#jpnLibRoot .cat-sec{margin-top:64px;}",
+    /* 카테고리 머리글 = 카테고리 색 띠(코랄/라이트) + 검정 글씨 → 흰 글씨 대제목과 구분 */
+    "#jpnLibRoot .cat-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:22px;padding:22px 24px;border-radius:4px;background:var(--coral);color:#0D0D0D;}",
+    "#jpnLibRoot .cat-sec.light .cat-head{background:var(--light);}",
+    "#jpnLibRoot .cat-head h2{font-size:26px;font-weight:700;line-height:1.25;letter-spacing:-0.035em;margin:0;color:inherit;}",
+    "#jpnLibRoot .cat-head h2 span{font-size:14px;font-weight:600;margin-left:10px;letter-spacing:-0.01em;opacity:.7;}",
+    "#jpnLibRoot .cat-head a{font-size:14px;font-weight:700;color:inherit;text-decoration:none;white-space:nowrap;}",
+    "#jpnLibRoot .cat-head a:hover{text-decoration:underline;}",
+    "#jpnLibRoot .cat-desc{font-size:15px;line-height:1.6;color:var(--muted);margin:0 0 22px;letter-spacing:-0.02em;}",
     "#jpnLibRoot .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:28px;}",
     "#jpnLibRoot .back{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--line2);border-radius:4px;background:transparent;color:var(--fg);font-size:13.5px;font-weight:600;letter-spacing:-0.02em;text-decoration:none;cursor:pointer;}",
     "#jpnLibRoot .back:hover{border-color:var(--coral);color:var(--coral);}",
@@ -89,6 +101,10 @@
     "  #jpnLibRoot .cat-card h2{font-size:21px;}",
     "  #jpnLibRoot .cat-card p{font-size:14px;}",
     "  #jpnLibRoot .grid{grid-template-columns:1fr;gap:12px;}",
+    "  #jpnLibRoot .hero{padding-bottom:28px;}",
+    "  #jpnLibRoot .cat-sec{margin-top:44px;}",
+    "  #jpnLibRoot .cat-head{padding:18px 18px;}",
+    "  #jpnLibRoot .cat-head h2{font-size:21px;}",
     "  #jpnLibRoot .card{padding:20px 18px;}",
     "  #jpnLibRoot .card h3{font-size:17.5px;}",
     "  #jpnLibRoot .doc-title{font-size:27px;line-height:1.28;}",
@@ -147,20 +163,29 @@
   function renderHome() {
     var d = state.data;
     var html = '<div class="wrap">';
-    html += '<h1 class="hero-title">' + d.hero.title + '</h1>';
-    html += '<p class="hero-lead">' + d.hero.lead + '</p>';
-    html += '<div class="cat-cards">';
+    html += '<div class="hero"><p class="hero-eyebrow">무료 자료실</p><h1 class="hero-title">' + d.hero.title + '</h1>';
+    html += '<p class="hero-lead">' + d.hero.lead + '</p></div>';
     for (var i = 0; i < d.categories.length; i++) {
       var cat = d.categories[i];
-      var cnt = d.items.filter(function (it) { return it.category === cat.id; }).length;
-      html += '<a class="cat-card ' + esc(cat.theme || "coral") + '" href="#' + esc(cat.id) + '">';
-      html += '<div class="cat-card-top"><span>' + cnt + '개 자료</span><span>@jeegongpaynote</span></div>';
-      html += '<div class="cat-card-mid"><h2>' + esc(cat.name) + '</h2><p>' + esc(cat.desc) + '</p></div>';
-      html += '<div class="cat-card-cta">자료 보러 가기 →</div>';
-      html += '</a>';
+      var list = d.items.filter(function (it) { return it.category === cat.id; });
+      html += '<section class="cat-sec ' + esc(cat.theme || "coral") + '">';
+      html += '<div class="cat-head"><h2>' + esc(cat.name) + '<span>' + list.length + '</span></h2>';
+      html += '<a href="#' + esc(cat.id) + '">전체 보기 →</a></div>';
+      html += '<p class="cat-desc">' + esc(cat.desc) + '</p>';
+      html += '<div class="grid">' + list.map(cardHtml).join("") + '</div>';
+      html += '</section>';
     }
-    html += '</div></div>';
+    html += '</div>';
     mount.innerHTML = html;
+  }
+
+  function cardHtml(it, j) {
+    var href = it.type === "article" ? ("#g-" + encodeURIComponent(it.id)) : esc(it.url);
+    var target = it.type === "article" ? "" : ' target="_blank" rel="noopener"';
+    return '<a class="card" href="' + href + '"' + target + '><div>' +
+      '<div class="card-meta"><span class="card-idx">' + pad2(j + 1) + '</span><span>' + esc(it.kind || "자료") + '</span></div>' +
+      '<h3>' + esc(it.title) + '</h3><p>' + esc(it.summary) + '</p></div>' +
+      '<div class="card-go">' + esc(it.cta || "자료 열기 →") + '</div></a>';
   }
 
   function renderCategory(catId) {
@@ -192,21 +217,7 @@
     if (!list.length) {
       html += '<div class="empty">검색 조건에 맞는 자료가 없습니다.</div>';
     } else {
-      html += '<div class="grid">';
-      for (var j = 0; j < list.length; j++) {
-        var it = list[j];
-        var href = it.type === "article" ? ("#g-" + encodeURIComponent(it.id)) : esc(it.url);
-        var target = it.type === "article" ? "" : ' target="_blank" rel="noopener"';
-        html += '<a class="card" href="' + href + '"' + target + '>';
-        html += '<div>';
-        html += '<div class="card-meta"><span class="card-idx">' + pad2(j + 1) + '</span><span>' + esc(it.kind || "자료") + '</span></div>';
-        html += '<h3>' + esc(it.title) + '</h3>';
-        html += '<p>' + esc(it.summary) + '</p>';
-        html += '</div>';
-        html += '<div class="card-go">' + esc(it.cta || "자료 열기 →") + '</div>';
-        html += '</a>';
-      }
-      html += '</div>';
+      html += '<div class="grid">' + list.map(cardHtml).join("") + '</div>';
     }
     html += '</div>';
     mount.innerHTML = html;
