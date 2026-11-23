@@ -87,7 +87,80 @@
           "done": false
         }
       ],
-      "todomateTodos": [],
+      "todomateTodos": [
+        {
+          "id": "t-20261123-1",
+          "text": "디어커스 제안 25명",
+          "title": "디어커스 제안 25명",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261123-2",
+          "text": "케이스니키 제안 15명",
+          "title": "케이스니키 제안 15명",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261123-3",
+          "text": "칠공이사 홈페이지 제작",
+          "title": "칠공이사 홈페이지 제작",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261123-4",
+          "text": "크몽 견적서 작성",
+          "title": "크몽 견적서 작성",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261123-5",
+          "text": "발품맘&또또네 주문건 확인 및 발주서 작성",
+          "title": "발품맘&또또네 주문건 확인 및 발주서 작성",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261123-6",
+          "text": "베베설&정뚱환뚱 주문건 확인 및 발주서 작성",
+          "title": "베베설&정뚱환뚱 주문건 확인 및 발주서 작성",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261123-7",
+          "text": "다온연 문의폼 확인",
+          "title": "다온연 문의폼 확인",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261123-8",
+          "text": "듀오링고 일본어 2개",
+          "title": "듀오링고 일본어 2개",
+          "category": "자기계발",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261123-9",
+          "text": "일본어 회화 1분 120일",
+          "title": "일본어 회화 1분 120일",
+          "category": "자기계발",
+          "done": false,
+          "isDone": false
+        }
+      ],
       "calendar": [
         "[공구] 또또네 아넬라 과일퓨레 진행 (종일(~11/25))",
         "[공구] 사당이네 아넬라 과일퓨레 진행 (종일(~11/26))",
