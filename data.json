@@ -103,7 +103,104 @@
           "done": false
         }
       ],
-      "todomateTodos": [],
+      "todomateTodos": [
+        {
+          "id": "t-20261124-1",
+          "text": "디어커스 제안 25명",
+          "title": "디어커스 제안 25명",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261124-2",
+          "text": "케이스니키 제안 15명",
+          "title": "케이스니키 제안 15명",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261124-3",
+          "text": "발품맘&사당이네 주문건 확인",
+          "title": "발품맘&사당이네 주문건 확인",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261124-4",
+          "text": "서연맘 주문건 확인",
+          "title": "서연맘 주문건 확인",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261124-5",
+          "text": "지공의 페이노트 무료자료 수정",
+          "title": "지공의 페이노트 무료자료 수정",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261124-6",
+          "text": "칠공이사 홈페이지 제작",
+          "title": "칠공이사 홈페이지 제작",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261124-7",
+          "text": "디어커스 결제링크 요청",
+          "title": "디어커스 결제링크 요청",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261124-8",
+          "text": "지수맘 결제링크 요청",
+          "title": "지수맘 결제링크 요청",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261124-9",
+          "text": "베베설 결제링크 요청",
+          "title": "베베설 결제링크 요청",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261124-10",
+          "text": "듀오링고 일본어 2개",
+          "title": "듀오링고 일본어 2개",
+          "category": "자기계발",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261124-11",
+          "text": "일본어 회화 1분 120일",
+          "title": "일본어 회화 1분 120일",
+          "category": "자기계발",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261124-12",
+          "text": "전자책 공부",
+          "title": "전자책 공부",
+          "category": "해야 할 일",
+          "done": false,
+          "isDone": false
+        }
+      ],
       "calendar": [
         "[공구] 또또네 아넬라 과일퓨레 진행 (종일(~11/25))",
         "[공구] 사당이네 아넬라 과일퓨레 진행 (종일(~11/26))",
