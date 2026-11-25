@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>지공 출근 에이전트 | 업무 현황 대시보드</title>
   <link rel="stylesheet" href="styles.css?v=20261116_airoomwide">
+  <link rel="stylesheet" href="ops.css?v=20261125_ops">
 </head>
 <body>
   <div class="app-container">
@@ -150,6 +151,9 @@
       </nav>
 
       <main class="content-body">
+        <!-- 마감 알림 (로그인 시 ops.js 가 채움) -->
+        <div class="ops-alert-bar" id="ops-alert-bar" hidden></div>
+
         <!-- VIEW 1: HOME (오늘의 업무 현황판) -->
         <section class="view-section active" id="today-view">
           
@@ -525,6 +529,21 @@
             <div style="font-size: 11px; color: var(--text-tertiary); white-space: nowrap;">인플루언서 발굴 및 맞춤 제안문 원클릭 발송기</div>
           </div>
 
+          <!-- 공동구매 하위 메뉴 (2026-11-25) -->
+          <nav class="ops-subnav" id="ops-gonggu-subnav" aria-label="공동구매 하위 메뉴">
+            <button type="button" class="btn-campaign-tab active" data-ops="sub" data-sub="dm">DM 관리</button>
+            <button type="button" class="btn-campaign-tab" data-ops="sub" data-sub="events">공구 일정</button>
+            <button type="button" class="btn-campaign-tab" data-ops="sub" data-sub="settle">인플루언서 정산 <span class="ops-subnav-badge" id="ops-settle-badge" hidden></span></button>
+            <button type="button" class="btn-campaign-tab" data-ops="sub" data-sub="sourcing">상품 소싱</button>
+            <button type="button" class="btn-campaign-tab" data-ops="sub" data-sub="withholding">원천징수</button>
+          </nav>
+          <div class="ops-sub" data-sub="events" id="ops-events" hidden></div>
+          <div class="ops-sub" data-sub="settle" id="ops-settle" hidden></div>
+          <div class="ops-sub" data-sub="sourcing" id="ops-sourcing" hidden></div>
+          <div class="ops-sub" data-sub="withholding" id="ops-withholding" hidden></div>
+
+          <!-- DM 관리 (기존 공구 발송 센터) -->
+          <div class="ops-sub" data-sub="dm">
           <!-- 다중 상품/캠페인 전환 탭 바 -->
           <div class="gonggu-campaign-tabs" id="gonggu-campaign-tabs">
             <!-- JS에서 gongguCampaigns 기반 동적 렌더링 -->
@@ -562,52 +581,16 @@
               <!-- JS에서 동적 렌더링 -->
             </div>
           </div>
+          </div><!-- /DM 관리 -->
         </section>
 
-        <!-- VIEW 8: 정산·매출 뷰 -->
+        <!-- VIEW 8: 정산·매출 뷰 (2026-11-25 업무관리 — 로그인 시 ops.js 가 채움) -->
         <section class="view-section" id="sales-view">
           <div class="view-summary-banner">
-            <div>💰 <strong>정산 및 매출 현황판</strong> · 크몽 · 카카오 비즈니스 · 스마트스토어</div>
-            <div style="font-size: 11px; color: var(--text-tertiary); white-space: nowrap;">세금계산서 및 수수료 실시간 실사</div>
+            <div>💰 <strong>정산·매출</strong> · 내 수수료 매출과 순수익 (공구 · 페이노트 · 온세스)</div>
+            <div style="font-size: 11px; color: var(--text-tertiary); white-space: nowrap;">🔒 로그인해야 보이는 비공개 정보</div>
           </div>
-          <div class="dashboard-mid-grid" style="grid-template-columns: 1fr 1fr 1fr;">
-            <div class="panel-card">
-              <div class="panel-header">
-                <div class="panel-title"><span>🧾</span><span>크몽 10월 정산</span></div>
-                <span class="section-badge" style="background: var(--accent-green-light); color: var(--accent-green-text);">발행 완료</span>
-              </div>
-              <div style="font-size: 20px; font-weight: 800; color: var(--text-primary); margin: 6px 0 10px 0;">18,850원</div>
-              <div style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.65;">
-                • 공급가액: 17,136원 (세액 1,714원)<br>
-                • 품목: 10월 판매 수수료 (전자세금계산서 역발행)<br>
-                • 상태: 11/1 팝빌 발행 완료 확인
-              </div>
-            </div>
-            <div class="panel-card">
-              <div class="panel-header">
-                <div class="panel-title"><span>💳</span><span>카카오 페이노트</span></div>
-                <span class="section-badge" style="background: var(--accent-blue-light); color: var(--accent-blue-text);">결제 완료</span>
-              </div>
-              <div style="font-size: 20px; font-weight: 800; color: var(--text-primary); margin: 6px 0 10px 0;">129,000원</div>
-              <div style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.65;">
-                • 품목: 대표 전자책 실결제<br>
-                • 결제 방식: 페이노트 비즈니스 채널<br>
-                • 상태: 매출 집계 반영 완료
-              </div>
-            </div>
-            <div class="panel-card">
-              <div class="panel-header">
-                <div class="panel-title"><span>🛒</span><span>스마트스토어 더올쓰</span></div>
-                <span class="section-badge" style="background: var(--accent-green-light); color: var(--accent-green-text);">빠른정산 유지</span>
-              </div>
-              <div style="font-size: 20px; font-weight: 800; color: var(--text-primary); margin: 6px 0 10px 0;">정상 가동</div>
-              <div style="font-size: 11.5px; color: var(--text-secondary); line-height: 1.65;">
-                • 기준: 거래건수 및 반품률 충족<br>
-                • 빠른정산: 당일/익일 즉시 정산 유지<br>
-                • 상태: 11/1 네이버 통지 확인
-              </div>
-            </div>
-          </div>
+          <div id="ops-sales"></div>
         </section>
 
       </main>
@@ -647,6 +630,7 @@
 
   <div class="toast-notice" id="toast-notice">클립보드에 복사되었습니다.</div>
 
-  <script src="app.js?v=20261117_sheetlink"></script>
+  <script src="app.js?v=20261125_ops"></script>
+  <script src="ops.js?v=20261125_ops"></script>
 </body>
 </html>

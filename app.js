@@ -656,6 +656,7 @@ function setupNavigation() {
     if (viewId === 'gonggu-view' && typeof renderGongguCampaign === 'function') {
       renderGongguCampaign();
     }
+    if (window.opsOnView) window.opsOnView(viewId); // 업무관리(ops.js) 비공개 데이터 새로고침
 
     if (topTitle) topTitle.textContent = '지공 출근 에이전트';
 
