@@ -10,7 +10,7 @@
   const FN_SYNC = SUPABASE_URL + '/functions/v1/ops-sync';
   const BIZ = { gonggu: '공구', paynote: '페이노트', onsess: '온세스' };
   const SET_STATUS = { waiting: '정산 대기', amount: '금액 입력', paid: '입금 확인', done: '완료' };
-  const STAGES = { proposed: '제안', waiting: '답장 대기', negotiating: '조건 협의', confirmed: '공구 확정', hold: '보류' };
+  const STAGES = { planned: '제안 예정', proposed: '제안', waiting: '답장 대기', negotiating: '조건 협의', confirmed: '공구 확정', hold: '보류' };
   const CATS = ['건강', '뷰티', '패션', '리빙', '육아', '식품', '애견', '여행'];
   const ALERT_KIND = {
     settle_late: ['정산 지연', 'settle'], settle_due: ['정산 예정', 'settle'], event_end: ['공구 종료', 'events'],
@@ -361,13 +361,14 @@
     const map = {};
     S.settlements.filter((s) => s.is_individual && s.paid_date).forEach((s) => {
       const m = monthOf(s.paid_date);
-      map[m] = map[m] || { people: 0, total: 0 };
+      map[m] = map[m] || { people: 0, payout: 0 };
       map[m].people += 1;
-      map[m].total += Number(s.payout || 0);
+      map[m].payout += Number(s.payout || 0);
     });
     const cur = monthOf();
-    [cur, shiftMonth(cur, -1)].forEach((m) => { map[m] = map[m] || { people: 0, total: 0 }; });
-    return Object.keys(map).sort().reverse().map((m) => Object.assign({ month: m }, map[m]));
+    [cur, shiftMonth(cur, -1)].forEach((m) => { map[m] = map[m] || { people: 0, payout: 0 }; });
+    // 신고 지급액 = 정산금 ÷ 1.1 (원천징수_신고리스트 기준, 2026-11-25 원진님 확정). 월 합계로 한 번만 반올림
+    return Object.keys(map).sort().reverse().map((m) => ({ month: m, people: map[m].people, total: Math.round(map[m].payout / 1.1) }));
   }
   function renderWithholding() {
     const el = document.getElementById('ops-withholding');
@@ -380,7 +381,7 @@
       <p class="ops-muted">인플루언서 정산에서 "개인 (3.3%)"을 체크한 건을 <b>지급·입금일이 속한 달</b>로 모읍니다. 신고는 다음 달 10일까지 홈택스에서 직접 해 주세요.
       주민등록번호 같은 개인정보는 구글 드라이브 "원천징수_신고리스트.xlsx"에만 둡니다.</p>
       <div class="ops-table" role="table">
-        <div class="ops-tr ops-th" role="row"><span>지급 월</span><span>대상 인원</span><span>지급 총액</span><span>신고 기한</span><span>신고 완료</span></div>
+        <div class="ops-tr ops-th" role="row"><span>지급 월</span><span>대상 인원</span><span>지급액 (정산금 ÷ 1.1)</span><span>신고 기한</span><span>신고 완료</span></div>
         ${withholdingMonths().map((w) => {
           const due = shiftMonth(w.month, 1) + '-10';
           const done = !!(filed[w.month] && filed[w.month].filed);
