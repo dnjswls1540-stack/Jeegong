@@ -343,6 +343,8 @@
         <div class="ops-grid">
           ${field('정산 예정일', `<input type="date" name="due_date" value="${s.due_date || ''}">`)}
           ${field('판매 총액', `<input type="number" inputmode="numeric" step="1" name="gross_sales" value="${s.gross_sales ?? ''}">`)}
+          ${field('판매 수량', `<input type="number" inputmode="numeric" step="1" min="0" name="quantity" value="${s.quantity ?? ''}">`)}
+          ${field('인플루언서 수수료 (%)', `<input type="number" inputmode="decimal" step="0.1" min="0" max="100" name="influencer_rate" value="${s.influencer_rate ?? ''}">`)}
           ${field('정산 금액 (인플루언서 지급)', `<input type="number" inputmode="numeric" step="1" name="payout" value="${s.payout ?? ''}">`)}
           ${field('내 수수료 매출', `<input type="number" inputmode="numeric" step="1" name="my_fee" value="${s.my_fee ?? ''}">`)}
           ${field('지급·입금일', `<input type="date" name="paid_date" value="${s.paid_date || ''}">`)}
@@ -554,6 +556,7 @@
       const s = S.settlements.find((x) => x.id === f.dataset.id);
       const row = {
         due_date: d.due_date || null, gross_sales: num(d.gross_sales), payout: num(d.payout), my_fee: num(d.my_fee),
+        quantity: num(d.quantity), influencer_rate: d.influencer_rate === '' ? null : Number(d.influencer_rate),
         paid_date: d.paid_date || null, status: d.status, is_individual: !!d.is_individual, memo: d.memo.trim(),
       };
       // 금액을 넣으면 "금액 입력"으로, 입금 확인·완료인데 날짜가 없으면 오늘로 채운다
