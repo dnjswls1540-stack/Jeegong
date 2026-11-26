@@ -1,0 +1,427 @@
+{
+ "generated_at": "2026-11-26T12:20:00+09:00",
+ "campaign": "디어커스 대나무 화장지 — 1인가구·자취·신혼 살림 2차 발굴",
+ "criteria": {
+  "followers_min": 15000,
+  "recent_6_posts": 6,
+  "under30_max": 2,
+  "latest_days": 30,
+  "dedupe": "master sheet A열 + data.json + 제외큐 + dearkus 후보 이력"
+ },
+ "stats": {
+  "verified_accounts": 2046,
+  "followers15k_and_6posts": 1046,
+  "quant_pass": 275,
+  "not_registered_quant_pass": 205,
+  "home_category_new_pass": 34,
+  "link_verified": 25,
+  "final_pass": 1
+ },
+ "candidates": [
+  {
+   "num": 1,
+   "grade": "B",
+   "id": "kkyu_kkam",
+   "name": "깜뉴 | 결혼꿀팁·의사한의사 신혼부부·재테크",
+   "followers": 41248,
+   "comments": [
+    101,
+    6239,
+    32,
+    49,
+    37,
+    97
+   ],
+   "median": 97,
+   "under30": 0,
+   "latest": "2026-11-24",
+   "url": "https://www.instagram.com/kkyu_kkam/",
+   "category": "신혼부부·결혼꿀팁 / 신혼살림(가구·가전·생활용품 리스트)",
+   "profile_link": "https://litt.ly/kkyu_kkam",
+   "link_check": {
+    "type": "리틀리",
+    "opened_at": "2026-11-26",
+    "schedule_past": [
+     "11.19~11.23 웨딩컨설팅&청담헤메샵",
+     "11.05~11.09 베라수 붓기차",
+     "10.08~10.12 플랫슈즈 기획전",
+     "09.23~09.28 [깜뉴X락앤락] 데켓 쿡플레이트"
+    ],
+    "coupang": true,
+    "coupang_note": "페이지 하단 생활용품 섹션에 쿠팡 링크 다수(디어커스 누볼라·오발레 욕실화 포함) — 공구+쿠팡 병행",
+    "gonggu_alarm": "신혼살림 결혼꿀팁 나누기 & 공구알림방 링크 운영"
+   },
+   "why_B": "정량 100% 통과(최근 6개 전부 30+). 공구 이력은 링크 페이지 내 지난 일정(9~11월 4건)으로 확인. 최근 공구 품목이 웨딩·뷰티 중심이고 쿠팡 링크 병행 → B. 다만 링크 페이지에 디어커스 욕실화 2종이 이미 걸려 있어 제안 상품 친화도 높음.",
+   "dedupe": {
+    "master_sheet": false,
+    "data_json": false,
+    "excluded_queue": false,
+    "dearkus_history": false
+   }
+  }
+ ],
+ "duplicates_registered": [
+  {
+   "id": "self_interior",
+   "sheet_row": 24,
+   "followers": 691869,
+   "comments": [
+    76,
+    114,
+    306,
+    10400,
+    201,
+    160
+   ],
+   "proposal": "디어커스 휴지",
+   "proposed_at": "2026-10-21",
+   "link": "https://link.inpock.co.kr/ohusalim"
+  },
+  {
+   "id": "euun_kyung_",
+   "sheet_row": 194,
+   "followers": 260990,
+   "comments": [
+    6,
+    8719,
+    285,
+    862,
+    916,
+    585
+   ],
+   "proposal": "디어커스 뱀부500 화장지",
+   "proposed_at": "2026-11-11",
+   "link": "https://link.inpock.co.kr/euun_kyung_"
+  },
+  {
+   "id": "sallim_after_work",
+   "sheet_row": 209,
+   "followers": 241070,
+   "comments": [
+    34,
+    1,
+    237,
+    3193,
+    88,
+    71
+   ],
+   "proposal": "디어커스 뱀부500 화장지",
+   "proposed_at": "2026-10-26",
+   "link": "https://link.inpock.co.kr/sallim_after_work"
+  },
+  {
+   "id": "dada_salrim",
+   "sheet_row": 1599,
+   "followers": 387083,
+   "comments": [
+    2,
+    704,
+    649,
+    1312,
+    19,
+    195
+   ],
+   "proposal": "홍익상회",
+   "proposed_at": "2026-08-18",
+   "link": "https://link.inpock.co.kr/dadasalrim"
+  },
+  {
+   "id": "haedal_home",
+   "sheet_row": 1642,
+   "followers": 219683,
+   "comments": [
+    563,
+    572,
+    329,
+    62,
+    232,
+    26
+   ],
+   "proposal": "아넬라 과일퓨레",
+   "proposed_at": "2026-09-23",
+   "link": "https://link.inpock.co.kr/haedal"
+  },
+  {
+   "id": "chaezip.home",
+   "sheet_row": 1869,
+   "followers": 201580,
+   "comments": [
+    161,
+    223,
+    266,
+    25,
+    644,
+    151
+   ],
+   "proposal": "디어커스 뱀부500 화장지",
+   "proposed_at": "2026-10-26",
+   "link": "https://link.inpock.co.kr/chaezip.home"
+  },
+  {
+   "id": "kongsoon_home",
+   "sheet_row": 2001,
+   "followers": 149323,
+   "comments": [
+    70,
+    139,
+    1169,
+    123,
+    38,
+    274
+   ],
+   "proposal": "디어커스 뱀부500 화장지",
+   "proposed_at": "2026-10-30",
+   "link": "https://link.inpock.co.kr/kongsoon_home"
+  },
+  {
+   "id": "2floor.home",
+   "sheet_row": 2220,
+   "followers": 61679,
+   "comments": [
+    1,
+    165,
+    44,
+    20,
+    38,
+    50
+   ],
+   "proposal": "디어커스 뱀부500 화장지",
+   "proposed_at": "2026-11-09",
+   "link": "https://link.inpock.co.kr/2floor.home"
+  },
+  {
+   "id": "needlenina",
+   "sheet_row": 2234,
+   "followers": 273971,
+   "comments": [
+    100,
+    134,
+    173,
+    5070,
+    4643,
+    6
+   ],
+   "proposal": "디어커스 뱀부500 화장지",
+   "proposed_at": "2026-11-10",
+   "link": "https://link.inpock.co.kr/menini"
+  }
+ ],
+ "excluded": [
+  {
+   "id": "salim_room",
+   "followers": 553561,
+   "reason": "X④ 자사몰 운영",
+   "evidence": "https://link.inpock.co.kr/salim_room — 자체 스마트스토어 상품 60여종 나열, 공구 일정 없음"
+  },
+  {
+   "id": "dongeun_bubu",
+   "followers": 266954,
+   "reason": "X③ 카테고리 불일치(재테크)",
+   "evidence": "https://litt.ly/dongeun_bubu — 경제뉴스 공부방·OTT/통신비 절약, 공구 없음"
+  },
+  {
+   "id": "seoyeongkyeong",
+   "followers": 197413,
+   "reason": "공구 이력 미확인",
+   "evidence": "https://link.inpock.co.kr/seoyeongkyeong — 단일 제품 링크(폼포나치)만, 공구 일정 없음"
+  },
+  {
+   "id": "pungyoro",
+   "followers": 182731,
+   "reason": "링크 미확인",
+   "evidence": "인포크·리틀리 모두 미개설(placeholder)"
+  },
+  {
+   "id": "homterior_pick",
+   "followers": 179348,
+   "reason": "X① 쿠팡 링크 위주",
+   "evidence": "인포크 미개설 + 캡션 '댓글에 욕실 → DM 최저가 링크' (제휴 링크 안내)"
+  },
+  {
+   "id": "iammakeroom",
+   "followers": 135253,
+   "reason": "X① 쿠팡 링크 위주",
+   "evidence": "https://link.inpock.co.kr/makeroom — 쿠팡 링크 1,820개, 'N번 검색' 번호 목록"
+  },
+  {
+   "id": "_bonihome_",
+   "followers": 125554,
+   "reason": "X① 쿠팡 링크 위주",
+   "evidence": "캡션 '프로필 링크에서 <768> 검색' 번호형 쿠팡 링크, 인포크 직접 페이지 미확인"
+  },
+  {
+   "id": "_miso.home",
+   "followers": 110566,
+   "reason": "X① 쿠팡 링크 위주",
+   "evidence": "https://link.inpock.co.kr/_miso.home — 쿠팡 링크 560개"
+  },
+  {
+   "id": "home_deco_lab",
+   "followers": 101647,
+   "reason": "링크 미확인",
+   "evidence": "인포크 placeholder"
+  },
+  {
+   "id": "g.rm_cc",
+   "followers": 70570,
+   "reason": "X① 쿠팡 링크 위주·공구 일정 없음",
+   "evidence": "https://link.inpock.co.kr/g.rm_cc — 제품 나열(쿠팡 12), 공구 일정 없음"
+  },
+  {
+   "id": "joyhomestory",
+   "followers": 64752,
+   "reason": "링크 미확인",
+   "evidence": "인포크 placeholder"
+  },
+  {
+   "id": "fish.bread_living",
+   "followers": 61659,
+   "reason": "링크 미확인",
+   "evidence": "인포크 placeholder, 캡션 '댓글에 따뜻' DM 링크"
+  },
+  {
+   "id": "home_space_tips",
+   "followers": 57763,
+   "reason": "X① 쿠팡 링크 위주",
+   "evidence": "https://link.inpock.co.kr/home_space_tips — 쿠팡 링크 1,556개"
+  },
+  {
+   "id": "homefixer_bear",
+   "followers": 53037,
+   "reason": "X① 쿠팡 링크 위주",
+   "evidence": "https://link.inpock.co.kr/homefixer_bear — 쿠팡 링크 669개·번호 목록, 공구링크 1건"
+  },
+  {
+   "id": "raon.box",
+   "followers": 51618,
+   "reason": "링크 미확인",
+   "evidence": "인포크 placeholder"
+  },
+  {
+   "id": "frenchluxury_ceo",
+   "followers": 51178,
+   "reason": "X④ 자사몰 대표",
+   "evidence": "https://link.inpock.co.kr/frenchluxury_official — 프렌치럭셔리 운영자 본인, 자사 제품 공구"
+  },
+  {
+   "id": "_moment_home",
+   "followers": 37830,
+   "reason": "링크 미확인",
+   "evidence": "인포크 placeholder"
+  },
+  {
+   "id": "w__s__e__s",
+   "followers": 36769,
+   "reason": "공구 이력 미확인",
+   "evidence": "https://link.inpock.co.kr/w__s__e__s — 공개 링크 없음"
+  },
+  {
+   "id": "jip.kimi",
+   "followers": 34404,
+   "reason": "X① 쿠팡 링크 위주",
+   "evidence": "https://link.inpock.co.kr/jip.kimi — 쿠팡 링크 332개·번호 목록"
+  },
+  {
+   "id": "honeyinfo.zip",
+   "followers": 31816,
+   "reason": "X① 쿠팡·핫딜 정보 큐레이션",
+   "evidence": "https://link.inpock.co.kr/honeyinfo.zip — 공개 링크 없음, 캡션 번호 링크"
+  },
+  {
+   "id": "asyouare1181",
+   "followers": 27953,
+   "reason": "X④ 자체 제작 제품 판매",
+   "evidence": "https://link.inpock.co.kr/asyouare1181 — 모듈 선반 등 자체 제작 상품"
+  },
+  {
+   "id": "kikihoho89",
+   "followers": 20921,
+   "reason": "X① 쿠팡 링크 위주",
+   "evidence": "https://link.inpock.co.kr/kikihoho89 — 쿠팡 링크 22개"
+  },
+  {
+   "id": "choweet__home",
+   "followers": 20458,
+   "reason": "X① 쿠팡 링크 위주·공구 일정 없음",
+   "evidence": "https://link.inpock.co.kr/choweet__home — 쿠팡 18개 제품 나열"
+  },
+  {
+   "id": "home._.ddokddok",
+   "followers": 15248,
+   "reason": "X① 쿠팡 링크 위주",
+   "evidence": "https://inpk.link/home_ddokddok — 쿠팡 링크 908개"
+  },
+  {
+   "id": "milchak.tem",
+   "followers": 35656,
+   "reason": "X① 쿠팡 링크 위주",
+   "evidence": "캡션 '프로필 아래 <359번>' 번호형 쿠팡 링크, 인포크 미개설"
+  },
+  {
+   "id": "kkumkkudang_moon",
+   "followers": 33500,
+   "reason": "링크 미확인",
+   "evidence": "인포크 placeholder"
+  },
+  {
+   "id": "your_terior",
+   "followers": 81744,
+   "reason": "X① 쿠팡 링크 위주",
+   "evidence": "https://link.inpock.co.kr/your_terior — '번호순' 쿠팡 링크 목록"
+  },
+  {
+   "id": "jamjam_at_home",
+   "followers": 70446,
+   "reason": "X① 쿠팡 링크 위주",
+   "evidence": "https://link.inpock.co.kr/jamjam_at_home — '👉클릭 후 [454] 검색' 번호 목록"
+  },
+  {
+   "id": "bbmi_home",
+   "followers": 79723,
+   "reason": "X① 쿠팡 링크 위주",
+   "evidence": "프로필 소개 '쿠팡 파트너스… 👇영상 속 꿀템 보러가기'"
+  },
+  {
+   "id": "salim_station",
+   "followers": 363800,
+   "reason": "X④ 자사몰(상시 판매)",
+   "evidence": "https://litt.ly/salim_station — 304스텐도마·설거지통 등 상시 판매"
+  },
+  {
+   "id": "greentica",
+   "followers": 241464,
+   "reason": "제휴 링크 위주·공구 없음",
+   "evidence": "https://litt.ly/greentica — 이케아·오늘의집 제품 링크"
+  },
+  {
+   "id": "pink_jungs",
+   "followers": 18983,
+   "reason": "X① 쿠팡 링크 위주·공구 일정 없음",
+   "evidence": "https://link.inpock.co.kr/pink_jungs — 쿠팡 26개 제품(디어커스 욕실화 포함) 나열"
+  },
+  {
+   "id": "hasuta.kr",
+   "followers": 24915,
+   "reason": "X④ 자사몰",
+   "evidence": "https://link.inpock.co.kr/hasutakr — 스마트스토어(앞치마) 단일"
+  },
+  {
+   "id": "quash_official",
+   "followers": 67068,
+   "reason": "X② 브랜드 계정",
+   "evidence": "가구·소품 브랜드 공식 계정"
+  },
+  {
+   "id": "dodamine_place",
+   "followers": 167962,
+   "reason": "X③ 품목 불일치(학습·독서대)",
+   "evidence": "캡션 '눈높이 2단 독서대'"
+  },
+  {
+   "id": "shop.little.sloth",
+   "followers": 133716,
+   "reason": "X④ 자사몰(잠옷)",
+   "evidence": "캡션 '프로필 링크에서' 자사 상품"
+  }
+ ]
+}
