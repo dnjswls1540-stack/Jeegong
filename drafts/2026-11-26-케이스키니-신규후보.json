@@ -1,0 +1,163 @@
+{
+ "generated_at": "2026-11-26T15:58:00+09:00",
+ "campaign": "케이스키니 5나노 PCL 바디앰플 — 신규 후보 발굴 (2026-11-26)",
+ "stage": "1차 발굴(구름이) → 2차 검수(클로드 A/B/X) → 3차 승인 후 시트·대시보드 반영",
+ "criteria": {
+  "followers_min": 15000,
+  "followers_preferred": 30000,
+  "recent_posts": 6,
+  "per_post_comments_min": 30,
+  "b_allow": "개별 25~29 스폿 최대 2개",
+  "latest_days": 30,
+  "must_be_real_gonggu_host": true,
+  "dedupe": "마스터 시트 A열 + 대시보드 캠페인(디어커스·아넬라·케이스키니) + 제외 큐"
+ },
+ "stats": {
+  "master_sheet_rows": 2326,
+  "registered_unique": 2325,
+  "campaign_handles": 517,
+  "excluded_queue": 19,
+  "pangpang_keywords_mined": 234,
+  "pangpang_categories_mined": 10,
+  "pangpang_post_archive_deals": 1000,
+  "pangpang_post_archive_accounts": 632,
+  "pangpang_keyword_accounts": 929,
+  "instagong_accounts": 433,
+  "adit_channels": 3001,
+  "adit_channels_new_unregistered": 2566,
+  "embed_verified_accounts": 1182,
+  "profiles_read_total": 3748,
+  "new_unregistered_15k_plus": 1069,
+  "new_unregistered_recent": 1029,
+  "quant_A_new": 142,
+  "quant_B_new": 22,
+  "final_pass": 1
+ },
+ "candidates": [
+  {
+   "num": 1,
+   "grade": "A",
+   "id": "__eun.mee",
+   "name": "설은미",
+   "followers": 39636,
+   "followers_text": "3.9만",
+   "comments": [966, 384, 3847, 587, 357, 481],
+   "comments_under30": 0,
+   "median": 587,
+   "latest": "2026-11-22",
+   "url": "https://www.instagram.com/__eun.mee/",
+   "profile_link": "https://link.inpock.co.kr/eunmee",
+   "category_main": "뷰티·생활 + 다이어트 식단(유지어터)",
+   "detail_category": ["뷰티", "자기관리", "다이어트"],
+   "link_check": {
+    "type": "인포크링크",
+    "opened_at": "2026-11-26",
+    "items": [
+     "[은미 X 설당프리] 비타미톡 다이어트보조제 4종 OPEN — 은미스토어",
+     "은미 스토어 자사몰",
+     "은미 고객센터",
+     "베베보(Bebebo) 고객센터 / rozipique 고객센터"
+    ],
+    "verdict": "자체 공구 스토어로 직접 주문·결제창 운영(진짜 공구 주최자). 쿠팡파트너스 번호 나열 없음."
+   },
+   "gonggu_history": [
+    "09pangpang 등록: 비타미톡 다이어트보조제 (2026-11-21 오픈, 건강식품/다이어트보조제)",
+    "베베보 곤약볶음면 런칭 공구 — '오늘부터 단 3일간' 진행",
+    "위프 탈취제 11/29 예정(프로필 상단 공지)",
+    "하이라이트에 keecho, 파로, 니베아, 비비안, 페버 수피마타올 등 공구 이력 다수"
+   ],
+   "content_fit": "164.5cm 60kg→45kg 감량 후 3년째 유지 중인 유지어터. 하루 식단 릴스·다이어트 제품(곤약볶음면·다이어트보조제) 공구를 꾸준히 진행. 주력은 뷰티·생활 꿀템.",
+   "why_A": "팔로워 3.9만(3만+ 충족), 최근 6개 게시물 개별 댓글 966·384·3847·587·357·481로 30 미만 0개, 최근 업로드 11/22(4일 전), 자체 공구 스토어로 실제 공구 주최, 약사·의료인·자체 브랜드 대표·공구 거부 문구·익명 큐레이션 어디에도 해당 없음.",
+   "caveats": [
+    "콘텐츠 주력이 뷰티·생활이라 바디앰플 카테고리 적합도는 '중간' — 3주 빌드업/비포애프터 콘텐츠 소화 가능성은 확인 필요.",
+    "'은미 스토어'는 여러 브랜드를 파는 공구 스토어로, 특정 자체 브랜드 대표(규칙 B)는 아님.",
+    "바이오에 공구 거부 문구 없음. 다만 사칭 주의 문구('이 계정 외에 사칭입니다')가 있어 계정 확인 필요."
+   ],
+   "dedupe": {"master_sheet": false, "dashboard_campaigns": false, "excluded_queue": false}
+  }
+ ],
+ "review_only": [
+  {
+   "id": "h1003141592",
+   "name": "조은비",
+   "followers": 718024,
+   "comments": [58, 109, 63, 22, 18, 62],
+   "latest": "2026-11-26",
+   "grade_note": "C — 2개 게시물(22·18)이 기준 미달",
+   "fit": "초등교사 출신, -14kg 감량, 36만 유튜버, PT/라인온 운영. 운동·감량 전문으로 타깃 적합.",
+   "blocker": "팔로워 71.8만 대형 + 자기 콘텐츠(유튜브·PT 사업) 중심 → X급 ② 판단 필요"
+  },
+  {
+   "id": "dongdongmom_step",
+   "name": "동동맘네 성장일기",
+   "followers": 172451,
+   "comments": [317, 6, 536, 0, 588, 1401],
+   "latest": "2026-11-26",
+   "grade_note": "C — 2개 게시물(6·0)이 기준 미달",
+   "fit": "홈트·운동기구 공구 진행(킹스미스 워킹패드 11/27, 슈로스바).",
+   "blocker": "자녀가 중학생이라 산후·자기관리 타깃 적합도 낮음. 정량도 2개 저조."
+  },
+  {
+   "id": "luv_ssuji",
+   "name": "쑤지 | 40대 워킹맘",
+   "followers": 268144,
+   "comments": [21, 55, 50, 50, 46, 47],
+   "latest": "2026-11-25",
+   "grade_note": "C — 1개 게시물(21)이 기준 미달",
+   "fit": "40대 워킴맘 라이프스타일, 혈당·다이어트·저속노화 소재.",
+   "blocker": "공구 주최 이력 미확인(광고 중심)."
+  },
+  {
+   "id": "__seu1__",
+   "name": "다슬",
+   "followers": 1340405,
+   "comments": [63, 60, 82, 69, 62, 129],
+   "latest": "2026-11-25",
+   "grade_note": "A 정량 통과",
+   "fit": "헬스·단백질 식단 전문.",
+   "blocker": "134만 대형, 자기 콘텐츠·브랜드 중심 → X급 ② 판단 필요. 공구 주최 이력 미확인."
+  },
+  {
+   "id": "pila_nyong",
+   "name": "흥둥이홈트_뇽쌤 윤원형",
+   "followers": 816296,
+   "comments": [616, 45, 195, 334, 55, 247],
+   "latest": "2026-11-24",
+   "grade_note": "A 정량 통과",
+   "fit": "산후 홈트 전문, -16kg 육아맘 다이어터. 타깃 적합도 최상.",
+   "blocker": "143만 유튜버(흥둥이) 계열 대형 크리에이터 → X급 ② 판단 필요."
+  },
+  {
+   "id": "sillllling",
+   "name": "장은실 Jang Eun Sil",
+   "followers": 738903,
+   "comments": [99, 67, 30, 30, 58, 40],
+   "latest": "2026-11-25",
+   "grade_note": "A 정량 통과",
+   "fit": "운동·피트니스 라이프스타일.",
+   "blocker": "73.9만 대형, 공구 주최 이력 미확인 → X급 ② 판단 필요."
+  }
+ ],
+ "rejected_summary": {
+  "duplicate_registered": "마스터 시트 A열 2,325명 + 대시보드 캠페인 517명 + 제외 큐 19명 전량 제외(중복 0건 기준)",
+  "quant_fail": "신규 1,029계정 중 정량 A 142·B 22 → 나머지 865계정 탈락(개별 댓글 30 미만 또는 25~29 3개 이상)",
+  "category_mismatch": "정량 통과 164명 중 타깃(다이어트·몸매·홈트·산후·바디케어)과 무관한 여행·캠핑·리빙·뷰티·연예 계정 다수",
+  "no_gonggu_history": "park_yean(26.3만, 필라테스 원장) — 링크가 스튜디오 예약·유튜브·몽피치 할인 링크뿐, 공구 일정·결제창 없음(규칙 D·E 탈락)",
+  "own_brand": "kang_ye_bin(24.7만, 정량 A·공구 3건) — 'K-Line Official' 자체제작 브랜드 운영(규칙 B). byhee_ — 'MADE BY BYHEE' 자체 제작(규칙 B)",
+  "medical": "약사·의료인 계정 17명 제외(lilly_yaksa·shine_yaksa·spring_pharmy·yak_secret·byak_yaksa·drug._.hacker·jasin_yaksa·medimantv·yak_father·alpaca_yaksa·ssofit_yaksa·beige_yaksa·yaksa_nam·ggultip_yaksa·strawberry_yaksa·dasik.yaksa·woori_yaksa) — 규칙 C",
+  "anonymous_curation": "health_minimal(11.2만) — 얼굴·일상 없는 익명 건강 큐레이션(제3조 2호)",
+  "coupang_affiliate": "to.ongs_(10.5만, 다이어트 식단) — 인포크링크에 공구 알림방은 있으나 상품 링크가 쿠팡파트너스 중심(X급 ①). 또한 마스터 시트 기등재"
+ },
+ "sources": [
+  "09pangpang.com — 키워드 검색 234개 + 최근 1개월 공구 아카이브 1,000건(632계정) + 카테고리 10종",
+  "insta-gong.com — 건강/뷰티·생활/장보기 크리에이터 433명",
+  "snapup.co.kr — 공구 캘린더 95명",
+  "adit.now/lens — 채널 3,001개(미등재 2,566개) 프로필·소개문 전수",
+  "언론·블로그·랭킹(하퍼스바자, virev, feedspot 등) — 계정 후보 보강"
+ ],
+ "notes": [
+  "인스타그램 로그인 없이 공개 임베드 JSON으로 최근 6개 게시물 댓글·업로드일 실측(scripts/ig_verify_embed.py).",
+  "상단 고정 게시물은 임베드에서 구분되지 않아, 고정 게시물이 상위에 노출되면 실제 일반 게시물 댓글은 더 낮을 수 있음(보수적 해석).",
+  "로그인 세션(jeegongpaynote)으로 후보 프로필·인포크링크를 직접 열어 공구 주최 여부를 확인했다."
+ ]
+}
