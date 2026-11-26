@@ -1,14 +1,14 @@
 {
- "generated_at": "2026-11-26T20:40:00+09:00",
- "campaign": "케이스키니 5나노 PCL 바디앰플 — 신규 후보 2차 보완(적합도 하 제외·미실사 12명 링크 실사·3만 미만 보충)",
- "stage": "구름이 1차 발굴·실사 → 클로드 A/B/X 검수 → 지원진 님 승인 후 시트·대시보드 반영",
+ "generated_at": "2026-11-26T19:30:00+09:00",
+ "campaign": "케이스키니 5나노 PCL 바디앰플 — 신규 후보 2차 보완 최종(경계 3명 포함·릴스 재확인 4명 반영)",
+ "stage": "구름이 1차 발굴·실사·릴스 재확인 → 클로드 A/B/X 검수 → 지원진 님 승인 후 시트·대시보드 반영(반영은 코덱스 요청분)",
  "criteria": {
   "followers_min": 15000,
   "followers_standard_tier": "3만 이상(A/B) — 기존 기준",
   "followers_sub30_tier": "1.5만~3만 — 지원진 님 11/26 확정으로 발굴 허용(B급)",
   "recent_posts": 6,
   "per_post_comments": "최근 6개 중 댓글 30+ 1개 이상(A) 또는 20~29 포함(B). 상단 고정 제외 실측(임베드)",
-  "reels_views": "3만 미만 구간은 릴스 조회수 엄수 — 최근 12개 중앙값이 팔로워의 20% 이상·5,000회 이상이면 통과(B), 50% 이상이면 A. 미달 시 제외",
+  "reels_views": "3만 미만 구간은 최근 12개 릴스 조회수 중앙값(상단 고정 제외)이 팔로워의 20% 이상이면서 5,000회 이상일 때만 통과. 등급은 B로 통일하며 3만 미만에는 A등급을 주지 않는다. 미달이거나 조회수를 확인할 수 없으면 제외 또는 보류.",
   "latest_days": 30,
   "must_be_real_gonggu_history": true,
   "fit_rules": "적합도 하(가습기·러그·장난감·도서·조미료 등 상품 카테고리 무관) 제외 — 지원진 님 11/26 결정",
@@ -22,7 +22,9 @@
    "공구 거부 문구",
    "자사 브랜드·자사몰 대표",
    "약사·의사 등 전문직"
-  ]
+  ],
+  "sub30_grade": "3만 미만 전원 B (2026-11-26 코덱스 지적 반영 — 기존 '50% 이상 A' 문구 폐기)",
+  "boundary_included": "경계 후보 3명(mini_home_____·sodam_home_·dandan_house_)은 적합도 하이나 지원진 님 11/26 결정('경계 3명 포함해 35명 기준으로 진행')에 따라 정식 포함"
  },
  "support": {
   "excluded_fit_low_11": [
@@ -41,17 +43,18 @@
   "excluded_reason": "지원진 님 11/26 결정 — 적합도 하 11명(가습기·러그·장난감·도서·조미료 계열) 제외"
  },
  "counts": {
-  "total": 32,
-  "existing_2nd": 17,
-  "this_round_12": 7,
-  "new_sub30": 8,
-  "grade_A": 6,
+  "total_confirmed": 31,
+  "grade_A": 5,
   "grade_B": 26,
-  "fit_상": 16,
-  "fit_중": 16,
-  "fit_하": 0,
-  "holding_3": 3,
-  "followers_under_30k": 8
+  "fit_상": 14,
+  "fit_중": 14,
+  "fit_하": 3,
+  "followers_30k_plus": 21,
+  "followers_under_30k": 10,
+  "boundary_included": 3,
+  "holding": 4,
+  "x_grade": 1,
+  "previous_2차": 32
  },
  "verified_pass": [
   {
@@ -293,44 +296,6 @@
   },
   {
    "num": 7,
-   "handle": "o1o211",
-   "name": "산범",
-   "followers": 169505,
-   "followers_text": "17.0만",
-   "comments": [
-    36,
-    10,
-    21,
-    15,
-    24,
-    5
-   ],
-   "max_comments": 36,
-   "latest": "2026-11-22",
-   "instagram_url": "https://www.instagram.com/o1o211/",
-   "profile_link": "https://link.inpock.co.kr/sanbum",
-   "link_status": "실사 완료",
-   "gonggu_history": [
-    "비채수 붓기 4차 공구(11/25 21:00 ~ 11/28 23:59)",
-    "하이라이트: 정여사 또이어트"
-   ],
-   "category": "산후 / 바디케어",
-   "fit": "제왕절개 1개월차 산후 붓기·몸무게 복귀 콘텐츠",
-   "fit_level": "상",
-   "grade": "B",
-   "grade_reason": "최근 6개 중 1개만 30+ (최대 36, 나머지 5,10,15) — 분포 얇음",
-   "verify": "프로필·링크 실사 완료",
-   "caveat": "",
-   "dedupe": {
-    "master_sheet": false,
-    "dashboard_campaigns": false,
-    "excluded_queue": false
-   },
-   "source": "2차 발굴·링크인바이오 실사 완료(2026-11-26 16:20~16:30)",
-   "reels_views": "미측정"
-  },
-  {
-   "num": 8,
    "handle": "sewon_janemom",
    "name": "제인맘 (시드시스터즈)",
    "followers": 125458,
@@ -371,7 +336,7 @@
    "reels_views": "미측정"
   },
   {
-   "num": 9,
+   "num": 8,
    "handle": "ssun__flow",
    "name": "썬플 (이미선)",
    "followers": 172637,
@@ -410,46 +375,7 @@
    "reels_views": "미측정"
   },
   {
-   "num": 10,
-   "handle": "yunameimfn",
-   "name": "진유나 YUNA",
-   "followers": 158571,
-   "followers_text": "15.9만",
-   "comments": [
-    8,
-    147,
-    26,
-    16,
-    39,
-    15
-   ],
-   "max_comments": 147,
-   "latest": "2026-11-22",
-   "instagram_url": "https://www.instagram.com/yunameimfn/",
-   "profile_link": "https://link.inpock.co.kr/yunameimfn",
-   "link_status": "실사 완료",
-   "gonggu_history": [
-    "에르고바디 EMS 벨트 공구(11/22~11/25)",
-    "가꾸기 후기",
-    "맥스컷 Q&A"
-   ],
-   "category": "바디케어 / 다이어트 / 홈케어",
-   "fit": "홈케어·체중조절·운동(EMS·복대) 콘텐츠",
-   "fit_level": "상",
-   "grade": "A",
-   "grade_reason": "댓글 [8,147,26,16,39,15] — 2개 30+(147·39)·1개 20~29(26), 최근 4일 내 업로드",
-   "verify": "프로필·링크 실사 완료",
-   "caveat": "게시물에 \"핏유어코어 세트\" 동시 판매 — 자사 브랜드 동반 여부 발송 전 확인 필요",
-   "dedupe": {
-    "master_sheet": false,
-    "dashboard_campaigns": false,
-    "excluded_queue": false
-   },
-   "source": "2차 발굴·링크인바이오 실사 완료(2026-11-26 16:20~16:30)",
-   "reels_views": "미측정"
-  },
-  {
-   "num": 11,
+   "num": 9,
    "handle": "silver__1026",
    "name": "이준이서맘",
    "followers": 53315,
@@ -487,7 +413,7 @@
    "reels_views": "미측정"
   },
   {
-   "num": 12,
+   "num": 10,
    "handle": "dongdongmom_step",
    "name": "동동맘네 성장일기",
    "followers": 172451,
@@ -526,7 +452,7 @@
    "reels_views": "미측정"
   },
   {
-   "num": 13,
+   "num": 11,
    "handle": "brandme_halim",
    "name": "구하림 | 나를 잊지 않는 육아",
    "followers": 123583,
@@ -566,7 +492,7 @@
    "reels_views": "미측정"
   },
   {
-   "num": 14,
+   "num": 12,
    "handle": "k.sujan",
    "name": "김수진 | 케이수잔",
    "followers": 106793,
@@ -606,7 +532,7 @@
    "reels_views": "미측정"
   },
   {
-   "num": 15,
+   "num": 13,
    "handle": "fall0715",
    "name": "박가을",
    "followers": 157093,
@@ -645,7 +571,7 @@
    "reels_views": "미측정"
   },
   {
-   "num": 16,
+   "num": 14,
    "handle": "mimi.hari_",
    "name": "미미하리",
    "followers": 56054,
@@ -674,45 +600,6 @@
    "grade_reason": "최근 6개 중 1개만 30+ (최대 34, 나머지 0,2,2) — 분포 얇음",
    "verify": "프로필·링크 실사 완료",
    "caveat": "",
-   "dedupe": {
-    "master_sheet": false,
-    "dashboard_campaigns": false,
-    "excluded_queue": false
-   },
-   "source": "2차 발굴·링크인바이오 실사 완료(2026-11-26 16:20~16:30)",
-   "reels_views": "미측정"
-  },
-  {
-   "num": 17,
-   "handle": "withmyl_",
-   "name": "이재은 | 위드마이엘",
-   "followers": 38388,
-   "followers_text": "3.8만",
-   "comments": [
-    1,
-    114,
-    7,
-    1,
-    4,
-    2
-   ],
-   "max_comments": 114,
-   "latest": "2026-11-24",
-   "instagram_url": "https://www.instagram.com/withmyl_/",
-   "profile_link": "프로필 링크 미표기(인스타 프로필 실사)",
-   "link_status": "실사 완료 — 링크인바이오 없음, 하이라이트 \"수입공유\"",
-   "gonggu_history": [
-    "탄소매트 공구",
-    "오가닉·건강식품",
-    "임신 3째·가족 건강·성장 루틴 콘텐츠"
-   ],
-   "category": "임산부 / 건강 / 자기관리",
-   "fit": "임산부·산후 건강관리",
-   "fit_level": "중",
-   "grade": "B",
-   "grade_reason": "최근 6개 중 1개만 30+ (최대 114, 나머지 1,1,2) — 분포 얇음",
-   "verify": "프로필·링크 실사 완료",
-   "caveat": "영양제 브랜드 디스트리뷰터·수입공유(판매 프로그램) 운영 — 자사 사업 성격 검수 필요",
    "dedupe": {
     "master_sheet": false,
     "dashboard_campaigns": false,
@@ -758,7 +645,7 @@
     "excluded_queue": false
    },
    "source": "이번 12명 링크 실사",
-   "num": 18
+   "num": 15
   },
   {
    "handle": "by.jiae",
@@ -796,7 +683,7 @@
     "excluded_queue": false
    },
    "source": "이번 12명 링크 실사",
-   "num": 19
+   "num": 16
   },
   {
    "handle": "heeddo__",
@@ -816,10 +703,10 @@
    "profile_link": "https://link.inpock.co.kr/heeddofit",
    "link_status": "인포크링크 직접 열람. 히또마켓 고객센터 / 오브오브 퍼자켓 앵콜 기획전(11/27 10am) / 락티브 이노시톨·시크릿케어 블프(11/30) — 공구 스토어 운영, 쿠팡 링크 없음",
    "gonggu_history": [
-    "오브오브 퍼자켓 앵콜 기획전(11/27)",
-    "락티브 이노시톨 & 시크릿케어 블랙프라이데이(11/30)",
-    "타밈 리뷰 이벤트",
-    "바이오: 11자 복근 루틴·-10kg 다이어트 콘텐츠"
+    "씨엘(CL) 스킨케어 공구 — 11/24 게시물 '씨엘 곧 마감합니다!', 11/25 게시물 '씨엘은 잠시후 자정 할인 마감입니다'로 실제 진행·마감 확인(오픈은 그 이전, 최근 30일 이내)",
+    "오브오브 퍼자켓 40% 할인 앵콜 — 11/27 10시 오픈 예정(11/26 게시물)",
+    "락티브 이노시톨 & 시크릿케어 블랙프라이데이 10차 — 11/30 오픈 예정",
+    "타밈 리뷰 이벤트 / 히또마켓 고객센터 운영"
    ],
    "category": "바디 / 홈트 / 다이어트",
    "fit": "복근·-10kg 감량 콘텐츠 + 핏니스 (바디앰플 최상 적합)",
@@ -835,7 +722,8 @@
     "excluded_queue": false
    },
    "source": "이번 12명 링크 실사",
-   "num": 20
+   "num": 17,
+   "recheck": "최근 30일 내 실제 공구 오픈 이력 확인 완료(씨엘 공구 11/24~25 마감) — B(후순위) 유지"
   },
   {
    "handle": "olonbin",
@@ -873,7 +761,7 @@
     "excluded_queue": false
    },
    "source": "이번 12명 링크 실사",
-   "num": 21
+   "num": 18
   },
   {
    "handle": "lee.sr____",
@@ -912,7 +800,7 @@
     "excluded_queue": false
    },
    "source": "이번 12명 링크 실사",
-   "num": 22
+   "num": 19
   },
   {
    "handle": "bd_.mom",
@@ -950,7 +838,7 @@
     "excluded_queue": false
    },
    "source": "이번 12명 링크 실사",
-   "num": 23
+   "num": 20
   },
   {
    "handle": "hongmerry__",
@@ -990,7 +878,7 @@
     "excluded_queue": false
    },
    "source": "이번 12명 링크 실사",
-   "num": 24
+   "num": 21
   },
   {
    "handle": "chasha.atelier",
@@ -1027,7 +915,7 @@
     "excluded_queue": false
    },
    "source": "3만 미만 보충 발굴",
-   "num": 25
+   "num": 22
   },
   {
    "handle": "jmini_ljm",
@@ -1065,7 +953,7 @@
     "excluded_queue": false
    },
    "source": "3만 미만 보충 발굴",
-   "num": 26
+   "num": 23
   },
   {
    "handle": "miso0518",
@@ -1102,7 +990,7 @@
     "excluded_queue": false
    },
    "source": "3만 미만 보충 발굴",
-   "num": 27
+   "num": 24
   },
   {
    "handle": "im.cyeon",
@@ -1130,7 +1018,7 @@
    "fit_level": "중",
    "grade": "B",
    "grade_reason": "최근 6개 중 1개만 30+(69), 나머지 2·4·6 — 분포 얇음",
-   "reels_views": "최근 13개 중앙값 약 3.3만 (팔로워 대비 119%) — 양호",
+   "reels_views": "최근 12개 중앙값 3.1만 (팔로워 대비 112%) — 양호 (고정 2건 제외, 13개→12개 재산정 2026-11-26 19:35)",
    "verify": "프로필+링크 실사 완료 · 공구 이력 확인",
    "caveat": "",
    "dedupe": {
@@ -1139,46 +1027,8 @@
     "excluded_queue": false
    },
    "source": "3만 미만 보충 발굴",
-   "num": 28
-  },
-  {
-   "handle": "ddoglemom",
-   "name": "또글맘",
-   "followers": 25929,
-   "followers_text": "2.6만",
-   "comments": [
-    4,
-    33,
-    15,
-    5,
-    67,
-    5
-   ],
-   "latest": "2026-11-26",
-   "instagram_url": "https://www.instagram.com/ddoglemom/",
-   "profile_link": "https://inpk.link/ddoglemom",
-   "link_status": "인포크링크 직접 열람. 저당과자 2종 공구(11/25~11/30) / 현미뻥튀기 건강간식 D-5 / 브레인탭 앵콜 2차 — 직접 공구 운영(쿠팡 병행)",
-   "gonggu_history": [
-    "09pangpang: 현미 간식·현미볼 공동구매(11/25)",
-    "저당과자 2종 공구(당연구소) 11/25~30",
-    "현미뻥튀기 12/1~6",
-    "브레인탭 앵콜"
-   ],
-   "category": "육아 / 건강간식 / 살림",
-   "fit": "저당·건강간식 공구 + 육아꿀팁 (건강 니즈 접점)",
-   "fit_level": "중",
-   "grade": "B",
-   "grade_reason": "최근 6개 중 2개 30+ (33·67) — 기준 충족",
-   "reels_views": "릴스 탭 조회수 로딩 실패로 미측정",
-   "verify": "프로필+링크 실사 완료 · 공구 이력 확인",
-   "caveat": "조회수 미측정 — 발송 전 재확인 권장",
-   "dedupe": {
-    "master_sheet": false,
-    "dashboard_campaigns": false,
-    "excluded_queue": false
-   },
-   "source": "3만 미만 보충 발굴",
-   "num": 29
+   "num": 25,
+   "recheck": "최근 12개 기준 재산정 완료 — 통과(B 유지)"
   },
   {
    "handle": "the__siena",
@@ -1216,7 +1066,7 @@
     "excluded_queue": false
    },
    "source": "3만 미만 보충 발굴",
-   "num": 30
+   "num": 26
   },
   {
    "handle": "_juju.mom_",
@@ -1246,7 +1096,7 @@
    "fit_level": "중",
    "grade": "B",
    "grade_reason": "최근 6개 중 3개 30+ (33·148·41) — 분포 안정",
-   "reels_views": "최근 9개 중앙값 약 1.8만 (팔로워 대비 90%) — 양호",
+   "reels_views": "최근 12개 중앙값 13.55만 (팔로워 대비 664%) — 양호 (고정 3건 제외, 9개→12개 재산정 2026-11-26 19:35)",
    "verify": "프로필+링크 실사 완료 · 공구 이력 확인",
    "caveat": "",
    "dedupe": {
@@ -1255,7 +1105,8 @@
     "excluded_queue": false
    },
    "source": "3만 미만 보충 발굴",
-   "num": 31
+   "num": 27,
+   "recheck": "최근 12개 기준 재산정 완료 — 통과(B 유지). 이전 '9개 중앙값 1.8만'은 최근 저조회 구간만 반영된 값이었음"
   },
   {
    "handle": "somy_jee",
@@ -1292,14 +1143,14 @@
     "excluded_queue": false
    },
    "source": "3만 미만 보충 발굴",
-   "num": 32
-  }
- ],
- "boundary_candidates": [
+   "num": 28
+  },
   {
+   "num": 29,
    "handle": "mini_home_____",
    "name": "미니홈",
    "followers": 15693,
+   "followers_text": "1.6만",
    "comments": [
     57,
     70,
@@ -1308,16 +1159,36 @@
     327,
     60
    ],
+   "max_comments": 327,
    "latest": "2026-11-26",
-   "link": "https://link.inpock.co.kr/mini_home____",
+   "instagram_url": "https://www.instagram.com/mini_home_____/",
+   "profile_link": "https://link.inpock.co.kr/mini_home____",
    "link_status": "테이블히터 공구 OPEN 11/24~27(오늘의집 단독) + 27년형 오브제 테이블히터 D-2. 공구·쿠팡·오늘의집 병행",
+   "gonggu_history": [
+    "테이블히터 공구 11/24~27(오늘의집 단독)",
+    "27년형 오브제 테이블히터 D-2"
+   ],
+   "category": "리빙 / 살림가전",
+   "fit": "살림가전·테이블히터 중심 (바디앰플과 상품 카테고리 거리 있음)",
+   "fit_level": "하",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 6개 30+ (최대 327) — 댓글 분포 안정 / 적합도 하",
    "reels_views": "최근 12개 중앙값 약 2.6만 (팔로워 대비 173%)",
-   "reason": "공구·댓글·조회수 모두 통과하나 주력이 살림가전(테이블히터)이라 적합도 하 — 지원진 님이 제외한 리빙 계열과 동일선상"
+   "verify": "프로필·링크 실사 완료 · 공구 이력 확인",
+   "caveat": "적합도 하(살림가전) — 지원진 님 결정으로 포함. 바디앰플 소구점과 거리가 있어 발송 우선순위 낮게",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "경계 후보 → 지원진 님 11/26 결정으로 정식 포함"
   },
   {
+   "num": 30,
    "handle": "sodam_home_",
    "name": "소담살림",
    "followers": 29946,
+   "followers_text": "2.9만",
    "comments": [
     2,
     84,
@@ -1326,16 +1197,35 @@
     155,
     2
    ],
+   "max_comments": 155,
    "latest": "2026-11-25",
-   "link": "https://link.inpock.co.kr/sodam_home_",
+   "instagram_url": "https://www.instagram.com/sodam_home_/",
+   "profile_link": "https://link.inpock.co.kr/sodam_home_",
    "link_status": "[에지리 X 소담] 블랙아이언 베이비웍 2차 공구(27일까지) + 쿠팡·오아시스마켓 병행",
-   "reels_views": "미측정(릴스 탭 로딩 실패)",
-   "reason": "공구 확인·댓글 1개 30+ 이나 주력이 이유식·주방(적합도 하)"
+   "gonggu_history": [
+    "에지리 X 소담 블랙아이언 베이비웍 2차 공구(11/27까지)"
+   ],
+   "category": "이유식 / 주방 / 리빙",
+   "fit": "유아식·주방(베이비웍) 중심 (바디앰플과 거리 있음)",
+   "fit_level": "하",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 1개만 30+ (최대 155, 나머지 1·2·6) — 분포 얇음 / 적합도 하",
+   "reels_views": "미측정 — 릴스 탭에 조회수 라벨이 표시되지 않음(계정 조회수 비공개, 2026-11-26 19:40 재확인)",
+   "verify": "프로필·링크 실사 완료 · 공구 이력 확인",
+   "caveat": "적합도 하(이유식·주방) + 조회수 비공개로 릴스 기준 미검증 — 지원진 님 결정으로 포함했으나 발송 우선순위 최하",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "경계 후보 → 지원진 님 11/26 결정으로 정식 포함"
   },
   {
+   "num": 31,
    "handle": "dandan_house_",
    "name": "단단이네",
    "followers": 23048,
+   "followers_text": "2.3만",
    "comments": [
     1,
     5,
@@ -1344,11 +1234,30 @@
     2,
     4
    ],
+   "max_comments": 34,
    "latest": "2026-11-25",
-   "link": "https://link.inpock.co.kr/with_dandan_",
+   "instagram_url": "https://www.instagram.com/dandan_house_/",
+   "profile_link": "https://link.inpock.co.kr/with_dandan_",
    "link_status": "슈로스도어(Lumino Design)·하루박스 사다리그네 CS + 거실서재화 가구. 쿠팡·오늘의집·브랜드커넥트 병행",
+   "gonggu_history": [
+    "슈로스도어(Lumino Design) 공구",
+    "하루박스 사다리그네",
+    "거실서재화 가구"
+   ],
+   "category": "인테리어 / 가구 / 리빙",
+   "fit": "인테리어 가구 중심 (바디앰플과 거리 있음)",
+   "fit_level": "하",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 1개만 30+ (최대 34, 나머지 1·3·4) — 분포 얇음 / 적합도 하",
    "reels_views": "최근 12개 중앙값 약 1.1만 (팔로워 대비 48%)",
-   "reason": "공구·조회수는 통과, 주력이 인테리어 가구(적합도 하)"
+   "verify": "프로필·링크 실사 완료 · 공구 이력 확인",
+   "caveat": "적합도 하(인테리어 가구) — 지원진 님 결정으로 포함. 발송 우선순위 낮게",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "경계 후보 → 지원진 님 11/26 결정으로 정식 포함"
   }
  ],
  "rejected_this_round": [
@@ -1457,12 +1366,17 @@
   {
    "item": "pila_nyong X급 예외",
    "status": "X급 유지 · 지원진 님 답변 대기",
-   "note": "흥둥이홈트 윤채형 81.6만. 29CM 흥둥이 공구마켓으로 공구 이력 실재, 산후 홈트 적합도 최상이나 유튜브 143만·특강 사업 중심 → X급 ②"
+   "note": "흥둥이홈트 윤채형 81.6만. 29CM 공구마켓으로 공구 이력 실재, 산후 홈트 적합도 최상이나 유튜브 143만·특강 사업 중심 → X급 ②"
   },
   {
    "item": "yunameimfn / withmyl_ / o1o211 보류",
    "status": "보류 유지 · 지원진 님 답변 대기",
    "note": "yunameimfn 자사 브랜드(핏유어코어) 동반 여부 / withmyl_ 영양제 판매 사업 성격 / o1o211 출산 직후 제외 기준"
+  },
+  {
+   "item": "ddoglemom",
+   "status": "보류 · 지원진 님 판단 대기",
+   "note": "릴스 조회수 비공개로 3만 미만 조회수 기준 검증 불가. 미검증 포함 결정 시 32명"
   },
   {
    "item": "공구 이력 인정 기간",
@@ -1492,16 +1406,175 @@
   "인포크링크·뉴베러 등 링크인바이오 페이지 직접 열람(공구 상품·오픈일·CS 채널)"
  ],
  "notes": [
-  "3만 미만 161명을 임베드 실측해 댓글·최근성·적합도로 44명을 남기고, 그중 프로필·링크까지 연 15명에서 8명이 통과했다. 나머지는 링크에 공구 없이 쿠팡·제휴만이거나, 릴스 조회수가 팔로워의 10~15%였거나, 적합도 하(육아·리빙 일반)였다.",
-  "따라서 40명을 채우려면 적합도 하 리빙 계열 또는 조회수 미달 계정을 넣어야 한다. 숫자 채우기 금지 지침에 따라 넣지 않았고, 대신 경계 후보 3명을 별도 표기했다.",
-  "임베드는 상단 고정 게시물을 구분하지 못한다. 고정 게시물이 상위에 노출되면 실제 일반 게시물 댓글은 더 낮을 수 있다(보수적 해석).",
-  "릴스 조회수는 로그인 세션의 릴스 탭 표시값(반올림: 1.2만·8,988 등) 기준이며, 고정 게시물은 제외하고 중앙값을 계산했다.",
-  "댓글 실측 시각: 2026-11-26 18:30~20:20 KST / 프로필·링크 실사: 같은 날 19:00~20:30 KST."
+  "2차 32명 중 보류 3명(yunameimfn·withmyl_·o1o211)과 조회수 미측정 1명(ddoglemom)을 분리하고, 경계 3명(mini_home_____·sodam_home_·dandan_house_)을 정식 포함해 확정 31명으로 정리했다.",
+  "3만 미만 8명 중 im.cyeon(13개→12개)·_juju.mom_(9개→12개)을 최근 12개 기준으로 재산정했고 둘 다 통과했다. ddoglemom은 조회수 비공개로 측정 불가.",
+  "3만 미만 등급은 전원 B로 통일했다(기존 '조회수 50% 이상이면 A' 문구는 코덱스 지적대로 폐기).",
+  "sodam_home_도 릴스 조회수가 비공개로 미측정이다. 지원진 님의 '경계 3명 포함' 결정에 따라 포함했으나 발송 우선순위는 최하로 둔다.",
+  "임베드는 상단 고정 게시물을 구분하지 못한다. 릴스 조회수는 고정 게시물을 제외하고 최근 12개만 집계했다.",
+  "댓글 실측 시각: 2026-11-26 18:30~20:20 KST / 프로필·링크 실사: 19:00~20:30 KST / 릴스 재확인: 19:25~19:45 KST."
  ],
  "next_steps": [
-  "경계 후보 3명(mini_home_____·sodam_home_·dandan_house_) 포함 여부 결정 → 포함 시 35명",
-  "적합도 하 11명 중 일부(예: chae.a_mommy·evajunie) 복원 여부 결정",
-  "yunameimfn·withmyl_·o1o211 보류 3명 및 pila_nyong 예외 판단",
-  "통과분 확정 시 마스터 시트·대시보드 반영은 지원진 님 승인 후 진행"
- ]
+  "확정 31명 마스터 시트·대시보드 반영 — 코덱스 요청(11/26 19:5x 협업방)",
+  "ddoglemom 미검증 포함 여부, yunameimfn·withmyl_·o1o211 보류 3명 승인 여부, pila_nyong 예외 여부 — 지원진 님 결정 대기",
+  "35명을 채우려면 위 보류분 중 승인 또는 3만 미만 추가 발굴(현 풀 사실상 소진)"
+ ],
+ "holding": [
+  {
+   "handle": "ddoglemom",
+   "name": "또글맘",
+   "followers": 25929,
+   "followers_text": "2.6만",
+   "comments": [
+    4,
+    33,
+    15,
+    5,
+    67,
+    5
+   ],
+   "latest": "2026-11-26",
+   "instagram_url": "https://www.instagram.com/ddoglemom/",
+   "profile_link": "https://inpk.link/ddoglemom",
+   "gonggu_history": [
+    "저당과자 2종 공구(11/25~11/30)",
+    "현미뻥튀기 12/1~6",
+    "브레인탭 앵콜",
+    "09pangpang: 현미 간식·현미볼 공동구매(11/25)"
+   ],
+   "status": "보류 — 릴스 조회수 확인 불가",
+   "reason": "릴스 탭 15개 타일 전부에 조회수 라벨이 없어 최근 12개 중앙값을 잴 수 없음(2회 재현). 같은 시각 im.cyeon·the__siena·_juju.mom_는 정상 표시되어 계정이 조회수를 비공개로 둔 상태로 판단. 임베드 API의 video_view_count는 계정 간 비율이 2~5배로 달라 대체 지표로 쓸 수 없음. 댓글(2개 30+)·공구 이력은 통과",
+   "note": "지원진 님이 '미검증 포함'을 결정하면 즉시 목록에 추가(32명)"
+  },
+  {
+   "handle": "yunameimfn",
+   "name": "진유나 YUNA",
+   "followers": 158571,
+   "followers_text": "15.9만",
+   "comments": [
+    8,
+    147,
+    26,
+    16,
+    39,
+    15
+   ],
+   "latest": "2026-11-22",
+   "instagram_url": "https://www.instagram.com/yunameimfn/",
+   "profile_link": "https://link.inpock.co.kr/yunameimfn",
+   "status": "보류 — 자사 브랜드(핏유어코어) 동반 여부 확인 필요",
+   "reason": "게시물에서 '핏유어코어 세트' 동시 판매 확인 — 자사 브랜드 운영이면 규칙 B. 지원진 님 승인 전 보류",
+   "note": "승인 시 A로 복귀 가능(댓글 2개 30+·1개 20~29)"
+  },
+  {
+   "handle": "withmyl_",
+   "name": "이재은 | 위드마이엘",
+   "followers": 38388,
+   "followers_text": "3.8만",
+   "comments": [
+    1,
+    114,
+    7,
+    1,
+    4,
+    2
+   ],
+   "latest": "2026-11-24",
+   "instagram_url": "https://www.instagram.com/withmyl_/",
+   "profile_link": "프로필 링크 미표기",
+   "status": "보류 — 영양제 판매 사업(수입공유·디스트리뷰터) 성격 확인 필요",
+   "reason": "영양제 브랜드 디스트리뷰터·수입공유(판매 프로그램) 운영 — 자사 사업 성격이면 규칙 B 검토 대상",
+   "note": "지원진 님 승인 전 보류"
+  },
+  {
+   "handle": "o1o211",
+   "name": "산범",
+   "followers": 169505,
+   "followers_text": "17.0만",
+   "comments": [
+    36,
+    10,
+    21,
+    15,
+    24,
+    5
+   ],
+   "latest": "2026-11-22",
+   "instagram_url": "https://www.instagram.com/o1o211/",
+   "profile_link": "https://link.inpock.co.kr/sanbum",
+   "status": "보류 — 출산 직후 계정 제외 기준 적용 여부 결정 필요",
+   "reason": "제왕절개 1개월차 산후 콘텐츠 — 산후 타깃 적합도는 최상이나 '출산 직후 제외' 기준 적용 여부가 지원진 님 판단 사항",
+   "note": "지원진 님 승인 전 보류"
+  }
+ ],
+ "x_grade": [
+  {
+   "handle": "pila_nyong",
+   "name": "흥둥이홈트 윤쌤(윤채형)",
+   "followers": 816000,
+   "followers_text": "81.6만",
+   "status": "X급 유지 — 지원진 님 예외 승인 전",
+   "reason": "29CM '흥둥이 공구마켓'(프로티원 단백질쉐이크 11/22~29)으로 공구 이력은 실재하나 유튜브 143만·특강/클래스 사업 중심 대형 크리에이터 → X급 ②",
+   "note": "산후 홈트 적합도 최상 — 예외 승인 시 바로 투입 가능"
+  }
+ ],
+ "recheck_2026_11_26": {
+  "measured_at": "2026-11-26 19:25~19:45 KST",
+  "method": "인스타 로그인 세션의 프로필 릴스 탭 표시값(조회수 아이콘) 직접 판독. 상단 고정 게시물은 제외하고 최근 12개만 집계. 임베드 video_view_count는 UI 조회수와 다른 지표로 확인되어 사용하지 않음",
+  "results": [
+   {
+    "handle": "im.cyeon",
+    "followers": 27689,
+    "views_12": [
+     3582,
+     7018,
+     7396,
+     13000,
+     16000,
+     29000,
+     33000,
+     34000,
+     43000,
+     99000,
+     113000,
+     217000
+    ],
+    "median": 31000,
+    "ratio": "112%",
+    "threshold": "5,538(20%)·5,000",
+    "verdict": "통과 B"
+   },
+   {
+    "handle": "_juju.mom_",
+    "followers": 20408,
+    "views_12": [
+     1666,
+     2667,
+     5443,
+     31000,
+     71000,
+     101000,
+     170000,
+     191000,
+     197000,
+     198000,
+     212000,
+     413000
+    ],
+    "median": 135500,
+    "ratio": "664%",
+    "threshold": "5,000",
+    "verdict": "통과 B"
+   },
+   {
+    "handle": "heeddo__",
+    "followers": 176005,
+    "verdict": "공구 이력 확인 — 11/24~25 씨엘(CL) 스킨케어 공구 마감(인스타 원문), 11/27 오브오브 앵콜·11/30 락티브 블프 예정 → B(후순위) 유지"
+   },
+   {
+    "handle": "ddoglemom",
+    "followers": 25929,
+    "verdict": "조회수 비공개로 미측정 → 보류(33명→31명 확정에서 제외)"
+   }
+  ]
+ }
 }
