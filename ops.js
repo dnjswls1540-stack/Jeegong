@@ -28,12 +28,14 @@
   const dayDiff = (d) => Math.round((Date.parse(d) - Date.parse(todayStr())) / 864e5);
   const dLabel = (d) => { const n = dayDiff(d); return n === 0 ? '오늘' : n > 0 ? 'D-' + n : Math.abs(n) + '일 지남'; };
   const num = (v) => (v === '' || v == null ? null : Math.round(Number(String(v).replace(/,/g, ''))));
+  const WH_FROM = '2026-11'; // 원천징수 탭 조회 시작 월
+  const gongguMonth = (s) => (s.start_date || s.end_date || '').slice(0, 7); // 공구 진행 월 = 시작일 기준
   const safeUrl = (u) => (/^https?:\/\//i.test(u || '') ? u : '');
 
   const S = {
     session: readSession(), owner: null, loading: false, loadedAt: 0,
     revenue: [], targets: [], events: [], settlements: [], sourcing: [], withholding: [], meta: {}, alerts: [],
-    month: monthOf(), sub: lsGet(SUB_KEY) || 'dm', setFilter: 'open', srcCat: '전체', srcStage: '전체',
+    month: monthOf(), sub: lsGet(SUB_KEY) || 'dm', setFilter: 'open', setMonth: monthOf(), srcCat: '전체', srcStage: '전체',
     editRevenue: null, editSourcing: null,
   };
 
@@ -273,21 +275,70 @@
     if (!ready()) { el.innerHTML = loginCard(); return; }
     const t = todayStr();
     const isLate = (s) => (s.status === 'waiting' || s.status === 'amount') && s.due_date && s.due_date < t;
-    const open = S.settlements.filter((s) => s.status !== 'done');
-    const done = S.settlements.filter((s) => s.status === 'done');
-    const list = (S.setFilter === 'open' ? open : S.setFilter === 'done' ? done : S.settlements).slice()
+    const sel = S.setMonth;
+    const scope = sel === 'all' ? S.settlements : S.settlements.filter((s) => gongguMonth(s) === sel);
+    const sumOf = (list, k) => list.reduce((a, s) => a + Number(s[k] || 0), 0);
+    // 월별 실적: 첫 공구 달 ~ 이번 달 (공구 시작일 기준, 기존 시트 대시보드와 같은 기준)
+    const firstM = S.settlements.map(gongguMonth).filter(Boolean).sort()[0] || monthOf();
+    const months = [];
+    for (let m = monthOf(); m >= firstM; m = shiftMonth(m, -1)) months.push(m);
+    const gross = sumOf(scope, 'gross_sales'), fee = sumOf(scope, 'my_fee');
+    const best = scope.filter((s) => s.gross_sales != null).sort((a, b) => b.gross_sales - a.gross_sales).slice(0, 10);
+    const open = scope.filter((s) => s.status !== 'done');
+    const done = scope.filter((s) => s.status === 'done');
+    const list = (S.setFilter === 'open' ? open : S.setFilter === 'done' ? done : scope).slice()
       .sort((a, b) => (a.due_date || '9999').localeCompare(b.due_date || '9999') || (b.end_date || '').localeCompare(a.end_date || ''));
     const late = S.settlements.filter(isLate);
     const removed = new Set(S.events.filter((e) => e.removed).map((e) => e.id));
     const chip = (k, label, n) => `<button class="btn-gonggu-filter${S.setFilter === k ? ' active' : ''}" data-ops="set-filter" data-k="${k}">${label} ${n}</button>`;
-    el.innerHTML = `<div class="panel-card ops-card">
-      <div class="panel-header"><div class="panel-title"><span>💸</span><span>인플루언서 정산</span></div>
-        <div class="gonggu-filter-bar" style="margin:0">${chip('open', '진행 중', open.length)}${chip('done', '완료', done.length)}${chip('all', '전체', S.settlements.length)}</div></div>
-      ${late.length ? `<div class="ops-note ops-note--bad">🔴 정산 예정일이 지났는데 입금 확인이 안 된 건 <b>${late.length}건</b>: ${late.map((s) => esc(s.title)).join(', ')}</div>` : ''}
+    const label = sel === 'all' ? '전체 기간' : sel;
+    el.innerHTML = `
+      <div class="ops-toolbar">
+        <div class="ops-month">
+          <button class="ops-btn ops-btn--icon" data-ops="set-month-shift" data-n="-1" aria-label="이전 달">◀</button>
+          <input type="month" value="${sel === 'all' ? '' : sel}" data-ops-change="set-month" aria-label="조회 월">
+          <button class="ops-btn ops-btn--icon" data-ops="set-month-shift" data-n="1" aria-label="다음 달">▶</button>
+          <button class="ops-btn${sel === 'all' ? ' ops-btn--primary' : ''}" data-ops="set-month" data-m="all">전체 기간</button>
+        </div>
+        <span class="ops-muted">공구 시작일 기준</span>
+      </div>
+      <div class="ops-stats">
+        <div class="ops-stat"><span>${label} 총매출</span><strong>${won(gross)}</strong></div>
+        <div class="ops-stat"><span>벤더 수익</span><strong>${won(fee)}</strong></div>
+        <div class="ops-stat"><span>진행 건수</span><strong>${scope.length}건</strong></div>
+        <div class="ops-stat"><span>평균 수익률</span><strong>${gross ? ((fee / gross) * 100).toFixed(1) + '%' : '–'}</strong></div>
+      </div>
+      <div class="ops-two">
+        <div class="panel-card ops-card">
+          <div class="panel-header"><div class="panel-title"><span>📈</span><span>월별 실적</span></div></div>
+          <div class="ops-table ops-table--4" role="table">
+            <div class="ops-tr ops-th" role="row"><span>월</span><span>총매출</span><span>벤더 수익</span><span>진행 건수</span></div>
+            ${months.map((m) => {
+              const ms = S.settlements.filter((s) => gongguMonth(s) === m);
+              return `<div class="ops-tr ops-tr--click${m === sel ? ' ops-tr--on' : ''}" role="row" data-ops="set-month" data-m="${m}">
+                <span>${m}</span><span>${won(sumOf(ms, 'gross_sales'))}</span><span>${won(sumOf(ms, 'my_fee'))}</span><span>${ms.length}건</span></div>`;
+            }).join('')}
+          </div>
+        </div>
+        <div class="panel-card ops-card">
+          <div class="panel-header"><div class="panel-title"><span>🏆</span><span>${label} BEST ${best.length}건 (총매출 순)</span></div></div>
+          <div class="ops-table" role="table">
+            <div class="ops-tr ops-th" role="row"><span>순위</span><span>인플루언서 · 상품</span><span>기간</span><span>총매출</span><span>벤더 수익</span></div>
+            ${best.length ? best.map((s, i) => `<div class="ops-tr" role="row"><span>${i + 1}</span>
+              <span><b>${esc(s.influencer)}</b><span class="ops-stamp">${esc([s.brand, s.product].filter(Boolean).join(' '))}</span></span>
+              <span>${md(s.start_date || s.end_date)} ~ ${md(s.end_date)}</span><span>${won(s.gross_sales)}</span><span>${won(s.my_fee)}</span></div>`).join('')
+            : '<p class="ops-empty">금액이 입력된 공구가 없어요.</p>'}
+          </div>
+        </div>
+      </div>
+      <div class="panel-card ops-card">
+      <div class="panel-header"><div class="panel-title"><span>💸</span><span>${label} 정산 목록</span></div>
+        <div class="gonggu-filter-bar" style="margin:0">${chip('open', '진행 중', open.length)}${chip('done', '완료', done.length)}${chip('all', '전체', scope.length)}</div></div>
+      ${late.length ? `<div class="ops-note ops-note--bad">🔴 정산 예정일이 지났는데 입금 확인이 안 된 건 <b>${late.length}건</b>(전체 기간): ${late.map((s) => esc(s.title)).join(', ')}</div>` : ''}
       <p class="ops-muted">공구 종료일이 지나면 자동으로 "정산 대기"로 들어옵니다. 판매 총액은 여기에만 적고, 정산·매출 탭에는 내 수수료 매출만 넘어갑니다.</p>
       ${list.length ? list.map((s) => `<form class="ops-settle${isLate(s) ? ' ops-settle--late' : ''}" data-ops-form="settle" data-id="${s.id}">
         <div class="ops-settle-head"><b>${esc(s.title || [s.influencer, s.brand, s.product].join(' '))}</b>
-          <span class="ops-muted">종료 ${md(s.end_date)}${removed.has(s.event_id) ? ' · 캘린더에서 삭제된 일정' : ''}</span>
+          <span class="ops-muted">${s.start_date ? md(s.start_date) + ' ~ ' : '종료 '}${md(s.end_date)}${removed.has(s.event_id) ? ' · 캘린더에서 삭제된 일정' : ''}</span>
           <span class="ops-pill ops-pill--${s.status}">${SET_STATUS[s.status]}</span></div>
         <div class="ops-grid">
           ${field('정산 예정일', `<input type="date" name="due_date" value="${s.due_date || ''}">`)}
@@ -360,17 +411,21 @@
 
   // ---------- 원천징수 ----------
   function withholdingMonths() {
+    // 원천징수_신고리스트처럼 "공구 진행 월(시작일)"로 묶고, 인원은 활동명 기준 사람 수 (2026-11-26 원진님 확정)
     const map = {};
-    S.settlements.filter((s) => s.is_individual && s.paid_date).forEach((s) => {
-      const m = monthOf(s.paid_date);
-      map[m] = map[m] || { people: 0, payout: 0 };
-      map[m].people += 1;
+    S.settlements.filter((s) => s.is_individual && gongguMonth(s)).forEach((s) => {
+      const m = gongguMonth(s);
+      map[m] = map[m] || { names: new Set(), payout: 0 };
+      map[m].names.add(s.influencer || s.title);
       map[m].payout += Number(s.payout || 0);
     });
     const cur = monthOf();
-    [cur, shiftMonth(cur, -1)].forEach((m) => { map[m] = map[m] || { people: 0, payout: 0 }; });
-    // 신고 지급액 = 정산금 ÷ 1.1 (원천징수_신고리스트 기준, 2026-11-25 원진님 확정). 월 합계로 한 번만 반올림
-    return Object.keys(map).sort().reverse().map((m) => ({ month: m, people: map[m].people, total: Math.round(map[m].payout / 1.1) }));
+    [cur, shiftMonth(cur, -1)].forEach((m) => { map[m] = map[m] || { names: new Set(), payout: 0 }; });
+    const sheet = Object.fromEntries(S.withholding.filter((w) => w.sheet_synced_at).map((w) => [w.month.slice(0, 7), w]));
+    // 2026-11부터만 보여 준다(원진님 확정). 시트 값(매달 말일 예약 작업이 저장)이 있으면 그 값을, 없으면 정산금 ÷ 1.1 계산값을 쓴다
+    return Object.keys(map).filter((m) => m >= WH_FROM).sort().reverse().map((m) => sheet[m]
+      ? { month: m, people: sheet[m].people, names: sheet[m].names || [], total: sheet[m].total, src: '시트 ' + kstDay(sheet[m].sheet_synced_at) }
+      : { month: m, people: map[m].names.size, names: [...map[m].names], total: Math.round(map[m].payout / 1.1), src: '대시보드 계산' });
   }
   function renderWithholding() {
     const el = document.getElementById('ops-withholding');
@@ -380,15 +435,15 @@
     const t = todayStr();
     el.innerHTML = `<div class="panel-card ops-card">
       <div class="panel-header"><div class="panel-title"><span>🧮</span><span>원천징수</span></div></div>
-      <p class="ops-muted">인플루언서 정산에서 "개인 (3.3%)"을 체크한 건을 <b>지급·입금일이 속한 달</b>로 모읍니다. 신고는 다음 달 10일까지 홈택스에서 직접 해 주세요.
+      <p class="ops-muted">매달 말일 밤 구글 드라이브 "원천징수_신고리스트.xlsx"의 해당 월 시트를 불러와 인원·지급액을 표시합니다. 아직 불러오기 전인 달은 인플루언서 정산의 "개인 (3.3%)" 체크 건을 <b>공구 진행 월</b>로 모아 계산합니다. 신고는 다음 달 10일까지 홈택스에서 직접 해 주세요.
       주민등록번호 같은 개인정보는 구글 드라이브 "원천징수_신고리스트.xlsx"에만 둡니다.</p>
       <div class="ops-table" role="table">
-        <div class="ops-tr ops-th" role="row"><span>지급 월</span><span>대상 인원</span><span>지급액 (정산금 ÷ 1.1)</span><span>신고 기한</span><span>신고 완료</span></div>
+        <div class="ops-tr ops-th" role="row"><span>공구 월</span><span>대상 인원</span><span>지급액</span><span>신고 기한</span><span>신고 완료</span></div>
         ${withholdingMonths().map((w) => {
           const due = shiftMonth(w.month, 1) + '-10';
           const done = !!(filed[w.month] && filed[w.month].filed);
           const bad = !done && w.people > 0 && due < t;
-          return `<div class="ops-tr${bad ? ' ops-tr--bad' : ''}" role="row"><span>${w.month}</span><span>${w.people}명</span><span>${won(w.total)}</span>
+          return `<div class="ops-tr${bad ? ' ops-tr--bad' : ''}" role="row"><span>${w.month}</span><span>${w.people}명${w.people ? `<span class="ops-stamp">${w.names.map(esc).join(', ')}</span>` : ''}</span><span>${won(w.total)}<span class="ops-stamp">${w.src}</span></span>
             <span>${md(due)}${done ? '' : ' · ' + dLabel(due)}</span>
             <label class="ops-check"><input type="checkbox" data-ops-change="filed" data-month="${w.month}"${done ? ' checked' : ''}> 완료${done && filed[w.month].filed_at ? ' (' + kstDay(filed[w.month].filed_at) + ')' : ''}</label></div>`;
         }).join('')}
@@ -437,6 +492,8 @@
     if (a === 'rev-skip') return act(() => patch('ops_settlements', id, { revenue_skipped: true }), '건너뛰었어요.');
     if (a === 'rev-del') { if (confirm('이 매출 입력을 삭제할까요? 되돌릴 수 없습니다.')) act(() => remove('ops_revenue', id), '삭제했어요.'); return; }
     if (a === 'set-filter') { S.setFilter = btn.dataset.k; return renderSettlements(); }
+    if (a === 'set-month') { S.setMonth = btn.dataset.m; return renderSettlements(); }
+    if (a === 'set-month-shift') { S.setMonth = shiftMonth(S.setMonth === 'all' ? monthOf() : S.setMonth, Number(btn.dataset.n)); return renderSettlements(); }
     if (a === 'src-cat') { S.srcCat = btn.dataset.k; return renderSourcing(); }
     if (a === 'src-stage') { S.srcStage = btn.dataset.k; return renderSourcing(); }
     if (a === 'src-new') { S.editSourcing = {}; return renderSourcing(); }
@@ -459,6 +516,7 @@
     if (!el) return;
     const kind = el.dataset.opsChange;
     if (kind === 'month' && el.value) { S.month = el.value; return renderSales(); }
+    if (kind === 'set-month' && el.value) { S.setMonth = el.value; return renderSettlements(); }
     if (kind === 'stage') return act(() => patch('ops_sourcing', el.dataset.id, { stage: el.value }), '진행 단계를 바꿨어요.');
     if (kind === 'filed') {
       return act(() => upsert('ops_withholding', 'month', { month: firstDay(el.dataset.month), filed: el.checked, filed_at: el.checked ? new Date().toISOString() : null }),

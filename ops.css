@@ -116,6 +116,13 @@
 .ops-tr { display: grid; grid-template-columns: 1fr 1fr 1.3fr 1.3fr 1.3fr; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--border-subtle); font-size: 13px; color: var(--text-primary); }
 .ops-th { font-size: 11.5px; font-weight: 700; color: var(--text-secondary); border-top: 0; }
 .ops-tr--bad { color: var(--accent-red-text); }
+.ops-table--4 .ops-tr { grid-template-columns: 1fr 1.4fr 1.4fr 0.8fr; }
+.ops-tr--click { cursor: pointer; }
+.ops-tr--click:hover { background: var(--bg-card-hover); }
+.ops-tr--on { font-weight: 700; background: var(--bg-card-subtle); }
+.ops-two { display: grid; grid-template-columns: 1fr 1.3fr; gap: 16px; align-items: start; }
+.ops-two .ops-card { margin-bottom: 16px; }
+@media (max-width: 1080px) { .ops-two { grid-template-columns: 1fr; gap: 0; } }
 
 @media (max-width: 1080px) {
   .ops-stats { grid-template-columns: repeat(2, 1fr); }
