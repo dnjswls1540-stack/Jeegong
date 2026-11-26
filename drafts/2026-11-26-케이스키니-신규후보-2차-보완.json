@@ -1,0 +1,1507 @@
+{
+ "generated_at": "2026-11-26T20:40:00+09:00",
+ "campaign": "케이스키니 5나노 PCL 바디앰플 — 신규 후보 2차 보완(적합도 하 제외·미실사 12명 링크 실사·3만 미만 보충)",
+ "stage": "구름이 1차 발굴·실사 → 클로드 A/B/X 검수 → 지원진 님 승인 후 시트·대시보드 반영",
+ "criteria": {
+  "followers_min": 15000,
+  "followers_standard_tier": "3만 이상(A/B) — 기존 기준",
+  "followers_sub30_tier": "1.5만~3만 — 지원진 님 11/26 확정으로 발굴 허용(B급)",
+  "recent_posts": 6,
+  "per_post_comments": "최근 6개 중 댓글 30+ 1개 이상(A) 또는 20~29 포함(B). 상단 고정 제외 실측(임베드)",
+  "reels_views": "3만 미만 구간은 릴스 조회수 엄수 — 최근 12개 중앙값이 팔로워의 20% 이상·5,000회 이상이면 통과(B), 50% 이상이면 A. 미달 시 제외",
+  "latest_days": 30,
+  "must_be_real_gonggu_history": true,
+  "fit_rules": "적합도 하(가습기·러그·장난감·도서·조미료 등 상품 카테고리 무관) 제외 — 지원진 님 11/26 결정",
+  "x_exclusions": [
+   "쿠팡파트너스 전용·번호검색형",
+   "자기 콘텐츠·브랜드 중심 대형 크리에이터",
+   "공구 품목이 제안 상품과 먼 계정",
+   "쇼핑몰 제휴 링크만 있는 계정"
+  ],
+  "rule_abc": [
+   "공구 거부 문구",
+   "자사 브랜드·자사몰 대표",
+   "약사·의사 등 전문직"
+  ]
+ },
+ "support": {
+  "excluded_fit_low_11": [
+   "jin.e.kitchen",
+   "evajunie",
+   "chae.a_mommy",
+   "jmarda1004",
+   "soomggul_",
+   "mylittle.mewhaus",
+   "byul.junimom",
+   "growing.kitchen",
+   "_roy.daily",
+   "minimom_life",
+   "sosine._"
+  ],
+  "excluded_reason": "지원진 님 11/26 결정 — 적합도 하 11명(가습기·러그·장난감·도서·조미료 계열) 제외"
+ },
+ "counts": {
+  "total": 32,
+  "existing_2nd": 17,
+  "this_round_12": 7,
+  "new_sub30": 8,
+  "grade_A": 6,
+  "grade_B": 26,
+  "fit_상": 16,
+  "fit_중": 16,
+  "fit_하": 0,
+  "holding_3": 3,
+  "followers_under_30k": 8
+ },
+ "verified_pass": [
+  {
+   "num": 1,
+   "handle": "__eun.mee",
+   "name": "설은미",
+   "followers": 39636,
+   "followers_text": "4.0만",
+   "comments": [
+    966,
+    384,
+    3847,
+    587,
+    357,
+    481
+   ],
+   "max_comments": 3847,
+   "latest": "2026-11-21",
+   "instagram_url": "https://www.instagram.com/__eun.mee/",
+   "profile_link": "https://link.inpock.co.kr/eunmee → https://eunmee.co.kr(은미스토어)",
+   "link_status": "실사 완료 · 운영사 ㈜아워픽(대표 윤하늘·유경태)의 멀티브랜드 공구 스토어. 자체 제조 브랜드 아님 → 규칙 B 해당 없음",
+   "gonggu_history": [
+    "은미 X 설당프리 비타미톡 다이어트보조제 4종 OPEN(11/22 20:00, 47,000원)",
+    "설당프리 리셋미 붓기 14일분 / 페미라이드 4종 / 모제림 엘릭서 / elre 시카크림 / 은미 X 퓨어틱 아이래쉬 세럼",
+    "09pangpang 등록: 비타미톡 다이어트보조제(2026-11-21 오픈)"
+   ],
+   "category": "뷰티 / 자기관리 / 다이어트",
+   "fit": "뷰티·생활 + 다이어트 식단(60kg→45kg 유지어터)",
+   "fit_level": "중",
+   "grade": "A",
+   "grade_reason": "최근 6개 중 6개 30+ (최대 3847) — 분포 안정",
+   "verify": "프로필·링크 실사 완료",
+   "caveat": "사칭 주의 문구가 있는 계정 — DM 발송 전 계정 확인 권장",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "2차 발굴·링크인바이오 실사 완료(2026-11-26 16:20~16:30)",
+   "reels_views": "미측정"
+  },
+  {
+   "num": 2,
+   "handle": "sooleesea",
+   "name": "수리씨 (이수경)",
+   "followers": 132644,
+   "followers_text": "13.3만",
+   "comments": [
+    4,
+    20,
+    26,
+    40,
+    64,
+    35
+   ],
+   "max_comments": 64,
+   "latest": "2026-11-25",
+   "instagram_url": "https://www.instagram.com/sooleesea/",
+   "profile_link": "https://link.inpock.co.kr/sooleesea",
+   "link_status": "실사 완료",
+   "gonggu_history": [
+    "압토솔 선크림 공구(댓글·DM 최저가)",
+    "철분제 3일 공구(30일분 19,900원대)",
+    "국내생산 핫팩 OPEN",
+    "하이라이트: 공구구매방법·학습트롤리·자동 코세척기 등"
+   ],
+   "category": "육아 / 리빙 / 자기관리",
+   "fit": "대치동 육아·교육·살림 + 본인 자기관리(선크림·철분·건강)",
+   "fit_level": "중",
+   "grade": "A",
+   "grade_reason": "최근 6개 중 3개 30+ (최대 64) — 분포 안정",
+   "verify": "프로필·링크 실사 완료",
+   "caveat": "교육·살림 소재 비중이 높아 바디앰플 단독 소구는 약할 수 있음",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "2차 발굴·링크인바이오 실사 완료(2026-11-26 16:20~16:30)",
+   "reels_views": "미측정"
+  },
+  {
+   "num": 3,
+   "handle": "liv.garin",
+   "name": "리브가린 (Garin)",
+   "followers": 75554,
+   "followers_text": "7.6만",
+   "comments": [
+    271,
+    1,
+    1,
+    118,
+    71,
+    60
+   ],
+   "max_comments": 271,
+   "latest": "2026-11-26",
+   "instagram_url": "https://www.instagram.com/liv.garin/",
+   "profile_link": "https://link.inpock.co.kr/liv.garin",
+   "link_status": "실사 완료",
+   "gonggu_history": [
+    "홈슈로스바 2차 공구 12/1 오픈(홈트 기구)",
+    "미니두두(육아필수템)",
+    "키즈워치폰"
+   ],
+   "category": "리빙 / 홈트 / 육아",
+   "fit": "살림·리빙 + 가족 홈트(슈로스바·운동기구)",
+   "fit_level": "상",
+   "grade": "A",
+   "grade_reason": "댓글 [271,1,1,118,71,60] — 4개 30+(1·1은 캐러셀 중복 추정)",
+   "verify": "프로필·링크 실사 완료",
+   "caveat": "",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "2차 발굴·링크인바이오 실사 완료(2026-11-26 16:20~16:30)",
+   "reels_views": "미측정"
+  },
+  {
+   "num": 4,
+   "handle": "kaone815",
+   "name": "kaOne (모두가원해)",
+   "followers": 218232,
+   "followers_text": "21.8만",
+   "comments": [
+    71,
+    6,
+    1,
+    90,
+    4,
+    4
+   ],
+   "max_comments": 90,
+   "latest": "2026-11-26",
+   "instagram_url": "https://www.instagram.com/kaone815/",
+   "profile_link": "https://link.inpock.co.kr/kaone815",
+   "link_status": "실사 완료",
+   "gonggu_history": [
+    "시초 바디크림·바디오일·립밤 공구(11/26 자정 마감)",
+    "데코아르 멜로우 LED 보풀제거기(자정 오픈)",
+    "이뮤어그 겨울부츠",
+    "bellelueur 더플코트"
+   ],
+   "category": "육아 / 바디케어 / 리빙",
+   "fit": "아셋맘 + 나이트 바디케어 루틴(바디크림·오일) 콘텐츠",
+   "fit_level": "상",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 2개만 30+ (최대 90, 나머지 1,4,4) — 분포 얇음",
+   "verify": "프로필·링크 실사 완료",
+   "caveat": "",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "2차 발굴·링크인바이오 실사 완료(2026-11-26 16:20~16:30)",
+   "reels_views": "미측정"
+  },
+  {
+   "num": 5,
+   "handle": "yellong_e",
+   "name": "이연정 / 옐롱",
+   "followers": 235084,
+   "followers_text": "23.5만",
+   "comments": [
+    1,
+    2,
+    1,
+    0,
+    46,
+    8
+   ],
+   "max_comments": 46,
+   "latest": "2026-11-26",
+   "instagram_url": "https://www.instagram.com/yellong_e/",
+   "profile_link": "https://link.inpock.co.kr/yellong_e",
+   "link_status": "실사 완료",
+   "gonggu_history": [
+    "라인젤리(다이어트 젤리) 공구",
+    "구강유산균 공구"
+   ],
+   "category": "다이어트 / 산후 / 몸매관리",
+   "fit": "모델 출신 애둘맘, -25kg 감량·몸매관리 콘텐츠",
+   "fit_level": "상",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 1개만 30+ (최대 46, 나머지 0,1,1) — 분포 얇음",
+   "verify": "프로필·링크 실사 완료",
+   "caveat": "",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "2차 발굴·링크인바이오 실사 완료(2026-11-26 16:20~16:30)",
+   "reels_views": "미측정"
+  },
+  {
+   "num": 6,
+   "handle": "haengzassi",
+   "name": "행자",
+   "followers": 168389,
+   "followers_text": "16.8만",
+   "comments": [
+    2,
+    3,
+    61,
+    4,
+    6,
+    3
+   ],
+   "max_comments": 61,
+   "latest": "2026-11-23",
+   "instagram_url": "https://www.instagram.com/haengzassi/",
+   "profile_link": "https://link.inpock.co.kr/haengzassi",
+   "link_status": "실사 완료",
+   "gonggu_history": [
+    "[바디셀트 X 행자] 압박밴드 OPEN(11/27 자정까지, 1등급 의료기기)",
+    "맥스컷",
+    "이노시톨",
+    "잘록",
+    "컬리케일"
+   ],
+   "category": "바디케어 / 다이어트",
+   "fit": "다리관리·부기관리·다이어트 제품 공구 전문",
+   "fit_level": "상",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 1개만 30+ (최대 61, 나머지 2,3,3) — 분포 얇음",
+   "verify": "프로필·링크 실사 완료",
+   "caveat": "",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "2차 발굴·링크인바이오 실사 완료(2026-11-26 16:20~16:30)",
+   "reels_views": "미측정"
+  },
+  {
+   "num": 7,
+   "handle": "o1o211",
+   "name": "산범",
+   "followers": 169505,
+   "followers_text": "17.0만",
+   "comments": [
+    36,
+    10,
+    21,
+    15,
+    24,
+    5
+   ],
+   "max_comments": 36,
+   "latest": "2026-11-22",
+   "instagram_url": "https://www.instagram.com/o1o211/",
+   "profile_link": "https://link.inpock.co.kr/sanbum",
+   "link_status": "실사 완료",
+   "gonggu_history": [
+    "비채수 붓기 4차 공구(11/25 21:00 ~ 11/28 23:59)",
+    "하이라이트: 정여사 또이어트"
+   ],
+   "category": "산후 / 바디케어",
+   "fit": "제왕절개 1개월차 산후 붓기·몸무게 복귀 콘텐츠",
+   "fit_level": "상",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 1개만 30+ (최대 36, 나머지 5,10,15) — 분포 얇음",
+   "verify": "프로필·링크 실사 완료",
+   "caveat": "",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "2차 발굴·링크인바이오 실사 완료(2026-11-26 16:20~16:30)",
+   "reels_views": "미측정"
+  },
+  {
+   "num": 8,
+   "handle": "sewon_janemom",
+   "name": "제인맘 (시드시스터즈)",
+   "followers": 125458,
+   "followers_text": "12.5만",
+   "comments": [
+    17,
+    0,
+    38,
+    25,
+    0,
+    35
+   ],
+   "max_comments": 38,
+   "latest": "2026-11-26",
+   "instagram_url": "https://www.instagram.com/sewon_janemom/",
+   "profile_link": "https://link.inpock.co.kr/sewon_siljang",
+   "link_status": "실사 완료 · 제품별 CS 채널 운영(공구 주최자)",
+   "gonggu_history": [
+    "쉑쉑한끼(단백질 쉐이크)",
+    "슬림티",
+    "슬림앤글림",
+    "청담보감",
+    "비우자피"
+   ],
+   "category": "다이어트 / 산후",
+   "fit": "89kg → -29kg 산후 다이어트",
+   "fit_level": "상",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 2개만 30+ (최대 38, 나머지 0,0,17) — 분포 얇음",
+   "verify": "프로필·링크 실사 완료",
+   "caveat": "링크에 네이버 쇼핑 제휴 링크(블프 아미·폴로·스투시) 병행 — 직접 공구도 함께 운영",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "2차 발굴·링크인바이오 실사 완료(2026-11-26 16:20~16:30)",
+   "reels_views": "미측정"
+  },
+  {
+   "num": 9,
+   "handle": "ssun__flow",
+   "name": "썬플 (이미선)",
+   "followers": 172637,
+   "followers_text": "17.3만",
+   "comments": [
+    2,
+    20,
+    5,
+    9,
+    16,
+    146
+   ],
+   "max_comments": 146,
+   "latest": "2026-11-26",
+   "instagram_url": "https://www.instagram.com/ssun__flow/",
+   "profile_link": "https://inpk.link/yeonhoo__mom",
+   "link_status": "실사 완료",
+   "gonggu_history": [
+    "잠옷 공구(4만원대→2만원대, 월요일 10시 오픈)",
+    "칼로하스 케큐민(마감 알림)",
+    "네이버 쇼핑라이브"
+   ],
+   "category": "자기관리 / 다이어트 / 뷰티",
+   "fit": "70kg → 자기관리 중인 두 딸맘, 뷰티·건강",
+   "fit_level": "상",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 1개만 30+ (최대 146, 나머지 2,5,9) — 분포 얇음",
+   "verify": "프로필·링크 실사 완료",
+   "caveat": "",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "2차 발굴·링크인바이오 실사 완료(2026-11-26 16:20~16:30)",
+   "reels_views": "미측정"
+  },
+  {
+   "num": 10,
+   "handle": "yunameimfn",
+   "name": "진유나 YUNA",
+   "followers": 158571,
+   "followers_text": "15.9만",
+   "comments": [
+    8,
+    147,
+    26,
+    16,
+    39,
+    15
+   ],
+   "max_comments": 147,
+   "latest": "2026-11-22",
+   "instagram_url": "https://www.instagram.com/yunameimfn/",
+   "profile_link": "https://link.inpock.co.kr/yunameimfn",
+   "link_status": "실사 완료",
+   "gonggu_history": [
+    "에르고바디 EMS 벨트 공구(11/22~11/25)",
+    "가꾸기 후기",
+    "맥스컷 Q&A"
+   ],
+   "category": "바디케어 / 다이어트 / 홈케어",
+   "fit": "홈케어·체중조절·운동(EMS·복대) 콘텐츠",
+   "fit_level": "상",
+   "grade": "A",
+   "grade_reason": "댓글 [8,147,26,16,39,15] — 2개 30+(147·39)·1개 20~29(26), 최근 4일 내 업로드",
+   "verify": "프로필·링크 실사 완료",
+   "caveat": "게시물에 \"핏유어코어 세트\" 동시 판매 — 자사 브랜드 동반 여부 발송 전 확인 필요",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "2차 발굴·링크인바이오 실사 완료(2026-11-26 16:20~16:30)",
+   "reels_views": "미측정"
+  },
+  {
+   "num": 11,
+   "handle": "silver__1026",
+   "name": "이준이서맘",
+   "followers": 53315,
+   "followers_text": "5.3만",
+   "comments": [
+    8,
+    4,
+    22,
+    4,
+    8,
+    17
+   ],
+   "max_comments": 22,
+   "latest": "2026-11-26",
+   "instagram_url": "https://www.instagram.com/silver__1026/",
+   "profile_link": "https://link.inpock.co.kr/silver__1026",
+   "link_status": "실사 완료",
+   "gonggu_history": [
+    "바디셀트 라인닥터 압박밴드 첫 공구(11/23~11/26, 최대 42% 할인)",
+    "도시농장 고구마 2종 공구(11/17~11/20)"
+   ],
+   "category": "육아 / 바디케어",
+   "fit": "육아·가족 릴스 + 다리 붓기·압박 관리",
+   "fit_level": "상",
+   "grade": "B",
+   "grade_reason": "30+ 없음, 최대 22(20~29 구간) — 완화 기준",
+   "verify": "프로필·링크 실사 완료",
+   "caveat": "",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "2차 발굴·링크인바이오 실사 완료(2026-11-26 16:20~16:30)",
+   "reels_views": "미측정"
+  },
+  {
+   "num": 12,
+   "handle": "dongdongmom_step",
+   "name": "동동맘네 성장일기",
+   "followers": 172451,
+   "followers_text": "17.2만",
+   "comments": [
+    347,
+    6,
+    577,
+    0,
+    596,
+    1415
+   ],
+   "max_comments": 1415,
+   "latest": "2026-11-26",
+   "instagram_url": "https://www.instagram.com/dongdongmom_step/",
+   "profile_link": "https://link.inpock.co.kr/dongdongshouse",
+   "link_status": "실사 완료",
+   "gonggu_history": [
+    "킹스미스 워킹패드 앵콜 공구(11/27)",
+    "리투삭스 공구",
+    "보홀 스쿠버다이빙 공구 예정"
+   ],
+   "category": "육아 / 홈트",
+   "fit": "육아·교육 + 홈트 운동기구(워킹패드) 공구",
+   "fit_level": "상",
+   "grade": "B",
+   "grade_reason": "댓글 [347,6,577,0,596,1415] — 3개는 30+지만 2개가 0·6으로 저조, 중앙값 왜곡",
+   "verify": "프로필·링크 실사 완료",
+   "caveat": "자녀가 중학생이라 산후 타깃은 아님 — 홈트·자기관리 축으로 접근",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "2차 발굴·링크인바이오 실사 완료(2026-11-26 16:20~16:30)",
+   "reels_views": "미측정"
+  },
+  {
+   "num": 13,
+   "handle": "brandme_halim",
+   "name": "구하림 | 나를 잊지 않는 육아",
+   "followers": 123583,
+   "followers_text": "12.4만",
+   "comments": [
+    0,
+    3,
+    52,
+    0,
+    1,
+    2
+   ],
+   "max_comments": 52,
+   "latest": "2026-11-26",
+   "instagram_url": "https://www.instagram.com/brandme_halim/",
+   "profile_link": "https://link.inpock.co.kr/hotongruru",
+   "link_status": "실사 완료",
+   "gonggu_history": [
+    "더좋은 오메가3(11/29 24시 마감, 20주년 구성)",
+    "퓨리톡스 다목적 세정티슈·찌든때 크림",
+    "대교 눈높이 한국사",
+    "더브레드블루 비건 슈톨렌(11/24~27)"
+   ],
+   "category": "육아 / 자기관리",
+   "fit": "책육아 1세대 셀러 + -15kg 감량 싱글맘 자기관리 서사",
+   "fit_level": "중",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 1개만 30+ (최대 52, 나머지 0,0,1) — 분포 얇음",
+   "verify": "프로필·링크 실사 완료",
+   "caveat": "",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "2차 발굴·링크인바이오 실사 완료(2026-11-26 16:20~16:30)",
+   "reels_views": "미측정"
+  },
+  {
+   "num": 14,
+   "handle": "k.sujan",
+   "name": "김수진 | 케이수잔",
+   "followers": 106793,
+   "followers_text": "10.7만",
+   "comments": [
+    6,
+    9,
+    3,
+    11,
+    1,
+    44
+   ],
+   "max_comments": 44,
+   "latest": "2026-11-25",
+   "instagram_url": "https://www.instagram.com/k.sujan/",
+   "profile_link": "https://link.inpock.co.kr/k.sujan",
+   "link_status": "실사 완료",
+   "gonggu_history": [
+    "바사삭먹태(단백질 간식) 공구오픈(프로필 상단 공지)",
+    "부황괄사 공구(자정 마감)",
+    "워킹패드",
+    "지압슬리퍼"
+   ],
+   "category": "다이어트 / 홈트 / 바디케어",
+   "fit": "40대 엄마의 쉬운 관리, 부기·다이어트·슬로우러닝",
+   "fit_level": "상",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 1개만 30+ (최대 44, 나머지 1,3,6) — 분포 얇음",
+   "verify": "프로필·링크 실사 완료",
+   "caveat": "",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "2차 발굴·링크인바이오 실사 완료(2026-11-26 16:20~16:30)",
+   "reels_views": "미측정"
+  },
+  {
+   "num": 15,
+   "handle": "fall0715",
+   "name": "박가을",
+   "followers": 157093,
+   "followers_text": "15.7만",
+   "comments": [
+    16,
+    5,
+    18,
+    5,
+    34,
+    10
+   ],
+   "max_comments": 34,
+   "latest": "2026-11-23",
+   "instagram_url": "https://www.instagram.com/fall0715/",
+   "profile_link": "https://link.inpock.co.kr/fall",
+   "link_status": "실사 완료",
+   "gonggu_history": [
+    "포들 포어톡스 효소 필마스크(11/23 18:00 ~ 11/28 10:00, 최대 58%)",
+    "아리얼",
+    "물미역 베르폼"
+   ],
+   "category": "뷰티 / 피부관리 / 홈케어",
+   "fit": "피부·홈케어(모공·피지) 중심",
+   "fit_level": "중",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 1개만 30+ (최대 34, 나머지 5,5,10) — 분포 얇음",
+   "verify": "프로필·링크 실사 완료",
+   "caveat": "",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "2차 발굴·링크인바이오 실사 완료(2026-11-26 16:20~16:30)",
+   "reels_views": "미측정"
+  },
+  {
+   "num": 16,
+   "handle": "mimi.hari_",
+   "name": "미미하리",
+   "followers": 56054,
+   "followers_text": "5.6만",
+   "comments": [
+    2,
+    34,
+    2,
+    3,
+    0,
+    21
+   ],
+   "max_comments": 34,
+   "latest": "2026-11-25",
+   "instagram_url": "https://www.instagram.com/mimi.hari_/",
+   "profile_link": "https://link.inpock.co.kr/mimi.hari_",
+   "link_status": "실사 완료",
+   "gonggu_history": [
+    "더설하 경락권 5차(11/29~12/2, 초대코드 미미하리)",
+    "라컬렉타 주얼리(12/7~12/9)"
+   ],
+   "category": "자기관리 / 뷰티",
+   "fit": "경락(얼굴·바디) 자기관리 + 쇼핑호스트",
+   "fit_level": "중",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 1개만 30+ (최대 34, 나머지 0,2,2) — 분포 얇음",
+   "verify": "프로필·링크 실사 완료",
+   "caveat": "",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "2차 발굴·링크인바이오 실사 완료(2026-11-26 16:20~16:30)",
+   "reels_views": "미측정"
+  },
+  {
+   "num": 17,
+   "handle": "withmyl_",
+   "name": "이재은 | 위드마이엘",
+   "followers": 38388,
+   "followers_text": "3.8만",
+   "comments": [
+    1,
+    114,
+    7,
+    1,
+    4,
+    2
+   ],
+   "max_comments": 114,
+   "latest": "2026-11-24",
+   "instagram_url": "https://www.instagram.com/withmyl_/",
+   "profile_link": "프로필 링크 미표기(인스타 프로필 실사)",
+   "link_status": "실사 완료 — 링크인바이오 없음, 하이라이트 \"수입공유\"",
+   "gonggu_history": [
+    "탄소매트 공구",
+    "오가닉·건강식품",
+    "임신 3째·가족 건강·성장 루틴 콘텐츠"
+   ],
+   "category": "임산부 / 건강 / 자기관리",
+   "fit": "임산부·산후 건강관리",
+   "fit_level": "중",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 1개만 30+ (최대 114, 나머지 1,1,2) — 분포 얇음",
+   "verify": "프로필·링크 실사 완료",
+   "caveat": "영양제 브랜드 디스트리뷰터·수입공유(판매 프로그램) 운영 — 자사 사업 성격 검수 필요",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "2차 발굴·링크인바이오 실사 완료(2026-11-26 16:20~16:30)",
+   "reels_views": "미측정"
+  },
+  {
+   "handle": "e__naa",
+   "name": "Ena 장이나",
+   "followers": 110403,
+   "followers_text": "11.0만",
+   "comments": [
+    46,
+    91,
+    18,
+    48,
+    53,
+    33
+   ],
+   "latest": "2026-11-26",
+   "instagram_url": "https://www.instagram.com/e__naa/",
+   "profile_link": "https://linktr.ee/e__naa",
+   "link_status": "프로필 링크 실사 완료. 바이오에 진행 중 공구 명시(최저가 비프로젝트 샴푸&트리트먼트 26일 마감 / 이나 X 글로니 가디건 리오더). 링크트리 페이지는 외부 스크립트로 본문 크롤 불가 → 공구 실적은 09pangpang 기록·하이라이트로 교차 확인",
+   "gonggu_history": [
+    "09pangpang: 마미케어 올레즙(11/24)",
+    "09pangpang: 비프로젝트 헤어 마켓(11/10)",
+    "하이라이트: 셀라피 / GLOWNY / 니아르 / 아수라 모헤어 자켓",
+    "바이오: 비프로젝트 샴푸·트리트먼트 26일 마감, 글로니 가디건 리오더"
+   ],
+   "category": "뷰티 / 패션 / 라이프",
+   "fit": "뷰티·헤어케어 공구 다수 + 라이프스타일",
+   "fit_level": "중",
+   "grade": "A",
+   "grade_reason": "최근 6개 중 3개 30+ (46·91·48·53·33) — 분포 안정",
+   "reels_views": "최근 12개 중앙값 약 22만 (팔로워 대비 200%) — 최상",
+   "verify": "프로필+링크 실사 완료 · 공구 이력 확인",
+   "caveat": "부계 @maxiandtheo는 반려묘 계정(3,018명)으로 확인 — 자사 브랜드 아님",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "이번 12명 링크 실사",
+   "num": 18
+  },
+  {
+   "handle": "by.jiae",
+   "name": "바이지애",
+   "followers": 57968,
+   "followers_text": "5.8만",
+   "comments": [
+    40,
+    0,
+    2,
+    26,
+    80,
+    356
+   ],
+   "latest": "2026-11-24",
+   "instagram_url": "https://www.instagram.com/by.jiae/",
+   "profile_link": "https://link.inpock.co.kr/by.jiae",
+   "link_status": "인포크링크 직접 열람. 아쿠아픽 역대 최저가 OPEN / 제제마켓 CS / 윤 안경 / 블로그페이 CS — 직접 결제창 운영, 쿠팡 링크 없음",
+   "gonggu_history": [
+    "아쿠아픽 역대 최저가 (오늘 10시 오픈)",
+    "09pangpang: 루틴티(11/16) / 영양제·임신준비 이너뷰티",
+    "하이라이트: 아쿠아픽·인앤아웃 9차"
+   ],
+   "category": "건강 / 이너뷰티 / 뷰티",
+   "fit": "이너뷰티·임신준비·건강기능식품 공구",
+   "fit_level": "중",
+   "grade": "A",
+   "grade_reason": "최근 6개 중 3개 30+ (40·80·356) — 분포 안정",
+   "reels_views": "최근 12개 중앙값 약 1.7만 (팔로워 대비 29%)",
+   "verify": "프로필+링크 실사 완료 · 공구 이력 확인",
+   "caveat": "시그마그룹(@sigmagroup.kr) 소속 — MCN 소속이나 자사 브랜드 아님",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "이번 12명 링크 실사",
+   "num": 19
+  },
+  {
+   "handle": "heeddo__",
+   "name": "정히또",
+   "followers": 176005,
+   "followers_text": "17.6만",
+   "comments": [
+    365,
+    0,
+    1,
+    0,
+    0,
+    0
+   ],
+   "latest": "2026-11-26",
+   "instagram_url": "https://www.instagram.com/heeddo__/",
+   "profile_link": "https://link.inpock.co.kr/heeddofit",
+   "link_status": "인포크링크 직접 열람. 히또마켓 고객센터 / 오브오브 퍼자켓 앵콜 기획전(11/27 10am) / 락티브 이노시톨·시크릿케어 블프(11/30) — 공구 스토어 운영, 쿠팡 링크 없음",
+   "gonggu_history": [
+    "오브오브 퍼자켓 앵콜 기획전(11/27)",
+    "락티브 이노시톨 & 시크릿케어 블랙프라이데이(11/30)",
+    "타밈 리뷰 이벤트",
+    "바이오: 11자 복근 루틴·-10kg 다이어트 콘텐츠"
+   ],
+   "category": "바디 / 홈트 / 다이어트",
+   "fit": "복근·-10kg 감량 콘텐츠 + 핏니스 (바디앰플 최상 적합)",
+   "fit_level": "상",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 1개만 30+(365), 나머지 0·1 — 댓글 분포 얇음",
+   "reels_views": "최근 12개 중앙값 약 2.6만 (팔로워 대비 15%)",
+   "verify": "프로필+링크 실사 완료 · 공구 이력 확인",
+   "caveat": "댓글 중앙값 0 — 떡상 게시물 의존. 조회수는 팔로워 대비 낮은 편이라 발송 순위는 낮게",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "이번 12명 링크 실사",
+   "num": 20
+  },
+  {
+   "handle": "olonbin",
+   "name": "이유빈",
+   "followers": 41336,
+   "followers_text": "4.1만",
+   "comments": [
+    25,
+    26,
+    1,
+    4,
+    5,
+    25
+   ],
+   "latest": "2026-11-19",
+   "instagram_url": "https://www.instagram.com/olonbin/",
+   "profile_link": "https://inpk.link/ubin",
+   "link_status": "인포크링크 직접 열람. IROUN.MARKET(이로운 마켓) — 컨트롤V 아르기닌 블프 / 엑소메라 클렌징듀오 / 11월 공동구매 일정. 직접 공구 운영",
+   "gonggu_history": [
+    "09pangpang: 아르기닌 공동구매(11/26)",
+    "컨트롤V 아르지닌 블랙프라이데이",
+    "약산성 엑소메라 클렌징듀오 11월 공구"
+   ],
+   "category": "건강 / 다이어트 / 육아일상",
+   "fit": "아르기닌·다이어트 보조 공구 + 애둘맘 일상",
+   "fit_level": "중",
+   "grade": "B",
+   "grade_reason": "30+ 없음, 25·26 두 개로 20~29 구간 — 완화 기준",
+   "reels_views": "최근 12개 중앙값 약 5.3만 (팔로워 대비 129%) — 양호",
+   "verify": "프로필+링크 실사 완료 · 공구 이력 확인",
+   "caveat": "",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "이번 12명 링크 실사",
+   "num": 21
+  },
+  {
+   "handle": "lee.sr____",
+   "name": "이소라",
+   "followers": 68886,
+   "followers_text": "6.9만",
+   "comments": [
+    1,
+    1,
+    1,
+    17,
+    10,
+    138
+   ],
+   "latest": "2026-11-26",
+   "instagram_url": "https://www.instagram.com/lee.sr____/",
+   "profile_link": "https://www.nuebetter.com/surl/P/1161",
+   "link_status": "뉴베러(공구몰) 상품페이지 직접 열람 — [소라 X 마이 클렌즈 팝] 55,900원 구성 선택·장바구니 있는 실제 공구 판매창. 프로필에 쏠마켓 일정(클렌즈팝 11/29까지 / 레시피 화장품 12/02 / 애사비팝 13차 12/9)",
+   "gonggu_history": [
+    "소라 X 마이 클렌즈팝(11/29까지)",
+    "레시피 화장품(12/2)",
+    "애사비팝 13차(12/9)",
+    "09pangpang: 뉴베러 마이 클렌즈팝(11/22·11/24)"
+   ],
+   "category": "다이어트 / 건강 / 클렌즈",
+   "fit": "클렌즈·애사비 등 다이어트 제품 공구",
+   "fit_level": "중",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 1개만 30+(138), 나머지 1·10·17 — 분포 얇음",
+   "reels_views": "최근 12개 중앙값 약 3.4만 (팔로워 대비 49%)",
+   "verify": "프로필+링크 실사 완료 · 공구 이력 확인",
+   "caveat": "",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "이번 12명 링크 실사",
+   "num": 22
+  },
+  {
+   "handle": "bd_.mom",
+   "name": "봄동맘 / 육아정보",
+   "followers": 40877,
+   "followers_text": "4.1만",
+   "comments": [
+    6,
+    30,
+    5,
+    51,
+    150,
+    77
+   ],
+   "latest": "2026-11-25",
+   "instagram_url": "https://www.instagram.com/bd_.mom/",
+   "profile_link": "https://link.inpock.co.kr/bdmom",
+   "link_status": "인포크링크 직접 열람. 쁘띠엘린 바이오메라 철분 공구 + 상시판매 제품 다수. 단 링크 상단에 쿠팡파트너스 고지 8회 반복(쿠팡 병행)",
+   "gonggu_history": [
+    "쁘띠엘린 바이오메라 리포퍼 철분 공동구매(11/24)",
+    "바이오메라 유산균",
+    "비타민D"
+   ],
+   "category": "육아 / 영양 / 건강",
+   "fit": "아이 영양·철분·유산균 공구 (아기옷 디자이너)",
+   "fit_level": "중",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 3개 30+ (30·51·150·77) — 기준 충족 / 다만 조회수 저조",
+   "reels_views": "최근 14개 중앙값 약 4.2천 (팔로워 대비 10%) — 저조",
+   "verify": "프로필+링크 실사 완료 · 공구 이력 확인",
+   "caveat": "쿠팡파트너스 병행 비중 높음 · 릴스 조회수 낮음 → 후순위",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "이번 12명 링크 실사",
+   "num": 23
+  },
+  {
+   "handle": "hongmerry__",
+   "name": "EVERYDAY MERRYMENT_",
+   "followers": 104168,
+   "followers_text": "10.4만",
+   "comments": [
+    4,
+    6,
+    15,
+    27,
+    25,
+    1
+   ],
+   "latest": "2026-11-26",
+   "instagram_url": "https://www.instagram.com/hongmerry__/",
+   "profile_link": "https://link.inpock.co.kr/merryment_",
+   "link_status": "인포크링크 직접 열람. 동시 진행 공구 8건(심화반 에스팀에상스·멜티드 11/23~29 / 오베 소창수건 / 페이크퍼 코트 / 알레피아 귀족때비누·풋네스 D-1 / 레디바이옴 토닝샷 D-1 / 간장 디톡스) — 실공구 주최 확인",
+   "gonggu_history": [
+    "페이크퍼 리오더 공동구매(11/23)",
+    "프리미엄 7년산 궁오일(11/17)",
+    "레디바이옴 토닝샷·리부트샷",
+    "알레피아 귀족때비누 & 풋네스",
+    "쉐이크보드(홈트)"
+   ],
+   "category": "바디 / 다이어트 / 홈케어",
+   "fit": "40대 갱년기 -7kg 유지·하체비만 탈출 + 순환·부기 관리 (적합도 상)",
+   "fit_level": "상",
+   "grade": "B",
+   "grade_reason": "30+ 없음, 최대 27(20~29 구간) — 완화 기준",
+   "reels_views": "최근 12개 중앙값 약 8.1천 (팔로워 대비 8%) — 저조",
+   "verify": "프로필+링크 실사 완료 · 공구 이력 확인",
+   "caveat": "공구 활동은 활발하나 릴스 조회수가 팔로워 대비 크게 낮음 — 발송은 하되 성과 기대치는 낮게",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "이번 12명 링크 실사",
+   "num": 24
+  },
+  {
+   "handle": "chasha.atelier",
+   "name": "챠샤",
+   "followers": 22710,
+   "followers_text": "2.2만",
+   "comments": [
+    5,
+    50,
+    8,
+    2,
+    5,
+    35
+   ],
+   "latest": "2026-11-25",
+   "instagram_url": "https://www.instagram.com/chasha.atelier/",
+   "profile_link": "https://link.inpock.co.kr/chasha",
+   "link_status": "인포크링크 직접 열람. \"놀랍도록 피부 리셋 가능 리셋팩\"(초고기능성 마스크팩) 공구 진행 중 + 연탄구이 제육·더덕 훈제 등 식품 공구. 쿠팡 링크 없음",
+   "gonggu_history": [
+    "초고기능성 마스크팩(리셋팩) 공구 진행 중",
+    "insta-gong 기록: 최근 30일 공구 9건(health-beauty)"
+   ],
+   "category": "건강 / 뷰티 / 피부",
+   "fit": "피부 과학 콘텐츠 + 마스크팩·스킨케어 공구 (적합도 상)",
+   "fit_level": "상",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 2개 30+ (50·35) — 기준 충족",
+   "reels_views": "최근 12개 중앙값 약 6.9천 (팔로워 대비 31%) — 고정 게시물 949만·932만·848만",
+   "verify": "프로필+링크 실사 완료 · 공구 이력 확인",
+   "caveat": "",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "3만 미만 보충 발굴",
+   "num": 25
+  },
+  {
+   "handle": "jmini_ljm",
+   "name": "제이미니 (이정민)",
+   "followers": 23088,
+   "followers_text": "2.3만",
+   "comments": [
+    0,
+    0,
+    58,
+    1,
+    6,
+    6
+   ],
+   "latest": "2026-11-26",
+   "instagram_url": "https://www.instagram.com/jmini_ljm/",
+   "profile_link": "https://link.inpock.co.kr/jmini",
+   "link_status": "인포크링크 직접 열람. ZVZO C/S(11/23~26) / 리셋세럼(판테놀세럼) 11/26 13시~11/29 / 피지흡착마스크팩 판매창 — 직접 공구 운영",
+   "gonggu_history": [
+    "09pangpang: 피지흡착마스크 공동구매(11/26)",
+    "리셋세럼(톤+보습+장벽) 11/26 오픈",
+    "ZVZO 기획전 11/23~26"
+   ],
+   "category": "피부 / 홈케어 / 뷰티",
+   "fit": "홈케어 관리 습관 + 뷰티·라이프템 (84년생, 직접 써보고 추천)",
+   "fit_level": "상",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 1개만 30+(58), 나머지 0·1·6 — 분포 얇음",
+   "reels_views": "최근 12개 중앙값 약 5.2천 (팔로워 대비 23%)",
+   "verify": "프로필+링크 실사 완료 · 공구 이력 확인",
+   "caveat": "",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "3만 미만 보충 발굴",
+   "num": 26
+  },
+  {
+   "handle": "miso0518",
+   "name": "미소",
+   "followers": 24254,
+   "followers_text": "2.4만",
+   "comments": [
+    19,
+    19,
+    31,
+    41,
+    43,
+    36
+   ],
+   "latest": "2026-11-25",
+   "instagram_url": "https://www.instagram.com/miso0518/",
+   "profile_link": "https://link.inpock.co.kr/miso0518",
+   "link_status": "인포크링크 직접 열람. \"미소 기획전\" 브랜드별 공구 이력 다수(모우트·르로망·메이버유·오브유이·바시카 등 20여 건) + 기획전 CS 채널 운영",
+   "gonggu_history": [
+    "미소 기획전(모우트 아우터·르로망·MARTY 체인백·오브유이 데님 등 20여 건)",
+    "미네르 혈당컷 다이어트 젤리"
+   ],
+   "category": "자기관리 / 뷰티 / 코디",
+   "fit": "피부과 원장 남편도 인정한 \"안 늙는 루틴\" + 자기관리·코디 (적합도 상)",
+   "fit_level": "상",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 4개 30+ (31·41·43·36) — 분포 안정",
+   "reels_views": "최근 12개 중앙값 약 1.85만 (팔로워 대비 77%) — 양호",
+   "verify": "프로필+링크 실사 완료 · 공구 이력 확인",
+   "caveat": "공구 품목이 의류 기획전 비중 높음",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "3만 미만 보충 발굴",
+   "num": 27
+  },
+  {
+   "handle": "im.cyeon",
+   "name": "셔니",
+   "followers": 27689,
+   "followers_text": "2.8만",
+   "comments": [
+    4,
+    4,
+    6,
+    69,
+    2,
+    15
+   ],
+   "latest": "2026-11-26",
+   "instagram_url": "https://www.instagram.com/im.cyeon/",
+   "profile_link": "https://link.inpock.co.kr/imcyeon",
+   "link_status": "인포크링크 직접 열람. 라무르(우리 아이 피부 고민 해결템 모음전 — 태열·습진) 공구 진행 중",
+   "gonggu_history": [
+    "라무르 모음전 공구(11월)",
+    "insta-gong 기록: 최근 30일 공구 2건"
+   ],
+   "category": "육아 / 아기피부 / 육아템",
+   "fit": "아이 피부·보습 공구 + 육아템 (바디·스킨케어 접점)",
+   "fit_level": "중",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 1개만 30+(69), 나머지 2·4·6 — 분포 얇음",
+   "reels_views": "최근 13개 중앙값 약 3.3만 (팔로워 대비 119%) — 양호",
+   "verify": "프로필+링크 실사 완료 · 공구 이력 확인",
+   "caveat": "",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "3만 미만 보충 발굴",
+   "num": 28
+  },
+  {
+   "handle": "ddoglemom",
+   "name": "또글맘",
+   "followers": 25929,
+   "followers_text": "2.6만",
+   "comments": [
+    4,
+    33,
+    15,
+    5,
+    67,
+    5
+   ],
+   "latest": "2026-11-26",
+   "instagram_url": "https://www.instagram.com/ddoglemom/",
+   "profile_link": "https://inpk.link/ddoglemom",
+   "link_status": "인포크링크 직접 열람. 저당과자 2종 공구(11/25~11/30) / 현미뻥튀기 건강간식 D-5 / 브레인탭 앵콜 2차 — 직접 공구 운영(쿠팡 병행)",
+   "gonggu_history": [
+    "09pangpang: 현미 간식·현미볼 공동구매(11/25)",
+    "저당과자 2종 공구(당연구소) 11/25~30",
+    "현미뻥튀기 12/1~6",
+    "브레인탭 앵콜"
+   ],
+   "category": "육아 / 건강간식 / 살림",
+   "fit": "저당·건강간식 공구 + 육아꿀팁 (건강 니즈 접점)",
+   "fit_level": "중",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 2개 30+ (33·67) — 기준 충족",
+   "reels_views": "릴스 탭 조회수 로딩 실패로 미측정",
+   "verify": "프로필+링크 실사 완료 · 공구 이력 확인",
+   "caveat": "조회수 미측정 — 발송 전 재확인 권장",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "3만 미만 보충 발굴",
+   "num": 29
+  },
+  {
+   "handle": "the__siena",
+   "name": "시에나",
+   "followers": 27400,
+   "followers_text": "2.7만",
+   "comments": [
+    0,
+    5,
+    257,
+    91,
+    7,
+    484
+   ],
+   "latest": "2026-11-26",
+   "instagram_url": "https://www.instagram.com/the__siena/",
+   "profile_link": "https://link.inpock.co.kr/siena",
+   "link_status": "인포크링크 직접 열람. siena X 올키 / siena X UGG / 기모슬랙스·코듀로이팬츠 / 코이무이 숄더백 — 공구 CS 채널 운영",
+   "gonggu_history": [
+    "siena X 올키 공구",
+    "siena X UGG 공구",
+    "기모슬랙스·코듀로이 팬츠 공구"
+   ],
+   "category": "라이프 / 패션 / 데일리룩",
+   "fit": "데일리룩·여행 콘텐츠 + 의류 공구",
+   "fit_level": "중",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 3개 30+ (257·91·484) — 분포 안정",
+   "reels_views": "최근 12개 중앙값 약 1.3만 (팔로워 대비 48%)",
+   "verify": "프로필+링크 실사 완료 · 공구 이력 확인",
+   "caveat": "",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "3만 미만 보충 발굴",
+   "num": 30
+  },
+  {
+   "handle": "_juju.mom_",
+   "name": "쥬쥬맘",
+   "followers": 20408,
+   "followers_text": "2.0만",
+   "comments": [
+    33,
+    148,
+    2,
+    4,
+    7,
+    41
+   ],
+   "latest": "2026-11-25",
+   "instagram_url": "https://www.instagram.com/_juju.mom_/",
+   "profile_link": "https://link.inpock.co.kr/_juju.mom_",
+   "link_status": "인포크링크 직접 열람. 쥬쥬맘 X 몽쉘베베 / 온하루 실내복 / 코트앤크래들 / 브라우니 / 이사청소 — 공구 모음 페이지 운영",
+   "gonggu_history": [
+    "쥬쥬맘 X 몽쉘베베 공구",
+    "온하루 데일리 실내복",
+    "코트앤크래들 테니스룩",
+    "브라우니·D.THRONE"
+   ],
+   "category": "육아 / 리빙 / 육아템",
+   "fit": "11개월 연년생맘 육아템 공구 (육아맘 확장 영역)",
+   "fit_level": "중",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 3개 30+ (33·148·41) — 분포 안정",
+   "reels_views": "최근 9개 중앙값 약 1.8만 (팔로워 대비 90%) — 양호",
+   "verify": "프로필+링크 실사 완료 · 공구 이력 확인",
+   "caveat": "",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "3만 미만 보충 발굴",
+   "num": 31
+  },
+  {
+   "handle": "somy_jee",
+   "name": "핑크빛 하얀홈",
+   "followers": 26246,
+   "followers_text": "2.6만",
+   "comments": [
+    24,
+    436,
+    86,
+    90,
+    182,
+    93
+   ],
+   "latest": "2026-11-26",
+   "instagram_url": "https://www.instagram.com/somy_jee/",
+   "profile_link": "https://link.inpock.co.kr/somy_jee",
+   "link_status": "인포크링크 직접 열람. 하얀맘 파티션(직접 제작·판매) + 릴스 속 제품 모음. 쿠팡파트너스·오늘의집 큐레이터 병행",
+   "gonggu_history": [
+    "09pangpang: 일레드 온풍기 공동구매(11/25)",
+    "하얀맘 파티션 세트 판매"
+   ],
+   "category": "육아 / 리빙 / 집꾸미기",
+   "fit": "육아맘 리빙 + 직접 만든 파티션 (리빙 확장 영역)",
+   "fit_level": "중",
+   "grade": "B",
+   "grade_reason": "최근 6개 중 5개 30+ (436·86·90·182·93) — 분포 안정",
+   "reels_views": "최근 12개 중앙값 약 1.95만 (팔로워 대비 75%) — 양호",
+   "verify": "프로필+링크 실사 완료 · 공구 이력 확인",
+   "caveat": "쿠팡파트너스·오늘의집 큐레이터 병행 비중 있음",
+   "dedupe": {
+    "master_sheet": false,
+    "dashboard_campaigns": false,
+    "excluded_queue": false
+   },
+   "source": "3만 미만 보충 발굴",
+   "num": 32
+  }
+ ],
+ "boundary_candidates": [
+  {
+   "handle": "mini_home_____",
+   "name": "미니홈",
+   "followers": 15693,
+   "comments": [
+    57,
+    70,
+    68,
+    52,
+    327,
+    60
+   ],
+   "latest": "2026-11-26",
+   "link": "https://link.inpock.co.kr/mini_home____",
+   "link_status": "테이블히터 공구 OPEN 11/24~27(오늘의집 단독) + 27년형 오브제 테이블히터 D-2. 공구·쿠팡·오늘의집 병행",
+   "reels_views": "최근 12개 중앙값 약 2.6만 (팔로워 대비 173%)",
+   "reason": "공구·댓글·조회수 모두 통과하나 주력이 살림가전(테이블히터)이라 적합도 하 — 지원진 님이 제외한 리빙 계열과 동일선상"
+  },
+  {
+   "handle": "sodam_home_",
+   "name": "소담살림",
+   "followers": 29946,
+   "comments": [
+    2,
+    84,
+    6,
+    1,
+    155,
+    2
+   ],
+   "latest": "2026-11-25",
+   "link": "https://link.inpock.co.kr/sodam_home_",
+   "link_status": "[에지리 X 소담] 블랙아이언 베이비웍 2차 공구(27일까지) + 쿠팡·오아시스마켓 병행",
+   "reels_views": "미측정(릴스 탭 로딩 실패)",
+   "reason": "공구 확인·댓글 1개 30+ 이나 주력이 이유식·주방(적합도 하)"
+  },
+  {
+   "handle": "dandan_house_",
+   "name": "단단이네",
+   "followers": 23048,
+   "comments": [
+    1,
+    5,
+    34,
+    3,
+    2,
+    4
+   ],
+   "latest": "2026-11-25",
+   "link": "https://link.inpock.co.kr/with_dandan_",
+   "link_status": "슈로스도어(Lumino Design)·하루박스 사다리그네 CS + 거실서재화 가구. 쿠팡·오늘의집·브랜드커넥트 병행",
+   "reels_views": "최근 12개 중앙값 약 1.1만 (팔로워 대비 48%)",
+   "reason": "공구·조회수는 통과, 주력이 인테리어 가구(적합도 하)"
+  }
+ ],
+ "rejected_this_round": [
+  {
+   "handle": "mama_yooni",
+   "followers": "5.6만",
+   "reason": "자사 브랜드 — 프로필에 \"제가 직접 개발한 제품 / 자사몰 톤마(Tonma) 공식몰\" 명시 → 규칙 B"
+  },
+  {
+   "handle": "labijou_rin",
+   "followers": "3.5만",
+   "reason": "라비쥬 에스테틱 원장 + 자사몰 labijou_ceo(자사 제품·창업상담) → 규칙 B·C"
+  },
+  {
+   "handle": "____arita____",
+   "followers": "12만",
+   "reason": "자사 브랜드 PRETTA(art&design) 운영 + 프로필 링크 없음 → 공구 채널 미확인"
+  },
+  {
+   "handle": "yekooooong",
+   "followers": "34.6만",
+   "reason": "링크가 코트·무스탕·어그 할인링크·유튜브 위주, 릴스 중앙값 1.2만(팔로워 3%) → X급 ④"
+  },
+  {
+   "handle": "__solping",
+   "followers": "6.5만",
+   "reason": "직접 공구 1건(프로우 과샤 클렌저)뿐 + 댓글 중앙값 4 → 공구 실적·참여도 약함(보류)"
+  },
+  {
+   "handle": "jinsim_hyewon",
+   "followers": "2.1만",
+   "reason": "\"진심혜원\" 자사 제품(혈당케어템·단백질쉐이크) 판매 + 유료 챌린지 → 규칙 B"
+  },
+  {
+   "handle": "_jaehamom",
+   "followers": "2.1만",
+   "reason": "FitLine 판매 사업가, 릴스 중앙값 약 600회(팔로워 3%) → 제외"
+  },
+  {
+   "handle": "danmi.in",
+   "followers": "2.4만",
+   "reason": "자사 스토어(단미인) 운영 — 공구 병행이나 자사몰 대표 성격"
+  },
+  {
+   "handle": "yangbo_editor",
+   "followers": "2.1만",
+   "reason": "링크가 쿠팡·네이버쇼핑커넥트·올리브영 큐레이터 위주 → X급 ①"
+  },
+  {
+   "handle": "sing_singhye",
+   "followers": "2.9만",
+   "reason": "링크가 핫딜·착장정보·쿠팡 위주, 조회수 중앙값 22% → X급 ①·조회수 미달"
+  },
+  {
+   "handle": "diet_ddoooda",
+   "followers": "1.8만",
+   "reason": "공구(라포젤·가꾸기 쉐이크)·조회수(172%)는 좋으나 최근 6개 댓글 최대 6개 → 댓글 기준 미달"
+  },
+  {
+   "handle": "nae_zip_clover",
+   "followers": "2.1만",
+   "reason": "링크에 쿠팡 아이템 1~38번 번호검색형 나열 → 규칙 D(쿠팡 번호 검색형)"
+  },
+  {
+   "handle": "peanutbutter_home",
+   "followers": "2.2만",
+   "reason": "댓글 5개 30+ 이나 릴스 중앙값 3.1천(팔로워 14%) → 조회수 미달"
+  },
+  {
+   "handle": "_sun__shine1207",
+   "followers": "1.6만",
+   "reason": "조회수 125%·댓글 5개 30+ 이나 링크에 진행 중 공구 없이 협찬·앰버서더만 → 공구 실적 미확인"
+  },
+  {
+   "handle": "2baemom",
+   "followers": "2.7만",
+   "reason": "링크가 쿠팡스토어·어그 할인링크·네이버클립 위주 → X급 ④"
+  },
+  {
+   "handle": "e_seeek",
+   "followers": "2.0만",
+   "reason": "wellness·beauty·self-care 적합 최상이나 프로필 링크 없음 → 공구 채널 미확인"
+  },
+  {
+   "handle": "leejin0559",
+   "followers": "2.0만",
+   "reason": "집밥·아동복 상시판매 사이트 + 식당 공구 → 적합도 하"
+  },
+  {
+   "handle": "3minimom_",
+   "followers": "2.0만",
+   "reason": "유아식 전문, 릴스 중앙값 약 4천(팔로워 20%) → 적합도 하·조회수 경계"
+  },
+  {
+   "handle": "kikihoho89",
+   "followers": "2.1만",
+   "reason": "링크가 쿠팡·오늘의집 큐레이터 위주 → X급 ①"
+  },
+  {
+   "handle": "luv_ssuji",
+   "followers": "26.8만",
+   "reason": "1차 탈락 유지 — 피드 전량 광고, 공구 주최 0건"
+  }
+ ],
+ "pending_user": [
+  {
+   "item": "pila_nyong X급 예외",
+   "status": "X급 유지 · 지원진 님 답변 대기",
+   "note": "흥둥이홈트 윤채형 81.6만. 29CM 흥둥이 공구마켓으로 공구 이력 실재, 산후 홈트 적합도 최상이나 유튜브 143만·특강 사업 중심 → X급 ②"
+  },
+  {
+   "item": "yunameimfn / withmyl_ / o1o211 보류",
+   "status": "보류 유지 · 지원진 님 답변 대기",
+   "note": "yunameimfn 자사 브랜드(핏유어코어) 동반 여부 / withmyl_ 영양제 판매 사업 성격 / o1o211 출산 직후 제외 기준"
+  },
+  {
+   "item": "공구 이력 인정 기간",
+   "status": "현행(최근 30일) 유지 · 답변 대기"
+  }
+ ],
+ "dedupe": {
+  "master_sheet": {
+   "rows": 2325,
+   "checked_at": "2026-11-26"
+  },
+  "dashboard_campaigns": {
+   "count": 528
+  },
+  "excluded_queue": {
+   "count": 19
+  },
+  "total_unique": 2446,
+  "result": "이번 32명 전원 미등재(중복 0)"
+ },
+ "sources": [
+  "09pangpang 계정 디렉터리 1,905명(팔로워 포함) 중 1.5만~3만 미등재 161명 임베드 실측",
+  "insta-gong 433명(3만 미만·health-beauty 12명 추가 확인)",
+  "snapup 72명 · pangpang 최근 1개월 공구 크롤 632계정",
+  "비로그인 공개 임베드(scripts/ig_verify_embed.py) — 댓글·업로드일 실측",
+  "인스타 로그인 세션으로 프로필·릴스 탭 직접 열람(조회수·바이오·링크 확인)",
+  "인포크링크·뉴베러 등 링크인바이오 페이지 직접 열람(공구 상품·오픈일·CS 채널)"
+ ],
+ "notes": [
+  "3만 미만 161명을 임베드 실측해 댓글·최근성·적합도로 44명을 남기고, 그중 프로필·링크까지 연 15명에서 8명이 통과했다. 나머지는 링크에 공구 없이 쿠팡·제휴만이거나, 릴스 조회수가 팔로워의 10~15%였거나, 적합도 하(육아·리빙 일반)였다.",
+  "따라서 40명을 채우려면 적합도 하 리빙 계열 또는 조회수 미달 계정을 넣어야 한다. 숫자 채우기 금지 지침에 따라 넣지 않았고, 대신 경계 후보 3명을 별도 표기했다.",
+  "임베드는 상단 고정 게시물을 구분하지 못한다. 고정 게시물이 상위에 노출되면 실제 일반 게시물 댓글은 더 낮을 수 있다(보수적 해석).",
+  "릴스 조회수는 로그인 세션의 릴스 탭 표시값(반올림: 1.2만·8,988 등) 기준이며, 고정 게시물은 제외하고 중앙값을 계산했다.",
+  "댓글 실측 시각: 2026-11-26 18:30~20:20 KST / 프로필·링크 실사: 같은 날 19:00~20:30 KST."
+ ],
+ "next_steps": [
+  "경계 후보 3명(mini_home_____·sodam_home_·dandan_house_) 포함 여부 결정 → 포함 시 35명",
+  "적합도 하 11명 중 일부(예: chae.a_mommy·evajunie) 복원 여부 결정",
+  "yunameimfn·withmyl_·o1o211 보류 3명 및 pila_nyong 예외 판단",
+  "통과분 확정 시 마스터 시트·대시보드 반영은 지원진 님 승인 후 진행"
+ ]
+}
