@@ -330,15 +330,17 @@
     const el = document.getElementById('ops-sourcing');
     if (!el) return;
     if (!ready()) { el.innerHTML = loginCard(); return; }
+    // 위(카테고리)·아래(단계) 필터가 서로의 숫자에 반영되도록 교차 집계한다
     const byCat = S.srcCat === '전체' ? S.sourcing : S.sourcing.filter((r) => r.category === S.srcCat);
+    const byStage = S.srcStage === '전체' ? S.sourcing : S.sourcing.filter((r) => r.stage === S.srcStage);
     const list = (S.srcStage === '전체' ? byCat : byCat.filter((r) => r.stage === S.srcStage)).slice()
       .sort((a, b) => (a.follow_up_date || '9999').localeCompare(b.follow_up_date || '9999'));
     const chip = (k, cur, act, label, n) => `<button class="btn-gonggu-filter${cur === k ? ' active' : ''}" data-ops="${act}" data-k="${k}">${label}${n == null ? '' : ' ' + n}</button>`;
     el.innerHTML = `<div class="panel-card ops-card">
       <div class="panel-header"><div class="panel-title"><span>🔎</span><span>상품 소싱</span></div>
         <button class="ops-btn ops-btn--primary" data-ops="src-new">+ 상품 추가</button></div>
-      <div class="gonggu-filter-bar ops-wrap">${chip('전체', S.srcCat, 'src-cat', '전체', S.sourcing.length)}${CATS.map((c) => chip(c, S.srcCat, 'src-cat', c, S.sourcing.filter((r) => r.category === c).length)).join('')}</div>
-      <div class="gonggu-filter-bar ops-wrap">${chip('전체', S.srcStage, 'src-stage', '모든 단계')}${Object.entries(STAGES).map(([k, v]) => chip(k, S.srcStage, 'src-stage', v, byCat.filter((r) => r.stage === k).length)).join('')}</div>
+      <div class="gonggu-filter-bar ops-wrap">${chip('전체', S.srcCat, 'src-cat', '전체', byStage.length)}${CATS.map((c) => chip(c, S.srcCat, 'src-cat', c, byStage.filter((r) => r.category === c).length)).join('')}</div>
+      <div class="gonggu-filter-bar ops-wrap">${chip('전체', S.srcStage, 'src-stage', '모든 단계', byCat.length)}${Object.entries(STAGES).map(([k, v]) => chip(k, S.srcStage, 'src-stage', v, byCat.filter((r) => r.stage === k).length)).join('')}</div>
       ${sourcingForm()}
       ${list.length ? list.map((r) => {
         const url = safeUrl(r.url);
