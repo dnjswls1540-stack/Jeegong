@@ -69,7 +69,80 @@
           "done": false
         }
       ],
-      "todomateTodos": [],
+      "todomateTodos": [
+        {
+          "id": "t-20261127-1",
+          "text": "디어커스 제안 25명",
+          "title": "디어커스 제안 25명",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261127-2",
+          "text": "하린이네 샘플 발송",
+          "title": "하린이네 샘플 발송",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261127-3",
+          "text": "케이스니키 제안 15명",
+          "title": "케이스니키 제안 15명",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261127-4",
+          "text": "지공의 페이노트 블로그스킨 제작",
+          "title": "지공의 페이노트 블로그스킨 제작",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261127-5",
+          "text": "발품맘&사당이네 주문건 확인 및 정산서 작성",
+          "title": "발품맘&사당이네 주문건 확인 및 정산서 작성",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261127-6",
+          "text": "보보홈 주문건 확인",
+          "title": "보보홈 주문건 확인",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261127-7",
+          "text": "서연맘 주문건 확인 및 정산서 작성",
+          "title": "서연맘 주문건 확인 및 정산서 작성",
+          "category": "사업or수익",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261127-8",
+          "text": "듀오링고 일본어 2개",
+          "title": "듀오링고 일본어 2개",
+          "category": "자기계발",
+          "done": false,
+          "isDone": false
+        },
+        {
+          "id": "t-20261127-9",
+          "text": "일본어 회화 1분 120일",
+          "title": "일본어 회화 1분 120일",
+          "category": "자기계발",
+          "done": false,
+          "isDone": false
+        }
+      ],
       "calendar": [
         "[공구] 보보홈 디어커스 뱀부 진행 (종일(~11/30))",
         "[공구] 지수맘 아넬라 과일퓨레 진행 (종일(~11/30))",
